@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Pixelated Snake</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+        :root {
+            --bg-color: #1a1a1a;
+            --primary-color: #2c2c2c;
+            --secondary-color: #444;
+            --font-color: #e0e0e0;
+            --accent-color: #00ff00;
+            --powerup-color: #ffcc00;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--font-color);
+            font-family: 'Press Start 2P', cursive;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            width: 100%;
+            max-width: 610px; /* Canvas width + borders */
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        
+        #game-area {
+            position: relative;
+            width: 100%;
+        }
+
+        #game-board {
+            border: 5px solid var(--secondary-color);
+            background-color: #000;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+            display: none; /* Hidden by default */
+            position: relative;
+            width: 100%;
+            height: auto;
+            aspect-ratio: 1 / 1;
+            image-rendering: pixelated;
+        }
+
+        .game-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            z-index: 10;
+            backdrop-filter: blur(5px);
+            transition: opacity 0.3s ease;
+        }
+        
+        #start-screen h1 {
+            font-size: 5rem;
+            color: var(--accent-color);
+            text-shadow: 4px 4px 0px #000;
+            animation: pulse 2s infinite;
+        }
+
+        .start-menu-buttons {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .level-options, .custom-options, .powerup-options {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .pixel-btn {
+            font-family: 'Press Start 2P', cursive;
+            background-color: var(--primary-color);
+            color: var(--font-color);
+            border: 3px solid var(--secondary-color);
+            padding: 15px 30px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 5px 5px 0px var(--secondary-color);
+            text-shadow: 2px 2px 0px #000;
+            position: relative;
+        }
+        
+        .pixel-btn.btn-secondary {
+            background-color: #555;
+            font-size: 1rem;
+            padding: 10px 20px;
+        }
+
+        .pixel-btn:hover {
+            background-color: var(--secondary-color);
+            box-shadow: 5px 5px 0px var(--accent-color);
+            transform: translateY(-2px);
+        }
+        
+        .pixel-btn:active {
+            box-shadow: 2px 2px 0px var(--accent-color);
+            transform: translateY(2px);
+        }
+
+        .pixel-btn:disabled {
+            background-color: #333;
+            color: #777;
+            cursor: not-allowed;
+            box-shadow: 5px 5px 0px #222;
+        }
+
+        #score-container {
+            font-size: 2rem;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.5);
+            padding: 5px 15px;
+            border-radius: 10px;
+            border: 2px solid var(--secondary-color);
+            z-index: 5;
+        }
+
+        #score-container img {
+            width: 32px;
+            height: 32px;
+        }
+        
+        #customization-panel, #ai-level-panel {
+            background: var(--primary-color);
+            border: 3px solid var(--secondary-color);
+            padding: 25px;
+            box-shadow: 8px 8px 0px #000;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 80%;
+            max-width: 500px;
+        }
+        
+        #customization-panel h3, #ai-level-panel h3 {
+            margin: 0;
+            font-size: 1.2rem;
+            text-align: center;
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+
+        .custom-section {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: flex-start;
+        }
+        
+        .color-options, .food-options {
+            display: flex;
+            gap: 10px;
+        }
+
+        .color-box, .food-box {
+            width: 30px;
+            height: 30px;
+            border: 3px solid var(--font-color);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .color-box.selected, .food-box.selected {
+             border: 4px solid var(--accent-color);
+             transform: scale(1.15);
+             box-shadow: 0 0 10px var(--accent-color);
+        }
+        
+        .food-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            image-rendering: pixelated;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        input[type="color"] {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 40px;
+            background-color: transparent;
+            border: 3px solid var(--secondary-color);
+            cursor: pointer;
+        }
+        input[type="color"]::-webkit-color-swatch {
+            border-radius: 5px;
+            border: none;
+        }
+        input[type="color"]::-moz-color-swatch {
+            border-radius: 5px;
+            border: none;
+        }
+
+        .upload-label {
+            font-size: 0.8rem;
+            background: var(--secondary-color);
+            padding: 8px 12px;
+            cursor: pointer;
+            text-align: center;
+            border: 2px solid #333;
+            box-shadow: 3px 3px 0px #111;
+        }
+        
+        .upload-label:hover {
+            background: #555;
+        }
+        
+        .upload-label:active {
+            transform: translateY(1px);
+            box-shadow: 2px 2px 0px #111;
+        }
+
+        #ai-prompt {
+            width: 100%;
+            background: #222;
+            border: 2px solid var(--secondary-color);
+            padding: 10px;
+            font-family: 'Press Start 2P', cursive;
+            color: var(--font-color);
+            font-size: 0.8rem;
+            box-sizing: border-box;
+        }
+
+        #ai-level-output {
+            min-height: 50px;
+            background: #222;
+            padding: 10px;
+            border: 2px solid var(--secondary-color);
+            text-align: left;
+            font-size: 0.8rem;
+            line-height: 1.5;
+            width: 80%;
+            max-width: 500px;
+            box-sizing: border-box;
+        }
+
+        #power-up-bar-container {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50%;
+            height: 20px;
+            background-color: #333;
+            border: 2px solid var(--secondary-color);
+            display: none;
+            z-index: 6;
+        }
+
+        #power-up-bar {
+            width: 100%;
+            height: 100%;
+            background-color: var(--powerup-color);
+            transition: width 0.1s linear;
+        }
+
+        .loader {
+            width: 20px;
+            height: 20px;
+            border: 3px solid #FFF;
+            border-bottom-color: transparent;
+            border-radius: 50%;
+            display: inline-block;
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
+            margin-left: 10px;
+        }
+
+        #notification {
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--accent-color);
+            color: var(--bg-color);
+            padding: 15px 30px;
+            font-size: 1rem;
+            z-index: 100;
+            border: 4px solid var(--bg-color);
+            box-shadow: 0 0 20px var(--accent-color);
+            opacity: 0;
+            transition: opacity 0.5s, top 0.5s;
+            pointer-events: none;
+            display: none;
+            text-shadow: none;
+        }
+
+        #mobile-controls {
+            display: none; /* Controlled by JS */
+            margin-top: 20px;
+            width: 180px;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-rows: 1fr 1fr 1fr;
+            gap: 10px;
+        }
+
+        .d-pad {
+            background-color: var(--primary-color);
+            color: var(--font-color);
+            border: 3px solid var(--secondary-color);
+            font-size: 2rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            user-select: none;
+        }
+        .d-pad:active {
+            background-color: var(--secondary-color);
+        }
+        #up-btn { grid-column: 2; grid-row: 1; }
+        #left-btn { grid-column: 1; grid-row: 2; }
+        #right-btn { grid-column: 3; grid-row: 2; }
+        #down-btn { grid-column: 2; grid-row: 3; }
+
+
+        @keyframes rotation {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); text-shadow: 4px 4px 0px #000; }
+            50% { transform: scale(1.05); text-shadow: 6px 6px 5px #000; }
+            100% { transform: scale(1); text-shadow: 4px 4px 0px #000; }
+        }
+        
+        @keyframes rainbow {
+            0%{background-position:0% 50%}
+            50%{background-position:100% 50%}
+            100%{background-position:0% 50%}
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            /* Mobile controls are now displayed via JavaScript */
+            #start-screen h1 {
+                font-size: 3rem;
+            }
+            .pixel-btn {
+                font-size: 1rem;
+                padding: 10px 20px;
+            }
+            .container {
+                gap: 10px;
+            }
+            #customization-panel, #ai-level-panel {
+                width: 90%;
+            }
+            #score-container {
+                font-size: 1.5rem;
+                top: 10px;
+            }
+        }
+        @media (max-width: 480px) {
+             #start-screen h1 {
+                font-size: 2.2rem;
+            }
+            .pixel-btn {
+                font-size: 0.8rem;
+                padding: 8px 15px;
+            }
+            .start-menu-buttons {
+                flex-direction: column;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div id="notification"></div>
+        <div id="score-container">
+            <span id="level-name-display"></span>
+            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAACyUlEQVR4nO2Wy2sTURjGv/9/pZmmzLQ0S5M2aZO0iaYkSWrUjYgoiLoWXLgRBH8BwYU/ILiQUnHhRkHchQs3rhQXVxVBEARBsMTGpiXFmGka0+n0JjcT09w0KzaxD3w4zMs9z+d5z3vOFP5zEa0ABwGvgNfAG/AW+F2i9sLp6xjwDHgJ/AVaW0E6H+AEqf0H2AbmS+g/gJ/AmUApA/c0AO6A06S9CTyR0G8DP0n1A+B3oNkO8GngK/AQKAA/gX2gaQW4B1QDXwItcBWIfQ20S0ZqIHoA7oF+k7oE3gCFILQRcE2mXwEuSuR94E+g0Qq0BlwGVoGXQA94Eog/B/wszQjgKXAWeAPcBX4B3ZIZ7QFXgX3gB3C/l3sbeBH4EphzQN8FfgEbgY9AfysBfgY+A/8BvwBfS7O2wGngffA9cE3Jt7Zc+p9Z6FkR1uBeULsP/FSa+cBVYL+2d+B+4AuwS8pP+w4sA/dLe3fBfSgA3wPfpfWpM+AvcE8K8C5wB5jL7x1I/wM/gIeBPBfQ34D7QPML4HngK/AHWCCtPAb8BFb/BBY0+gWwCjwBngMdwM8p4EHgIrCg0b+AVeBXoDYE/gfsU/q3wc/gS+AGsJ/W/hK4B5QCP+j018B+YC+zXwL/Avf1A3gfeB94DhwH3tbfA/cCf/gZ/Bv4CvgV+Az4HLgK/AYWA497ARxP/p0+Bz4DtwJ/Ab8CdwL/A9cA34HvgF+Br4CvwA/AZ8BnwIfAJ8AnwAvge+A3oPUMeBG4Hmg/AX4CfgS+BL4EPgF+AvwCfAZ8BnwGfAL8AnwAvAdeA94D3gNeAx4DHoM/DngE+AP4A/gA+AD4AvgA+AD4APgA+AA4ADgAOAA4ADgAOAD4GngM/C9gHhL4T8YV0/sI3n4UAAAAAElFTSuQmCC" alt="Coin Icon">
+            <span id="score">0</span>
+        </div>
+        
+        <div id="game-area">
+            <canvas id="game-board"></canvas>
+            <div id="power-up-bar-container"><div id="power-up-bar"></div></div>
+        </div>
+        
+        <div id="mobile-controls">
+            <div id="up-btn" class="d-pad">&#9650;</div>
+            <div id="left-btn" class="d-pad">&#9664;</div>
+            <div></div>
+            <div id="right-btn" class="d-pad">&#9654;</div>
+            <div id="down-btn" class="d-pad">&#9660;</div>
+        </div>
+
+        <!-- Start Screen -->
+        <div id="start-screen" class="game-screen">
+            <h1>PIXEL SNAKE</h1>
+            <div class="start-menu-buttons">
+                 <button id="start-btn" class="pixel-btn">START</button>
+                 <button id="customize-btn" class="pixel-btn">CUSTOMIZE</button>
+            </div>
+        </div>
+
+        <!-- Level Select Screen -->
+        <div id="level-select-screen" class="game-screen" style="display: none;">
+            <h2>SELECT LEVEL</h2>
+            <div class="level-options">
+                <button class="pixel-btn level-btn" data-level="easy">EASY</button>
+                <button class="pixel-btn level-btn" data-level="medium">MEDIUM</button>
+                <button class="pixel-btn level-btn" data-level="hard">HARD</button>
+                <button id="ai-level-btn" class="pixel-btn">✨ AI LEVEL</button>
+                <button id="level-back-btn" class="pixel-btn btn-secondary">BACK</button>
+            </div>
+        </div>
+        
+        <!-- Customization Screen -->
+        <div id="customization-screen" class="game-screen" style="display: none;">
+            <div id="customization-panel">
+                 <h3>CUSTOMIZE</h3>
+                <div class="custom-section">
+                    <label>SNAKE SKIN:</label>
+                    <div class="color-options">
+                        <div class="color-box" data-color="#00ff00" style="background-color: #00ff00;"></div>
+                        <div class="color-box" data-color="#ffcc00" style="background-color: #ffcc00;"></div>
+                        <div class="color-box" data-color="#00ccff" style="background-color: #00ccff;"></div>
+                        <div class="color-box" data-color="#ff69b4" style="background-color: #ff69b4;"></div>
+                    </div>
+                    <label for="color-picker" style="margin-top: 10px;">CUSTOM COLOR:</label>
+                    <input type="color" id="color-picker" value="#00ff00">
+                </div>
+                <div class="custom-section">
+                    <label>SNAKE HEAD (PNG):</label>
+                    <input type="file" id="head-upload" accept="image/png">
+                    <label for="head-upload" class="upload-label">UPLOAD</label>
+                </div>
+                <div class="custom-section">
+                    <label>FOOD:</label>
+                    <div class="food-options">
+                        <div class="food-box" data-food="apple"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMCAyMCIgc2hhcGUtcmVuZGVyaW5nPSJjcmlzcEVkZGVzIj48cGF0aCBmaWxsPSIjOEI0NTEzIiBkPSJNOSwyIGgyIHYyIGgtMiB6Ii8+PHBhdGggZmlsbD0iIzM0RDM5OSIgZD0iTTExLDIgaDIgdjEgaC0yIHoiLz48cGF0aCBmaWxsPSIjRUY0NDQ0IiBkPSJNNiw0IGg4IHYxIGgtOCB6IE00LDUgaDEyIHYxIGgtMTIgeiBNMyw2IGgxNCB2NSBoLTE0IHogTTQsMTEgaDEyIHYxIGgtMTIgeiBNNSwxMiBoMTAgdjEgaC0xMCB6IE02LDEzIGg4IHYxIGgtOCB6Ii8+PHBhdGggZmlsbD0iI0Y4NzE3MSIgZD0iTTUsNiBoMiB2MSBoLTIgeiIvPjwvc3ZnPg==" alt="Apple"></div>
+                        <div class="food-box" data-food="cherry"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMCAyMCIgc2hhcGUtcmVuZGVyaW5nPSJjcmlzcEVkZGVzIj48cGF0aCBmaWxsPSIjMzREMzk5IiBkPSJNOSAyaDF2MWgtMSBNOCAzaDF2MWgtMSBNNyA0aDF2MWgtMSBNMTIgM2gxdjFoLTEgTTEzIDRoMXYxaC0xIE0xNCA1aDF2MWgtMSBNMTAgMWgydjFoLTJ6Ii8+PHBhdGggZmlsbD0iI0VGNDQ0NCIgZD0iTTQgNWg1djVoLTV6IE0xMSA2aDV2NWgtNXoiLz48cGF0aCBmaWxsPSIjRjg3MTcxIiBkPSJNNSA2aDF2MWgtMXogTTEyIDdoMXYxaC0xeiIvPjwvc3ZnPg==" alt="Cherry"></div>
+                    </div>
+                     <input type="file" id="food-upload" accept="image/png">
+                     <label for="food-upload" class="upload-label">CUSTOM</label>
+                </div>
+            </div>
+            <div class="custom-options">
+                <button id="custom-back-btn" class="pixel-btn btn-secondary">BACK</button>
+            </div>
+        </div>
+
+        <!-- ✨ AI Level Generation Screen -->
+        <div id="ai-level-screen" class="game-screen" style="display: none;">
+            <div id="ai-level-panel">
+                <h3>✨ AI LEVEL GENERATOR</h3>
+                <div class="custom-section">
+                    <label for="ai-prompt">DESCRIBE A THEME:</label>
+                    <input type="text" id="ai-prompt" placeholder="e.g., enchanted forest, lava cave...">
+                </div>
+                <div id="ai-level-output">Ready for your idea...</div>
+                <div class="level-options">
+                    <button id="generate-ai-level-btn" class="pixel-btn">GENERATE</button>
+                    <button id="play-ai-level-btn" class="pixel-btn" disabled>PLAY</button>
+                    <button id="ai-back-btn" class="pixel-btn btn-secondary">BACK</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ✨ Power-Up Selection Screen -->
+        <div id="power-up-select-screen" class="game-screen" style="display: none;">
+            <h2>SELECT A POWER-UP!</h2>
+            <div class="powerup-options">
+                <button class="pixel-btn power-up-btn" data-powerup="INVINCIBLE">INVINCIBLE (7s)</button>
+                <button class="pixel-btn power-up-btn" data-powerup="CLEAR_WALLS">CLEAR WALLS</button>
+                <button class="pixel-btn power-up-btn" data-powerup="GO_TO_CENTER">TELEPORT</button>
+                
+            </div>
+        </div>
+
+        <!-- Game Over Screen -->
+        <div id="game-over-screen" class="game-screen" style="display: none;">
+    <h2>GAME OVER</h2>
+    <p style="font-size: 1.5rem;">SCORE: <span id="final-score">0</span></p>
+    <div class="level-options">
+        <button id="restart-btn" class="pixel-btn">PLAY AGAIN</button>
+        <button id="menu-btn" class="pixel-btn btn-secondary">MENU</button>
+    </div>
+</div>
+
+    
+    <!-- Music Elements -->
+    <audio id="music-easy" src="toyland.mp3" loop></audio>
+    <audio id="music-medium" src="ice.mp3" loop></audio>
+    <audio id="music-hard" src="magic.mp3" loop></audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // DOM Elements
+            const gameBoard = document.getElementById('game-board');
+            const ctx = gameBoard.getContext('2d');
+            
+            const startScreen = document.getElementById('start-screen');
+            const levelSelectScreen = document.getElementById('level-select-screen');
+            const gameOverScreen = document.getElementById('game-over-screen');
+            const customizationScreen = document.getElementById('customization-screen');
+            const aiLevelScreen = document.getElementById('ai-level-screen');
+            const powerUpSelectScreen = document.getElementById('power-up-select-screen');
+            const scoreContainer = document.getElementById('score-container');
+            const powerUpBarContainer = document.getElementById('power-up-bar-container');
+            const powerUpBar = document.getElementById('power-up-bar');
+            const notificationEl = document.getElementById('notification');
+            
+            const startBtn = document.getElementById('start-btn');
+            const customizeBtn = document.getElementById('customize-btn');
+            const levelBtns = document.querySelectorAll('.level-btn');
+            const powerUpBtns = document.querySelectorAll('.power-up-btn');
+            const restartBtn = document.getElementById('restart-btn');
+            const levelBackBtn = document.getElementById('level-back-btn');
+            const customBackBtn = document.getElementById('custom-back-btn');
+            const aiLevelBtn = document.getElementById('ai-level-btn');
+            const aiBackBtn = document.getElementById('ai-back-btn');
+            const generateAiLevelBtn = document.getElementById('generate-ai-level-btn');
+            const playAiLevelBtn = document.getElementById('play-ai-level-btn');
+
+            const scoreEl = document.getElementById('score');
+            const finalScoreEl = document.getElementById('final-score');
+            const levelNameDisplay = document.getElementById('level-name-display');
+            
+            const aiPrompt = document.getElementById('ai-prompt');
+            const aiLevelOutput = document.getElementById('ai-level-output');
+
+            // Mobile Controls
+            const mobileControls = document.getElementById('mobile-controls');
+            const upBtn = document.getElementById('up-btn');
+            const downBtn = document.getElementById('down-btn');
+            const leftBtn = document.getElementById('left-btn');
+            const rightBtn = document.getElementById('right-btn');
+
+            // Customization elements
+            const colorBoxes = document.querySelectorAll('.color-box');
+            const foodBoxes = document.querySelectorAll('.food-box');
+            const headUpload = document.getElementById('head-upload');
+            const foodUpload = document.getElementById('food-upload');
+            const colorPicker = document.getElementById('color-picker');
+
+            // Game variables
+            const canvas = document.getElementById('game-board');
+            const container = document.querySelector('.container');
+            let canvasSize = Math.min(container.clientWidth, window.innerHeight - 100);
+            canvas.width = canvasSize;
+            canvas.height = canvasSize;
+            const tileCount = 15; // 15x15 grid
+            let gridSize = canvasSize / tileCount;
+
+            let snake = [{ x: 7, y: 7 }];
+            let foods = [];
+            let powerUpFood = null;
+            let score = 0;
+            let direction = 'right';
+            let nextDirection = 'right';
+            let gameSpeed = 150;
+            let level = 'easy';
+            let currentLevel = null; // simpan level terakhir dimainkan
+            let obstacles = [];
+            let isGameOver = false;
+            let gameInterval;
+            let notificationTimeout;
+            
+            // Power-up variables
+            let activePowerUp = null;
+            let powerUpTimer = null;
+            let baseGameSpeed = 210;
+
+            // AI Level variables
+            let aiLevelData = null;
+            let customBackgroundColor = '#000';
+            let customWallColor = '#fff';
+
+            // Customization variables
+            let snakeColor = '#00ff00';
+            let savedSnakeColor = snakeColor;
+            let snakeHeadImg = null;
+            let foodImg = new Image();
+            foodImg.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMCAyMCIgc2hhcGUtcmVuZGVyaW5nPSJjcmlzcEVkZGVzIj48cGF0aCBmaWxsPSIjOEI0NTEzIiBkPSJNOSwyIGgyIHYyIGgtMiB6Ii8+PHBhdGggZmlsbD0iIzM0RDM5OSIgZD0iTTExLDIgaDIgdjEgaC0yIHoiLz48cGF0aCBmaWxsPSIjRUY0NDQ0IiBkPSJNNiw0IGg4IHYxIGgtOCB6IE00LDUgaDEyIHYxIGgtMTIgeiBNMyw2IGgxNCB2NSBoLTE0IHogTTQsMTEgaDEyIHYxIGgtMTIgeiBNNSwxMiBoMTAgdjEgaC0xMCB6IE02LDEzIGg4IHYxIGgtOCB6Ii8+PHBhdGggZmlsbD0iI0Y4NzE3MSIgZD0iTTUsNiBoMiB2MSBoLTIgeiIvPjwvc3ZnPg==';
+            const powerUpImg = new Image();
+            powerUpImg.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMCAyMCIgc2hhcGUtcmVuZGVyaW5nPSJjcmlzcEVkZGVzIj48cGF0aCBmaWxsPSIjRkZEMDMyIiBkPSJNMTAgMWwzIDZoNiBsLTUgNGwyIDYtNS00LTUtNGwyLTZMMCA3aDZ6Ii8+PC9zdmc+';
+            let customFoodSrc = null;
+
+            // SVG Wall Textures
+            const iceWallImg = new Image();
+            iceWallImg.src = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMCAyMCIgc2hhcGUtcmVuZGVyaW5nPSJjcmlzcEVkZ2VzIj48cGF0aCBmaWxsPSIjYWFkN2ZmIiBkPSJNMCwwaDIwdjIwSDB6Ii8+PHBhdGggZmlsbD0iI2Q0ZWFmZiIgZD0iTTMgMmgzdjFIM3ogTTE0IDNoM3YxaC0zeiBNNCA1aDR2Mkg0eiBNMTIgNmgydjFIMTJ6IE0yIDloM3YySDJ6IE05IDEwaDV2M0g5eiBNMTYgMTFoMnYxaC0yeiBNMyAxNGg0djFIM3ogTTEzIDE1aDR2MmgLTR6IE0yIDE3aDJ2MUgyeiBNOSAxOGgzdjFIOXoiLz48cGF0aCBmaWxsPSIjZmZmIiBkPSJNNiAyaDF2MUg2eiBNMTMgNGgxdjFoLTF6IE04IDZoMXYxSDh6IE0xNiA3aDF2MWgtMXogTTUgMTBoMXYxSDV6IE0xNCAxMmgxdjFoLTF6IE03IDE1aDF2MUg3eiBNMTcgMThoMXYxaC0xeiIvPjwvc3ZnPg==";
+            const forestWallImg = new Image();
+            forestWallImg.src = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMCAyMCIgc2hhcGUtcmVuZGVyaW5nPSJjcmlzcEVkZ2VzIj48cGF0aCBmaWxsPSIjNGEyZTFhIiBkPSJNMCwwaDIwdjIwSDB6Ii8+PHBhdGggZmlsbD0iIzNhMjIxMiIgZD0iTTIgMmgzdjJIMnogTTEyIDNoNHYyaC00eiBNNSA3aDJ2M0g1eiBNMTUgOGgzdjNoLTN6IE0xIDEyaDN2NEgxek0xMCAxNGgzdjNoLTN6Ii8+PHBhdGggZmlsbD0iIzNjNWMyMSIgZD0iTTcgMWgydjFIN3ogTTEgNmgydjJIMXogTTggMTFoM3YxSDh6IE0xNyAxM2gydjFoLTJ6IE01IDE2aDN2Mkg1eiIvPjwvc3ZnPg==";
+            iceWallImg.onload = () => console.log("Ice wall image loaded");
+iceWallImg.onerror = () => console.error("Failed to load ice wall image");
+
+forestWallImg.onload = () => console.log("Forest wall image loaded");
+forestWallImg.onerror = () => console.error("Failed to load forest wall image");
+
+            // --- UI & Notifications ---
+            function showInGameNotification(message) {
+                if (!notificationEl) return;
+
+                clearTimeout(notificationTimeout);
+                notificationEl.textContent = message;
+                notificationEl.style.display = 'block';
+                
+                setTimeout(() => {
+                    notificationEl.style.opacity = 1;
+                    notificationEl.style.top = '50px';
+                }, 10);
+
+                notificationTimeout = setTimeout(() => {
+                    notificationEl.style.opacity = 0;
+                    notificationEl.style.top = '30px';
+                    setTimeout(() => {
+                        notificationEl.style.display = 'none';
+                    }, 500); // Wait for fade out
+                }, 3000); // 3 seconds visible
+            }
+            
+            function handleResize() {
+                canvasSize = Math.min(container.clientWidth, window.innerHeight - 200, 600);
+                canvas.width = canvasSize;
+                canvas.height = canvasSize;
+                gridSize = canvasSize / tileCount;
+            }
+
+            window.addEventListener('resize', handleResize);
+            
+            // --- UI Navigation ---
+            startBtn.addEventListener('click', () => {
+                startScreen.style.display = 'none';
+                levelSelectScreen.style.display = 'flex';
+            });
+            customizeBtn.addEventListener('click', () => {
+                startScreen.style.display = 'none';
+                customizationScreen.style.display = 'flex';
+            });
+            levelBackBtn.addEventListener('click', () => {
+                levelSelectScreen.style.display = 'none';
+                startScreen.style.display = 'flex';
+            });
+            customBackBtn.addEventListener('click', () => {
+                customizationScreen.style.display = 'none';
+                startScreen.style.display = 'flex';
+            });
+            aiLevelBtn.addEventListener('click', () => {
+                levelSelectScreen.style.display = 'none';
+                aiLevelScreen.style.display = 'flex';
+            });
+            aiBackBtn.addEventListener('click', () => {
+                aiLevelScreen.style.display = 'none';
+                levelSelectScreen.style.display = 'flex';
+            });
+
+           levelBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        level = btn.dataset.level;
+        currentLevel = level; // simpan level terakhir
+        startGame();
+    });
+});
+
+
+           restartBtn.addEventListener('click', () => {
+    gameOverScreen.style.display = 'none';
+    if (currentLevel) {
+        level = currentLevel; // pakai level terakhir
+    }
+    startGame();
+});
+
+            
+            // --- Game Flow ---
+            function startGame() {
+                levelSelectScreen.style.display = 'none';
+                aiLevelScreen.style.display = 'none';
+                gameBoard.style.display = 'block';
+                scoreContainer.style.display = 'flex';
+                handleResize();
+
+                if (window.innerWidth <= 768) {
+                    mobileControls.style.display = 'grid';
+                }
+
+                resetGame();
+                
+                if (level === 'ai' && aiLevelData) {
+                    levelNameDisplay.textContent = `"${aiLevelData.levelName}"`;
+                    obstacles = aiLevelData.obstacles;
+                    customBackgroundColor = aiLevelData.backgroundColor;
+                    customWallColor = aiLevelData.wallColor;
+                    snakeColor = aiLevelData.snakeColor;
+                    savedSnakeColor = snakeColor;
+                    playMusic('easy');
+                } else {
+                    levelNameDisplay.textContent = level.toUpperCase();
+                    generateObstacles();
+                    playMusic(level);
+                }
+
+                initializeFoods();
+                
+                clearInterval(gameInterval);
+                gameInterval = setInterval(gameLoop, gameSpeed);
+            }
+
+            function gameLoop() {
+                if (isGameOver) {
+                    clearInterval(gameInterval);
+                    showGameOver();
+                    return;
+                }
+                update();
+                draw();
+            }
+            
+            function resetGame() {
+                snake = [{ x: 7, y: 7 }];
+                direction = 'right';
+                nextDirection = 'right';
+                score = 0;
+                scoreEl.textContent = score;
+                isGameOver = false;
+                obstacles = [];
+                foods = [];
+                powerUpFood = null;
+                baseGameSpeed = 210;
+                gameSpeed = baseGameSpeed;
+                customBackgroundColor = '#000';
+                deactivatePowerUp();
+                loadCustomization(); 
+                savedSnakeColor = snakeColor;
+            }
+            
+            function showGameOver() {
+                stopMusic();
+                finalScoreEl.textContent = score;
+                gameOverScreen.style.display = 'flex';
+                mobileControls.style.display = 'none';
+            }
+
+            // --- Game Logic ---
+            function update() {
+                direction = nextDirection;
+                const head = { ...snake[0] };
+
+                switch (direction) {
+                    case 'up': head.y--; break;
+                    case 'down': head.y++; break;
+                    case 'left': head.x--; break;
+                    case 'right': head.x++; break;
+                }
+                
+                let isDead = (
+                    head.x < 0 || head.x >= tileCount ||
+                    head.y < 0 || head.y >= tileCount ||
+                    checkCollision(head, snake.slice(1)) ||
+                    checkCollision(head, obstacles)
+                );
+                
+                if (isDead) {
+                    if (activePowerUp && activePowerUp.type === 'INVINCIBLE') {
+                        isDead = false;
+                    } else {
+                        isGameOver = true;
+                        return;
+                    }
+                }
+                
+                snake.unshift(head);
+                
+                const eatenFoodIndex = foods.findIndex(f => f.x === head.x && f.y === head.y);
+
+                if (eatenFoodIndex !== -1) {
+                    score++;
+                    scoreEl.textContent = score;
+                    baseGameSpeed = Math.max(50, baseGameSpeed - 2.5);
+                    gameSpeed = baseGameSpeed * ( (activePowerUp && activePowerUp.type === 'SLOW_MOTION') ? 2.5 : 1 );
+
+                    clearInterval(gameInterval);
+                    gameInterval = setInterval(gameLoop, gameSpeed);
+                    
+                    foods[eatenFoodIndex] = generateNewFoodPosition();
+
+                    if (Math.random() < 0.25 && !powerUpFood) {
+                        generatePowerUpFood();
+                    }
+                } else if (powerUpFood && head.x === powerUpFood.x && head.y === powerUpFood.y) {
+                    powerUpFood = null;
+                    score += 5;
+                    scoreEl.textContent = score;
+                    triggerPowerUpSelection();
+                } else {
+                    snake.pop();
+                }
+            }
+
+            function checkCollision(point, array) {
+                return array.some(segment => segment.x === point.x && segment.y === point.y);
+            }
+
+            function generateNewFoodPosition() {
+                let newFood;
+                do {
+                    newFood = {
+                        x: Math.floor(Math.random() * tileCount),
+                        y: Math.floor(Math.random() * tileCount)
+                    };
+                } while (checkCollision(newFood, snake) || checkCollision(newFood, obstacles) || checkCollision(newFood, foods) || (powerUpFood && newFood.x === powerUpFood.x && newFood.y === powerUpFood.y));
+                return newFood;
+            }
+
+            function initializeFoods() {
+                foods = [];
+                for(let i = 0; i < 4; i++) {
+                    foods.push(generateNewFoodPosition());
+                }
+            }
+            
+            function generatePowerUpFood() {
+                 do {
+                    powerUpFood = {
+                        x: Math.floor(Math.random() * tileCount),
+                        y: Math.floor(Math.random() * tileCount)
+                    };
+                } while (checkCollision(powerUpFood, snake) || checkCollision(powerUpFood, obstacles) || checkCollision(powerUpFood, foods));
+            }
+
+            function generateObstacles() {
+                if (level === 'easy' || level === 'ai') return;
+                const numObstacles = level === 'medium' ? 10 : 20; 
+                for (let i = 0; i < numObstacles; i++) {
+                    let obstacle;
+                    do {
+                        obstacle = {
+                           x: Math.floor(Math.random() * tileCount),
+                           y: Math.floor(Math.random() * tileCount)
+                        };
+                    } while (
+                        (obstacle.x > 3 && obstacle.x < 11 && obstacle.y > 3 && obstacle.y < 11) ||
+                        checkCollision(obstacle, obstacles)
+                    );
+                    obstacles.push(obstacle);
+                }
+            }
+            
+            // --- Drawing ---
+            function draw() {
+                ctx.clearRect(0, 0, canvasSize, canvasSize);
+                ctx.fillStyle = level === 'ai' ? customBackgroundColor : (level === 'medium') ? '#6699CC' : (level === 'hard') ? '#223322' : '#000';
+                ctx.fillRect(0, 0, canvasSize, canvasSize);
+
+               if (level === 'ai') {
+    ctx.fillStyle = customWallColor;
+    obstacles.forEach(obs => {
+        ctx.fillRect(obs.x * gridSize, obs.y * gridSize, gridSize, gridSize);
+    });
+} else {
+    const wallImg = level === 'medium' ? iceWallImg : forestWallImg;
+    // ✅ cek dulu gambar sudah load sebelum dipakai
+    if (wallImg.complete && wallImg.naturalWidth !== 0) {
+        obstacles.forEach(obs => {
+            ctx.drawImage(wallImg, obs.x * gridSize, obs.y * gridSize, gridSize, gridSize);
+        });
+    } else {
+        // fallback: kalau gambar belum siap, pakai warna polos
+        ctx.fillStyle = "#999";
+        obstacles.forEach(obs => {
+            ctx.fillRect(obs.x * gridSize, obs.y * gridSize, gridSize, gridSize);
+        });
+    }
+}
+
+
+                foods.forEach(food => {
+                    ctx.drawImage(foodImg, food.x * gridSize, food.y * gridSize, gridSize, gridSize);
+                });
+                
+                if (powerUpFood) {
+                    ctx.drawImage(powerUpImg, powerUpFood.x * gridSize, powerUpFood.y * gridSize, gridSize, gridSize);
+                }
+                
+                snake.forEach((segment, index) => {
+                    ctx.fillStyle = snakeColor;
+                    if (index === 0 && snakeHeadImg) {
+                        ctx.save();
+                        ctx.translate(segment.x * gridSize + gridSize / 2, segment.y * gridSize + gridSize / 2);
+                        if (direction === 'right') ctx.rotate(90 * Math.PI / 180);
+                        if (direction === 'left') ctx.rotate(-90 * Math.PI / 180);
+                        if (direction === 'down') ctx.rotate(180 * Math.PI / 180);
+                        ctx.drawImage(snakeHeadImg, -gridSize / 2, -gridSize / 2, gridSize, gridSize);
+                        ctx.restore();
+                    } else {
+                        ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize, gridSize);
+                    }
+                });
+            }
+
+            // --- Controls ---
+            function handleControl(newDirection, oppositeDirection) {
+                if (direction !== oppositeDirection) {
+                    nextDirection = newDirection;
+                }
+            }
+
+            document.addEventListener('keydown', e => {
+                const key = e.key.toLowerCase();
+                if (key === 'arrowup' || key === 'w') handleControl('up', 'down');
+                else if (key === 'arrowdown' || key === 's') handleControl('down', 'up');
+                else if (key === 'arrowleft' || key === 'a') handleControl('left', 'right');
+                else if (key === 'arrowright' || key === 'd') handleControl('right', 'left');
+            });
+
+            upBtn.addEventListener('touchstart', (e) => { e.preventDefault(); handleControl('up', 'down'); });
+            downBtn.addEventListener('touchstart', (e) => { e.preventDefault(); handleControl('down', 'up'); });
+            leftBtn.addEventListener('touchstart', (e) => { e.preventDefault(); handleControl('left', 'right'); });
+            rightBtn.addEventListener('touchstart', (e) => { e.preventDefault(); handleControl('right', 'left'); });
+
+            // --- Music ---
+            function playMusic(level) {
+                stopMusic();
+                const music = document.getElementById(`music-${level}`);
+                if (music) {
+                    music.currentTime = 0;
+                    music.play().catch(error => { /* User interaction needed */ });
+                }
+            }
+
+            function stopMusic() {
+                document.querySelectorAll('audio').forEach(audio => audio.pause());
+            }
+            
+            // --- Customization Logic ---
+            function loadCustomization() {
+                const savedColor = localStorage.getItem('snakeColor');
+                if (savedColor) {
+                    snakeColor = savedColor;
+                    colorPicker.value = savedColor;
+                    updateSelected(colorBoxes, null);
+                } else {
+                     snakeColor = '#00ff00'; // Default green
+                     colorPicker.value = '#00ff00';
+                     updateSelected(colorBoxes, '[data-color="#00ff00"]');
+                }
+                
+                const savedHead = localStorage.getItem('snakeHead');
+                if (savedHead) {
+                    snakeHeadImg = new Image();
+                    snakeHeadImg.src = savedHead;
+                }
+
+                const savedFood = localStorage.getItem('foodImage');
+                const savedFoodType = localStorage.getItem('foodType') || 'apple';
+
+                if (savedFoodType === 'custom' && savedFood) {
+                    foodImg.src = savedFood;
+                    customFoodSrc = savedFood;
+                    updateSelected(foodBoxes, null);
+                } else {
+                    const preset = document.querySelector(`.food-box[data-food="${savedFoodType}"] img`);
+                    if(preset) foodImg.src = preset.src;
+                    updateSelected(foodBoxes, `[data-food="${savedFoodType}"]`);
+                }
+            }
+
+            function updateSelected(elements, selector) {
+                elements.forEach(el => el.classList.remove('selected'));
+                if (selector) {
+                    const toSelect = document.querySelector(selector);
+                    if (toSelect) toSelect.classList.add('selected');
+                }
+            }
+
+            const menuBtn = document.getElementById('menu-btn');
+
+menuBtn.addEventListener('click', () => {
+    gameOverScreen.style.display = 'none';
+    startScreen.style.display = 'flex'; // balik ke menu utama
+    scoreContainer.style.display = 'none';
+    gameBoard.style.display = 'none';
+    mobileControls.style.display = 'none';
+});
+
+
+            colorPicker.addEventListener('input', (e) => {
+                const newColor = e.target.value;
+                snakeColor = newColor;
+                savedSnakeColor = newColor;
+                localStorage.setItem('snakeColor', newColor);
+                updateSelected(colorBoxes, null);
+            });
+            
+            colorBoxes.forEach(box => {
+                box.addEventListener('click', () => {
+                    snakeColor = box.dataset.color;
+                    savedSnakeColor = snakeColor;
+                    colorPicker.value = snakeColor;
+                    localStorage.setItem('snakeColor', snakeColor);
+                    updateSelected(colorBoxes, `[data-color="${snakeColor}"]`);
+                });
+            });
+
+            foodBoxes.forEach(box => {
+                box.addEventListener('click', () => {
+                    const foodType = box.dataset.food;
+                    foodImg.src = box.querySelector('img').src;
+                    localStorage.setItem('foodType', foodType);
+                    localStorage.removeItem('foodImage');
+                    customFoodSrc = null;
+                    updateSelected(foodBoxes, `[data-food="${foodType}"]`);
+                });
+            });
+            
+            function handleImageUpload(event, storageKey, callback) {
+                const file = event.target.files[0];
+                if (!file || !file.type.startsWith('image/png')) return;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const base64String = e.target.result;
+                    localStorage.setItem(storageKey, base64String);
+                    callback(base64String);
+                };
+                reader.readAsDataURL(file);
+            }
+
+            headUpload.addEventListener('change', (e) => {
+                handleImageUpload(e, 'snakeHead', (base64) => {
+                    snakeHeadImg = new Image();
+                    snakeHeadImg.src = base64;
+                    showInGameNotification('Gambar kepala ular berhasil diunggah!');
+                });
+            });
+
+            foodUpload.addEventListener('change', (e) => {
+                handleImageUpload(e, 'foodImage', (base64) => {
+                    foodImg.src = base64;
+                    customFoodSrc = base64;
+                    localStorage.setItem('foodType', 'custom');
+                    updateSelected(foodBoxes, null);
+                    showInGameNotification('Gambar makanan berhasil diunggah!');
+                });
+            });
+
+            // --- ✨ Power-Up Logic ---
+            function triggerPowerUpSelection() {
+                clearInterval(gameInterval);
+                powerUpSelectScreen.style.display = 'flex';
+            }
+
+            powerUpBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const powerUpType = btn.dataset.powerup;
+                    powerUpSelectScreen.style.display = 'none';
+                    
+                    let duration = 0;
+                    if (powerUpType === 'INVINCIBLE') duration = 7;
+                    if (powerUpType === 'SLOW_MOTION') duration = 10;
+                    
+                    applyPowerUp({ type: powerUpType, duration: duration });
+                    gameInterval = setInterval(gameLoop, gameSpeed);
+                });
+            });
+
+            function applyPowerUp(data) {
+                deactivatePowerUp(); 
+                let durationMs = data.duration * 1000;
+                activePowerUp = { type: data.type, duration: durationMs, startTime: Date.now() };
+                
+                switch(data.type) {
+                    case 'INVINCIBLE':
+                        snakeColor = 'linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet)';
+                        gameBoard.style.animation = 'rainbow 4s ease infinite';
+                        gameBoard.style.backgroundSize = '400% 400%';
+                        gameBoard.style.background = snakeColor;
+                        break;
+                    case 'SLOW_MOTION':
+                        gameSpeed = baseGameSpeed * 2.5; // Slow down
+                        clearInterval(gameInterval);
+                        gameInterval = setInterval(gameLoop, gameSpeed);
+                        break;
+                    case 'CLEAR_WALLS':
+                        if(obstacles.length > 0) {
+                            const obstaclesToRemove = Math.floor(obstacles.length * 0.50); // Remove 50%
+                            for(let i=0; i<obstaclesToRemove; i++){
+                                obstacles.splice(Math.floor(Math.random() * obstacles.length), 1);
+                            }
+                        }
+                        break;
+                    case 'GO_TO_CENTER':
+                        snake[0].x = Math.floor(tileCount / 2);
+                        snake[0].y = Math.floor(tileCount / 2);
+                        break;
+                }
+
+                if (durationMs > 0) {
+                    powerUpBarContainer.style.display = 'block';
+                    powerUpTimer = setInterval(() => {
+                        const elapsedTime = Date.now() - activePowerUp.startTime;
+                        const remaining = 1 - (elapsedTime / durationMs);
+                        if (remaining <= 0) {
+                            deactivatePowerUp();
+                        } else {
+                            powerUpBar.style.width = `${remaining * 100}%`;
+                        }
+                    }, 100);
+                }
+            }
+
+            function deactivatePowerUp() {
+                if (!activePowerUp) return;
+                
+                if (activePowerUp.type === 'SLOW_MOTION') {
+                     gameSpeed = baseGameSpeed; // Return to normal
+                     clearInterval(gameInterval);
+                     gameInterval = setInterval(gameLoop, gameSpeed);
+                }
+                if (activePowerUp.type === 'INVINCIBLE') {
+                     gameBoard.style.animation = '';
+                     gameBoard.style.background = '';
+                }
+
+                snakeColor = savedSnakeColor;
+                clearInterval(powerUpTimer);
+                powerUpTimer = null;
+                activePowerUp = null;
+                powerUpBarContainer.style.display = 'none';
+                powerUpBar.style.width = '100%';
+            }
+
+
+            // --- ✨ AI Level Generation ---
+            async function generateAiLevel() {
+                const userPrompt = aiPrompt.value;
+                if (!userPrompt) {
+                    aiLevelOutput.textContent = 'Please enter a theme description.';
+                    return;
+                }
+
+                generateAiLevelBtn.disabled = true;
+                playAiLevelBtn.disabled = true;
+                aiLevelOutput.innerHTML = 'Generating level... <div class="loader"></div>';
+                
+                const apiKey = "AIzaSyASLq-v2JJlCvuFxH7dB-bmZmaxBrDxJ_0"; // API key is handled by the execution environment.
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+                const systemPrompt = "You are a creative level designer for a pixelated snake game. The game is played on a 15x15 grid (0-14 for x and y). Your task is to generate a level theme and layout based on a user's prompt. You must respond with a valid JSON object matching the provided schema. The obstacles should be placed thoughtfully to create a fun and challenging path, but avoid completely blocking off areas. Do not place obstacles in the center 7x7 area (from grid 4,4 to 10,10) to give the player a safe starting zone. Generate between 15 and 25 obstacles.";
+                
+                const payload = {
+                    contents: [{ parts: [{ text: userPrompt }] }],
+                    systemInstruction: { parts: [{ text: systemPrompt }] },
+                    generationConfig: {
+                        responseMimeType: "application/json",
+                        responseSchema: {
+                            type: "OBJECT",
+                            properties: {
+                                "levelName": { "type": "STRING" },
+                                "backgroundColor": { "type": "STRING" },
+                                "wallColor": { "type": "STRING" },
+                                "snakeColor": { "type": "STRING" },
+                                "obstacles": {
+                                    "type": "ARRAY",
+                                    "items": {
+                                        "type": "OBJECT",
+                                        "properties": {
+                                            "x": { "type": "NUMBER" },
+                                            "y": { "type": "NUMBER" }
+                                        }
+                                    }
+                                }
+                            },
+                        }
+                    }
+                };
+
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`API Error: ${response.statusText}`);
+                    }
+
+                    const result = await response.json();
+                    const jsonText = result.candidates[0].content.parts[0].text;
+                    aiLevelData = JSON.parse(jsonText);
+                    
+                    aiLevelOutput.textContent = `Generated Level: "${aiLevelData.levelName}"! Ready to play.`;
+                    playAiLevelBtn.disabled = false;
+
+                } catch (error) {
+                    console.error("Gemini API call failed:", error);
+                    aiLevelOutput.textContent = "Failed to generate level. Please try again.";
+                    aiLevelData = null;
+                } finally {
+                    generateAiLevelBtn.disabled = false;
+                }
+            }
+
+            generateAiLevelBtn.addEventListener('click', generateAiLevel);
+            playAiLevelBtn.addEventListener('click', () => {
+    level = 'ai';
+    currentLevel = 'ai'; // simpan juga
+    startGame();
+});
+
+
+            // Initial Load
+            handleResize();
+            loadCustomization();
+        });
+    </script>
+</body>
+</html>
+

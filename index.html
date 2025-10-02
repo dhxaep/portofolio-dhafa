@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hasna Game's - Koleksi Game Lucu</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style>
+        body {
+            box-sizing: border-box;
+            background: linear-gradient(135deg, #696FC7 0%, #A7AAE1 100%);
+            min-height: 100vh;
+            font-family: 'Press Start 2P', cursive;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Pixelated background pattern */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(245, 211, 196, 0.1) 2px, transparent 2px),
+                radial-gradient(circle at 75% 75%, rgba(242, 174, 187, 0.1) 2px, transparent 2px);
+            background-size: 50px 50px;
+            z-index: -1;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .pixel-font {
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        .main-title {
+            color: #F5D3C4;
+            text-shadow: 4px 4px 0px #F2AEBB, 8px 8px 0px rgba(0,0,0,0.2);
+            font-size: 3.5rem;
+            margin-bottom: 2rem;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        .description {
+            background: rgba(245, 211, 196, 0.9);
+            color: #696FC7;
+            padding: 1.5rem;
+            border: 4px solid #F2AEBB;
+            font-size: 0.8rem;
+            line-height: 1.6;
+            box-shadow: 8px 8px 0px rgba(0,0,0,0.2);
+            margin-bottom: 3rem;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+
+        .game-card {
+            background: rgba(245, 211, 196, 0.95);
+            border: 4px solid #F2AEBB;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+            box-shadow: 8px 8px 0px rgba(0,0,0,0.15);
+            position: relative;
+            overflow: hidden;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(167, 170, 225, 0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.5s ease;
+            opacity: 0;
+        }
+
+        .game-card:hover::before {
+            opacity: 1;
+            animation: shine 1s ease-in-out;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .game-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 12px 12px 0px rgba(0,0,0,0.25);
+            border-color: #696FC7;
+        }
+
+        .game-image {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 1.5rem;
+            border: 3px solid #F2AEBB;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            background: linear-gradient(135deg, #A7AAE1, #696FC7);
+            box-shadow: 6px 6px 0px rgba(0,0,0,0.2);
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+            overflow: hidden;
+        }
+
+        .pixel-art {
+            width: 80px;
+            height: 80px;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+
+        .game-title {
+            color: #696FC7;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        .game-description {
+            color: #696FC7;
+            margin-bottom: 1.5rem;
+            font-size: 0.7rem;
+            line-height: 1.5;
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        .play-btn {
+            background: linear-gradient(135deg, #696FC7, #A7AAE1);
+            border: 3px solid #F2AEBB;
+            color: white;
+            padding: 12px 30px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            box-shadow: 4px 4px 0px rgba(105, 111, 199, 0.5);
+            position: relative;
+            overflow: hidden;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+
+        .play-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .play-btn:hover::before {
+            left: 100%;
+        }
+
+        .play-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 6px 6px 0px rgba(105, 111, 199, 0.7);
+            background: linear-gradient(135deg, #5a60b8, #9498d4);
+        }
+
+        /* Modal Styles */
+        .modal-content {
+            background: linear-gradient(135deg, #F5D3C4, #F2AEBB);
+            border: 4px solid #696FC7;
+            box-shadow: 12px 12px 0px rgba(0,0,0,0.3);
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+
+        .modal-header {
+            border-bottom: 3px solid #696FC7;
+            padding: 2rem;
+            text-align: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .modal-title {
+            color: #696FC7;
+            font-size: 1.5rem;
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+            font-family: 'Press Start 2P', cursive;
+            margin: 0 auto;
+        }
+
+        .btn-close {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #696FC7;
+            border: 2px solid #F2AEBB;
+            opacity: 1;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.8rem;
+            box-shadow: 3px 3px 0px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+        }
+
+        .btn-close:hover {
+            background: #5a60b8;
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 4px 4px 0px rgba(0,0,0,0.4);
+        }
+
+        .modal-body {
+            padding: 2rem;
+            color: #696FC7;
+            font-size: 0.8rem;
+            line-height: 1.6;
+            text-align: left;
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-pixel {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: rgba(242, 174, 187, 0.3);
+            animation: floatPixel 15s linear infinite;
+        }
+
+        @keyframes floatPixel {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Download Button Styles */
+        .download-btn-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+        }
+
+        /* Dark Mode Toggle Button Styles */
+        .dark-mode-btn-container {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            z-index: 1000;
+        }
+
+        .download-btn {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #696FC7, #A7AAE1);
+            border: 4px solid #F2AEBB;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 6px 6px 0px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+
+        .download-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .download-btn:hover::before {
+            left: 100%;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 8px 8px 0px rgba(0,0,0,0.4);
+            background: linear-gradient(135deg, #5a60b8, #9498d4);
+        }
+
+        .download-btn:active {
+            transform: translateY(-1px) scale(0.98);
+            box-shadow: 4px 4px 0px rgba(0,0,0,0.3);
+        }
+
+        .download-icon {
+            width: 28px;
+            height: 28px;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+
+        .dark-mode-btn {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #696FC7, #A7AAE1);
+            border: 4px solid #F2AEBB;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 6px 6px 0px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+
+        .dark-mode-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .dark-mode-btn:hover::before {
+            left: 100%;
+        }
+
+        .dark-mode-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 8px 8px 0px rgba(0,0,0,0.4);
+            background: linear-gradient(135deg, #5a60b8, #9498d4);
+        }
+
+        .dark-mode-btn:active {
+            transform: translateY(-1px) scale(0.98);
+            box-shadow: 4px 4px 0px rgba(0,0,0,0.3);
+        }
+
+        .dark-mode-icon {
+            width: 28px;
+            height: 28px;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+
+        /* Password Modal Styles */
+        .password-input-container {
+            margin-bottom: 2rem;
+        }
+
+        .password-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(245, 211, 196, 0.9);
+            border: 3px solid #F2AEBB;
+            color: #696FC7;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.7rem;
+            box-shadow: 4px 4px 0px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+
+        .password-input:focus {
+            outline: none;
+            border-color: #696FC7;
+            box-shadow: 6px 6px 0px rgba(0,0,0,0.3);
+            transform: translateY(-2px);
+        }
+
+        .password-input::placeholder {
+            color: rgba(105, 111, 199, 0.6);
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.6rem;
+        }
+
+        .password-error {
+            color: #d63384;
+            font-size: 0.6rem;
+            margin-top: 0.5rem;
+            padding: 8px;
+            background: rgba(214, 51, 132, 0.1);
+            border: 2px solid #d63384;
+            box-shadow: 3px 3px 0px rgba(214, 51, 132, 0.3);
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .password-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .password-btn {
+            background: linear-gradient(135deg, #696FC7, #A7AAE1);
+            border: 3px solid #F2AEBB;
+            color: white;
+            padding: 10px 20px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            box-shadow: 4px 4px 0px rgba(105, 111, 199, 0.5);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+
+        .password-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .password-btn:hover::before {
+            left: 100%;
+        }
+
+        .password-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 6px 6px 0px rgba(105, 111, 199, 0.7);
+            background: linear-gradient(135deg, #5a60b8, #9498d4);
+        }
+
+        .cancel-btn {
+            background: linear-gradient(135deg, #d63384, #f8d7da);
+            box-shadow: 4px 4px 0px rgba(214, 51, 132, 0.5);
+        }
+
+        .cancel-btn:hover {
+            background: linear-gradient(135deg, #b02a5b, #f1aeb5);
+            box-shadow: 6px 6px 0px rgba(214, 51, 132, 0.7);
+        }
+
+        /* Dark Mode Styles */
+        body.dark-mode {
+            background: linear-gradient(135deg, #2c2c54 0%, #40407a 100%);
+        }
+
+        body.dark-mode::before {
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.05) 2px, transparent 2px),
+                radial-gradient(circle at 75% 75%, rgba(255, 255, 255, 0.05) 2px, transparent 2px);
+        }
+
+        body.dark-mode .main-title {
+            color: #f1f2f6;
+            text-shadow: 4px 4px 0px #706fd3, 8px 8px 0px rgba(0,0,0,0.4);
+        }
+
+        body.dark-mode .description {
+            background: rgba(47, 54, 64, 0.9);
+            color: #f1f2f6;
+            border-color: #706fd3;
+        }
+
+        body.dark-mode .game-card {
+            background: rgba(47, 54, 64, 0.95);
+            border-color: #706fd3;
+        }
+
+        body.dark-mode .game-card:hover {
+            border-color: #f1f2f6;
+        }
+
+        body.dark-mode .game-image {
+            background: linear-gradient(135deg, #706fd3, #2c2c54);
+            border-color: #706fd3;
+        }
+
+        body.dark-mode .game-title,
+        body.dark-mode .game-description {
+            color: #f1f2f6;
+        }
+
+        body.dark-mode .modal-content {
+            background: linear-gradient(135deg, #2f3640, #40407a);
+            border-color: #706fd3;
+        }
+
+        body.dark-mode .modal-title {
+            color: #f1f2f6;
+        }
+
+        body.dark-mode .modal-body {
+            color: #f1f2f6;
+        }
+
+        body.dark-mode .password-input {
+            background: rgba(47, 54, 64, 0.9);
+            border-color: #706fd3;
+            color: #f1f2f6;
+        }
+
+        body.dark-mode .password-input::placeholder {
+            color: rgba(241, 242, 246, 0.6);
+        }
+
+        body.dark-mode .floating-pixel {
+            background: rgba(112, 111, 211, 0.3);
+        }
+
+        /* Dark mode button color changes */
+        body.dark-mode .dark-mode-btn {
+            background: linear-gradient(135deg, #706fd3, #2c2c54);
+            border-color: #f1f2f6;
+        }
+
+        body.dark-mode .dark-mode-btn:hover {
+            background: linear-gradient(135deg, #5a60b8, #40407a);
+            box-shadow: 8px 8px 0px rgba(0,0,0,0.4);
+        }
+
+        body.dark-mode .download-btn {
+            background: linear-gradient(135deg, #706fd3, #2c2c54);
+            border-color: #f1f2f6;
+        }
+
+        body.dark-mode .download-btn:hover {
+            background: linear-gradient(135deg, #5a60b8, #40407a);
+            box-shadow: 8px 8px 0px rgba(0,0,0,0.4);
+        }
+
+        body.dark-mode .play-btn {
+            background: linear-gradient(135deg, #706fd3, #2c2c54);
+            border-color: #f1f2f6;
+        }
+
+        body.dark-mode .play-btn:hover {
+            background: linear-gradient(135deg, #5a60b8, #40407a);
+            box-shadow: 6px 6px 0px rgba(112, 111, 211, 0.7);
+        }
+
+        body.dark-mode .password-btn {
+            background: linear-gradient(135deg, #706fd3, #2c2c54);
+            border-color: #f1f2f6;
+        }
+
+        body.dark-mode .password-btn:hover {
+            background: linear-gradient(135deg, #5a60b8, #40407a);
+            box-shadow: 6px 6px 0px rgba(112, 111, 211, 0.7);
+        }
+
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 2rem;
+            }
+            .game-image {
+                width: 100px;
+                height: 100px;
+                font-size: 2.5rem;
+            }
+            .download-btn-container {
+                bottom: 20px;
+                right: 20px;
+            }
+            .download-btn {
+                width: 50px;
+                height: 50px;
+            }
+            .download-icon {
+                width: 24px;
+                height: 24px;
+            }
+            .dark-mode-btn-container {
+                bottom: 20px;
+                left: 20px;
+            }
+            .dark-mode-btn {
+                width: 50px;
+                height: 50px;
+            }
+            .dark-mode-icon {
+                width: 24px;
+                height: 24px;
+            }
+            .password-buttons {
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating Background Elements -->
+    <div class="floating-elements">
+        <div class="floating-pixel" style="left: 10%; animation-delay: 0s;"></div>
+        <div class="floating-pixel" style="left: 20%; animation-delay: 2s;"></div>
+        <div class="floating-pixel" style="left: 30%; animation-delay: 4s;"></div>
+        <div class="floating-pixel" style="left: 40%; animation-delay: 6s;"></div>
+        <div class="floating-pixel" style="left: 50%; animation-delay: 8s;"></div>
+        <div class="floating-pixel" style="left: 60%; animation-delay: 10s;"></div>
+        <div class="floating-pixel" style="left: 70%; animation-delay: 12s;"></div>
+        <div class="floating-pixel" style="left: 80%; animation-delay: 14s;"></div>
+        <div class="floating-pixel" style="left: 90%; animation-delay: 16s;"></div>
+    </div>
+
+    <!-- Password Modal -->
+    <div class="modal fade" id="passwordModal" tabindex="-1" aria-labelledby="passwordModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title pixel-font" id="passwordModalLabel">
+                        <svg style="width: 24px; height: 24px; vertical-align: middle; margin-right: 10px;" viewBox="0 0 16 16" fill="none">
+                            <rect x="4" y="6" width="8" height="6" fill="#696FC7"/>
+                            <rect x="5" y="7" width="6" height="4" fill="#A7AAE1"/>
+                            <rect x="7" y="4" width="2" height="4" fill="#F2AEBB"/>
+                            <rect x="6" y="3" width="4" height="2" fill="#F2AEBB"/>
+                            <rect x="7" y="9" width="2" height="1" fill="#F5D3C4"/>
+                        </svg>
+                        Password Required
+                    </h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">✕</button>
+                </div>
+                <div class="modal-body">
+                    <p style="margin-bottom: 1.5rem;">Masukkan password untuk mendownload Draft Game:</p>
+                    <div class="password-input-container">
+                        <input type="password" id="passwordInput" class="password-input" placeholder="Enter password..." maxlength="20">
+                        <div id="passwordError" class="password-error" style="display: none;">Password salah! Coba lagi 🔒</div>
+                    </div>
+                    <div class="password-buttons">
+                        <button class="password-btn download-confirm" onclick="checkPassword()">Download</button>
+                        <button class="password-btn cancel-btn" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Welcome Modal -->
+    <div class="modal fade" id="welcomeModal" tabindex="-1" aria-labelledby="welcomeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title pixel-font" id="welcomeModalLabel">
+                        <svg style="width: 24px; height: 24px; vertical-align: middle; margin-right: 10px;" viewBox="0 0 16 16" fill="none">
+                            <rect x="2" y="4" width="12" height="8" fill="#696FC7"/>
+                            <rect x="3" y="5" width="10" height="6" fill="#A7AAE1"/>
+                            <rect x="4" y="6" width="8" height="4" fill="#F5D3C4"/>
+                            <rect x="5" y="7" width="2" height="2" fill="#F2AEBB"/>
+                            <rect x="9" y="7" width="2" height="2" fill="#F2AEBB"/>
+                            <rect x="1" y="6" width="2" height="4" fill="#696FC7"/>
+                            <rect x="13" y="6" width="2" height="4" fill="#696FC7"/>
+                        </svg>
+                        Hasna Game's
+                    </h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="playCloseSound()">✕</button>
+                </div>
+                <div class="modal-body">
+                    <p>Ini gamenya masih beta ya jadi maklum banyak bug 😊</p>
+                    <p>Selamat bermain dan bersenang-senang! 🌟</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container py-5">
+        <!-- Main Title -->
+        <div class="text-center mb-5">
+            <h1 class="main-title pixel-font">
+                <svg style="width: 48px; height: 48px; vertical-align: middle; margin-right: 15px;" viewBox="0 0 16 16" fill="none">
+                    <rect x="2" y="4" width="12" height="8" fill="#F5D3C4"/>
+                    <rect x="3" y="5" width="10" height="6" fill="#F2AEBB"/>
+                    <rect x="4" y="6" width="8" height="4" fill="#A7AAE1"/>
+                    <rect x="5" y="7" width="2" height="2" fill="#696FC7"/>
+                    <rect x="9" y="7" width="2" height="2" fill="#696FC7"/>
+                    <rect x="1" y="6" width="2" height="4" fill="#F5D3C4"/>
+                    <rect x="13" y="6" width="2" height="4" fill="#F5D3C4"/>
+                </svg>
+                Hasna Game's
+            </h1>
+            <div class="description mx-auto" style="max-width: 600px;">
+                Selamat datang di dunia game pixel yang penuh warna dan kegembiraan! 
+                Koleksi game lucu dan menghibur yang dibuat khusus untuk memberikan 
+                pengalaman bermain yang menyenangkan. Dari petualangan dimsum hingga 
+                tantangan ular klasik, semua ada di sini! ✨
+            </div>
+        </div>
+
+        <!-- Game Cards -->
+        <div class="row justify-content-center">
+            <!-- Dimsum Game -->
+            <div class="col-lg-6 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="0">
+                <div class="game-card text-center h-100">
+                    <div class="game-image">
+                        <svg class="pixel-art" viewBox="0 0 32 32" fill="none">
+                            <rect x="8" y="12" width="16" height="12" fill="#F2AEBB"/>
+                            <rect x="10" y="14" width="12" height="8" fill="#F5D3C4"/>
+                            <rect x="12" y="16" width="8" height="4" fill="#696FC7"/>
+                            <rect x="6" y="10" width="20" height="2" fill="#A7AAE1"/>
+                            <rect x="14" y="8" width="4" height="4" fill="#F2AEBB"/>
+                        </svg>
+                    </div>
+                    <h3 class="game-title">Dimsum Adventure</h3>
+                    <p class="game-description">
+                        Petualangan seru mengumpulkan dimsum lezat! Hindari rintangan 
+                        dan kumpulkan sebanyak mungkin dimsum untuk mendapatkan skor tertinggi.
+                    </p>
+                    <button class="play-btn" onclick="playGame('dimsumgame.html')">
+                        🎯 Mainkan
+                    </button>
+                </div>
+            </div>
+
+            <!-- Snake Game -->
+            <div class="col-lg-6 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="500">
+                <div class="game-card text-center h-100">
+                    <div class="game-image">
+                        <svg class="pixel-art" viewBox="0 0 32 32" fill="none">
+                            <rect x="4" y="16" width="4" height="4" fill="#696FC7"/>
+                            <rect x="8" y="16" width="4" height="4" fill="#A7AAE1"/>
+                            <rect x="12" y="16" width="4" height="4" fill="#696FC7"/>
+                            <rect x="16" y="16" width="4" height="4" fill="#A7AAE1"/>
+                            <rect x="16" y="12" width="4" height="4" fill="#696FC7"/>
+                            <rect x="16" y="8" width="4" height="4" fill="#A7AAE1"/>
+                            <rect x="20" y="8" width="4" height="4" fill="#696FC7"/>
+                            <rect x="18" y="6" width="2" height="2" fill="#F2AEBB"/>
+                            <rect x="22" y="6" width="2" height="2" fill="#F2AEBB"/>
+                        </svg>
+                    </div>
+                    <h3 class="game-title">Snake Classic</h3>
+                    <p class="game-description">
+                        Game ular klasik yang tak pernah membosankan! Kendalikan ular 
+                        untuk memakan makanan dan tumbuh semakin panjang tanpa menabrak dinding.
+                    </p>
+                    <button class="play-btn" onclick="playGame('uler.game')">
+                        🎯 Mainkan
+                    </button>
+                </div>
+            </div>
+
+            <!-- Claw Game -->
+            <div class="col-lg-6 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="1000">
+                <div class="game-card text-center h-100">
+                    <div class="game-image">
+                        <svg class="pixel-art" viewBox="0 0 32 32" fill="none">
+                            <rect x="14" y="4" width="4" height="16" fill="#696FC7"/>
+                            <rect x="12" y="20" width="8" height="2" fill="#A7AAE1"/>
+                            <rect x="10" y="22" width="4" height="4" fill="#F2AEBB"/>
+                            <rect x="18" y="22" width="4" height="4" fill="#F2AEBB"/>
+                            <rect x="8" y="26" width="16" height="4" fill="#F5D3C4"/>
+                            <rect x="6" y="4" width="20" height="2" fill="#A7AAE1"/>
+                            <rect x="4" y="6" width="24" height="2" fill="#696FC7"/>
+                        </svg>
+                    </div>
+                    <h3 class="game-title">Claw Machine</h3>
+                    <p class="game-description">
+                        Uji keberuntungan dan skill kamu di mesin cakar! Ambil hadiah 
+                        sebanyak mungkin dengan mengatur waktu dan posisi yang tepat.
+                    </p>
+                    <button class="play-btn" onclick="playGame('claw.game')">
+                        🎯 Mainkan
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stick Game -->
+            <div class="col-lg-6 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="1500">
+                <div class="game-card text-center h-100">
+                    <div class="game-image">
+                        <svg class="pixel-art" viewBox="0 0 32 32" fill="none">
+                            <rect x="2" y="24" width="8" height="4" fill="#696FC7"/>
+                            <rect x="22" y="20" width="8" height="8" fill="#696FC7"/>
+                            <rect x="4" y="20" width="4" height="4" fill="#F2AEBB"/>
+                            <rect x="6" y="16" width="2" height="4" fill="#A7AAE1"/>
+                            <rect x="8" y="18" width="2" height="2" fill="#F5D3C4"/>
+                            <rect x="10" y="18" width="12" height="2" fill="#F2AEBB"/>
+                            <rect x="24" y="16" width="4" height="4" fill="#F2AEBB"/>
+                            <rect x="26" y="12" width="2" height="4" fill="#A7AAE1"/>
+                        </svg>
+                    </div>
+                    <h3 class="game-title">Stick Hero</h3>
+                    <p class="game-description">
+                        Tantangan ketepatan dan timing! Tekan dan tahan untuk membuat 
+                        tongkat dengan panjang yang pas untuk melewati setiap rintangan.
+                    </p>
+                    <button class="play-btn" onclick="playGame('stick.game')">
+                        🎯 Mainkan
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center mt-5">
+            <p style="color: #F5D3C4; font-size: 0.8rem; font-family: 'Press Start 2P', cursive;">
+                Made with 💖 by Hasna | Happy Gaming! 🎮
+            </p>
+        </div>
+    </div>
+
+    <!-- Floating Dark Mode Toggle Button -->
+    <div class="dark-mode-btn-container">
+        <button class="dark-mode-btn" onclick="toggleDarkMode()" title="Toggle Dark Mode">
+            <svg class="dark-mode-icon" id="darkModeIcon" viewBox="0 0 24 24" fill="none">
+                <!-- Moon Icon (Default) -->
+                <rect x="8" y="6" width="8" height="12" fill="white"/>
+                <rect x="6" y="8" width="2" height="8" fill="#696FC7"/>
+                <rect x="16" y="10" width="2" height="4" fill="#696FC7"/>
+                <rect x="10" y="4" width="4" height="2" fill="white"/>
+                <rect x="12" y="18" width="2" height="2" fill="white"/>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Floating Download Button -->
+    <div class="download-btn-container">
+        <button class="download-btn" onclick="downloadGame()" title="Download Draft Game">
+            <svg class="download-icon" viewBox="0 0 24 24" fill="none">
+                <rect x="8" y="2" width="8" height="12" fill="white"/>
+                <rect x="6" y="14" width="12" height="2" fill="white"/>
+                <rect x="4" y="16" width="16" height="2" fill="white"/>
+                <rect x="10" y="18" width="4" height="2" fill="white"/>
+                <rect x="11" y="6" width="2" height="4" fill="#696FC7"/>
+                <rect x="9" y="10" width="6" height="2" fill="#696FC7"/>
+                <rect x="11" y="12" width="2" height="2" fill="#696FC7"/>
+            </svg>
+        </button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true
+        });
+
+        // Show welcome modal on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const welcomeModal = new bootstrap.Modal(document.getElementById('welcomeModal'));
+            welcomeModal.show();
+        });
+
+        // Play close sound function
+        function playCloseSound() {
+            try {
+                const audio = new Audio('hasna.mp3');
+                audio.volume = 0.5;
+                audio.loop = true;
+                audio.play().catch(e => {
+                    console.log('Audio playback failed:', e);
+                });
+            } catch (error) {
+                console.log('Audio creation failed:', error);
+            }
+        }
+
+        // Download game function
+        function downloadGame() {
+            // Add click animation
+            const btn = document.querySelector('.download-btn');
+            btn.style.transform = 'translateY(-1px) scale(0.95)';
+            setTimeout(() => {
+                btn.style.transform = '';
+            }, 150);
+
+            // Show password modal
+            const passwordModal = new bootstrap.Modal(document.getElementById('passwordModal'));
+            passwordModal.show();
+            
+            // Clear previous input and error
+            document.getElementById('passwordInput').value = '';
+            document.getElementById('passwordError').style.display = 'none';
+            
+            // Focus on input after modal is shown
+            setTimeout(() => {
+                document.getElementById('passwordInput').focus();
+            }, 500);
+        }
+
+        // Check password function
+        function checkPassword() {
+            const passwordInput = document.getElementById('passwordInput');
+            const passwordError = document.getElementById('passwordError');
+            const enteredPassword = passwordInput.value;
+            const correctPassword = 'hasna2341';
+
+            if (enteredPassword === correctPassword) {
+                // Password correct - proceed with download
+                passwordError.style.display = 'none';
+                
+                // Close modal
+                const passwordModal = bootstrap.Modal.getInstance(document.getElementById('passwordModal'));
+                passwordModal.hide();
+                
+                // Start download
+                setTimeout(() => {
+                    const link = document.createElement('a');
+                    link.href = 'draftgame.zip';
+                    link.download = 'draftgame.zip';
+                    link.style.display = 'none';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }, 300);
+                
+            } else {
+                // Password incorrect - show error
+                passwordError.style.display = 'block';
+                passwordInput.value = '';
+                passwordInput.focus();
+                
+                // Add shake animation to input
+                passwordInput.style.animation = 'shake 0.5s ease-in-out';
+                setTimeout(() => {
+                    passwordInput.style.animation = '';
+                }, 500);
+            }
+        }
+
+        // Allow Enter key to submit password
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    checkPassword();
+                }
+            });
+        });
+
+        // Play game function
+        function playGame(gameUrl) {
+            // Add click animation
+            event.target.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                event.target.style.transform = '';
+            }, 150);
+
+            // Navigate to game (opens in new tab for security)
+            window.open(gameUrl, '_blank', 'noopener,noreferrer');
+        }
+
+        // Add more floating pixels dynamically
+        function createFloatingPixel() {
+            const pixel = document.createElement('div');
+            pixel.className = 'floating-pixel';
+            pixel.style.left = Math.random() * 100 + '%';
+            pixel.style.animationDelay = Math.random() * 15 + 's';
+            pixel.style.backgroundColor = Math.random() > 0.5 ? 'rgba(242, 174, 187, 0.3)' : 'rgba(167, 170, 225, 0.3)';
+            
+            document.querySelector('.floating-elements').appendChild(pixel);
+            
+            // Remove pixel after animation
+            setTimeout(() => {
+                pixel.remove();
+            }, 15000);
+        }
+
+        // Create new floating pixels periodically
+        setInterval(createFloatingPixel, 3000);
+
+        // Dark mode toggle function
+        function toggleDarkMode() {
+            const body = document.body;
+            const darkModeIcon = document.getElementById('darkModeIcon');
+            const btn = document.querySelector('.dark-mode-btn');
+            
+            // Add click animation
+            btn.style.transform = 'translateY(-1px) scale(0.95)';
+            setTimeout(() => {
+                btn.style.transform = '';
+            }, 150);
+
+            // Toggle dark mode class
+            body.classList.toggle('dark-mode');
+            
+            // Save preference to localStorage
+            const isDarkMode = body.classList.contains('dark-mode');
+            localStorage.setItem('darkMode', isDarkMode);
+            
+            // Update icon
+            if (isDarkMode) {
+                // Sun Icon for light mode toggle
+                darkModeIcon.innerHTML = `
+                    <rect x="10" y="8" width="4" height="8" fill="white"/>
+                    <rect x="8" y="10" width="8" height="4" fill="white"/>
+                    <rect x="6" y="6" width="2" height="2" fill="white"/>
+                    <rect x="16" y="6" width="2" height="2" fill="white"/>
+                    <rect x="6" y="16" width="2" height="2" fill="white"/>
+                    <rect x="16" y="16" width="2" height="2" fill="white"/>
+                    <rect x="4" y="11" width="2" height="2" fill="white"/>
+                    <rect x="18" y="11" width="2" height="2" fill="white"/>
+                    <rect x="11" y="4" width="2" height="2" fill="white"/>
+                    <rect x="11" y="18" width="2" height="2" fill="white"/>
+                `;
+            } else {
+                // Moon Icon for dark mode toggle
+                darkModeIcon.innerHTML = `
+                    <rect x="8" y="6" width="8" height="12" fill="white"/>
+                    <rect x="6" y="8" width="2" height="8" fill="#696FC7"/>
+                    <rect x="16" y="10" width="2" height="4" fill="#696FC7"/>
+                    <rect x="10" y="4" width="4" height="2" fill="white"/>
+                    <rect x="12" y="18" width="2" height="2" fill="white"/>
+                `;
+            }
+        }
+
+        // Load dark mode preference on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedDarkMode = localStorage.getItem('darkMode');
+            if (savedDarkMode === 'true') {
+                document.body.classList.add('dark-mode');
+                const darkModeIcon = document.getElementById('darkModeIcon');
+                // Set sun icon for light mode toggle
+                darkModeIcon.innerHTML = `
+                    <rect x="10" y="8" width="4" height="8" fill="white"/>
+                    <rect x="8" y="10" width="8" height="4" fill="white"/>
+                    <rect x="6" y="6" width="2" height="2" fill="white"/>
+                    <rect x="16" y="6" width="2" height="2" fill="white"/>
+                    <rect x="6" y="16" width="2" height="2" fill="white"/>
+                    <rect x="16" y="16" width="2" height="2" fill="white"/>
+                    <rect x="4" y="11" width="2" height="2" fill="white"/>
+                    <rect x="18" y="11" width="2" height="2" fill="white"/>
+                    <rect x="11" y="4" width="2" height="2" fill="white"/>
+                    <rect x="11" y="18" width="2" height="2" fill="white"/>
+                `;
+            }
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl + D for download
+            if (e.ctrlKey && e.key === 'd') {
+                e.preventDefault();
+                downloadGame();
+            }
+            
+            // Ctrl + M for dark mode toggle
+            if (e.ctrlKey && e.key === 'm') {
+                e.preventDefault();
+                toggleDarkMode();
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9882aac9d197f8d6',t:'MTc1OTM5MjAzNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

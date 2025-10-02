@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claw Machine Game</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+   
+  <div class="wrapper">
+    <div class="game-container">
+      <div class="hud">
+        <div class="hud-item" id="coin-display">
+          <img src="KOIN.png" alt="Koin">
+          <span id="coin-count">6</span>
+        </div>
+        <div class="hud-item" id="mission-btn">
+          <img src="MISI.png" alt="Misi">
+        </div>
+        <div class="hud-item" id="album-btn">
+          <img src="album.png" alt="Album">
+        </div>
+      </div>
+
+      <div class="claw-machine">
+        <div class="box pix">
+          <div class="machine-top pix">
+            <div class="arm-joint pix">
+              <div class="arm pix">
+                <div class="claws pix"></div>
+              </div>
+            </div>
+            <div class="rail vert pix"></div>
+            <div class="rail hori pix"></div>
+          </div>
+          <div class="machine-bottom pix">
+            <div class="collection-point pix"></div>
+          </div>
+        </div>
+        <div class="control pix">
+          <div class="cover left"></div>
+          <button class="hori-btn pix"></button>
+          <button class="vert-btn pix"></button>
+          <div class="cover right">
+            <div class="instruction pix"></div>
+          </div>
+          <div class="cover bottom"></div>
+          <div class="cover top">
+            <div class="collection-arrow pix"></div>
+          </div>
+          <div class="collection-point pix"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="album-modal" class="modal">
+    <div class="modal-content album-content">
+      <span class="close-btn">&times;</span>
+      <h2>Album Koleksi</h2>
+      <div id="album-grid"></div>
+    </div>
+  </div>
+
+  <div id="mission-modal" class="modal">
+      <div class="modal-content mission-content">
+        <span class="close-btn mission-close-btn">&times;</span>
+        <div class="mission-view" id="mission-selection-view">
+           <h2>Misi Koin Numerik</h2>
+             <div id="mission-hearts"></div>
+            
+             <button id="reset-mission-btn"><img src="reset.png" alt="Reset Misi"></button>
+        </div>
+        <div class="mission-view" id="mission-question-view" style="display: none;">
+            <p id="mission-question-text"></p>
+            <input type="text" id="mission-answer-input" placeholder="Jawaban Anda...">
+            <button id="submit-mission-btn"></button>
+        </div>
+      </div>
+  </div>
+  <div id="album-modal" class="modal">
+  <div class="modal-content album-content">
+    <span class="close-btn">&times;</span>
+    <h2>🎴 Album Koleksi</h2>
+    <table class="pixel-table">
+      <thead>
+        <tr>
+          <th>Boneka</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="album-grid"></tbody>
+    </table>
+  </div>
+</div>
+
+<div id="mission-modal" class="modal">
+  <div class="modal-content mission-content">
+    <span class="close-btn">&times;</span>
+    <h2>🎯 Misi</h2>
+    <table class="pixel-table">
+      <thead>
+        <tr>
+          <th>Misi</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="mission-list"></tbody>
+    </table>
+    <button id="reset-mission-btn">Reset Misi (2 Koin)</button>
+  </div>
+</div>
+
+  <div id="music-controls-container">
+    <button id="music-toggle-onoff"><img src="mute.png" alt="Toggle Music"></button>
+    <div class="music-track-buttons">
+        <button id="music-select-toy" class="track-button selected"><img src="toy.png" alt="Toyland Music"></button>
+        <button id="music-select-ice" class="track-button"><img src="ice.png" alt="Ice Music"></button>
+    </div>
+  </div>
+
+<audio id="bg-music" src="toyland.mp3" loop></audio>
+
+  <div id="custom-alert-modal" class="modal">
+    <div class="modal-content alert-content">
+      <p id="custom-alert-message"></p>
+      <button id="custom-alert-ok-btn"></button>
+    </div>
+  </div>
+
+  <script src="./script.js"></script>
+
+</body>
+</html>
