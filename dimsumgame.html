@@ -32,16 +32,7 @@
         .level-btn.completed { background: linear-gradient(135deg, #3e5526, #ab2902); color: #fadc9a; }
         .stars { position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%); font-size: 12px; }
         .game-area { margin: 30px 0; }
-        .cards-container {
-            display: grid; 
-            justify-content: center;
-            align-content: center;
-            gap: 15px;
-            max-width: 500px;
-            margin: 20px auto;
-            position: relative;
-            min-height: 220px; 
-        }
+        .cards-container { display: grid; justify-content: center; align-content: center; gap: 15px; max-width: 500px; margin: 20px auto; position: relative; min-height: 220px; }
         .card { width: 100px; height: 100px; font-size: 48px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #fadc9a, #f2d375); color: #3e5526; font-weight: bold; border-radius: 12px; transition: transform 0.4s ease, box-shadow 0.4s ease; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); cursor: pointer; position: relative; }
         .card:hover { transform: scale(1.03); box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25); }
         .card.red-marked { background: linear-gradient(135deg, #ab2902, #c08429); color: #fadc9a; box-shadow: 0 0 20px rgba(171, 41, 2, 0.5); }
@@ -57,13 +48,24 @@
         .heart { font-size: 24px; transition: all 0.3s ease; }
         .heart.lost { opacity: 0.3; transform: scale(0.8); }
         .timer { font-size: 2rem; color: #f2d375; margin: 10px 0 20px 0; font-weight: 700; animation: pulseTimer 1s infinite; }
-        .leaderboard { max-width: 500px; margin: 0 auto; }
-        .leaderboard-item { display: flex; justify-content: space-between; padding: 15px 20px; margin: 10px 0; border-radius: 12px; background: rgba(250, 220, 154, 0.1); color: #fadc9a; }
         .back-btn { position: absolute; top: 20px; left: 20px; background: rgba(250, 220, 154, 0.2); color: #fadc9a; border: none; padding: 10px 15px; border-radius: 10px; cursor: pointer; font-size: 16px; transition: all 0.3s ease; }
         .back-btn:hover { background: rgba(250, 220, 154, 0.3); }
         .user-info { position: absolute; top: 20px; right: 20px; color: #fadc9a; font-size: 16px; }
         .countdown { font-size: 4rem; color: #f2d375; font-weight: 700; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); animation: countdownPulse 1s ease-in-out; }
-        
+        .tictactoe-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 30px auto; max-width: 300px; }
+        .tictactoe-cell { aspect-ratio: 1; background: rgba(250, 220, 154, 0.1); backdrop-filter: blur(15px); border: 2px solid rgba(250, 220, 154, 0.3); border-radius: 20px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: all 0.3s ease; font-size: 3rem; }
+        .tictactoe-cell:hover { background: rgba(250, 220, 154, 0.2); transform: scale(1.05); }
+        .tictactoe-cell.taken { cursor: not-allowed; } .tictactoe-cell.taken:hover { transform: none; }
+        .difficulty-selector { margin-bottom: 20px; }
+        .difficulty-label { color: #fadc9a; font-weight: 600; margin-bottom: 10px; display: block; }
+        .difficulty-buttons { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+        .difficulty-btn { background: rgba(242, 211, 117, 0.2); border: 1px solid rgba(242, 211, 117, 0.3); border-radius: 16px; padding: 10px 20px; color: #fadc9a; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
+        .difficulty-btn.active { background: rgba(192, 132, 41, 0.6); }
+        .status { color: #fadc9a; font-size: 1.2rem; font-weight: 600; margin-bottom: 20px; min-height: 30px; }
+        .controls { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-top: 20px; }
+        .leaderboard { max-width: 500px; margin: 0 auto; }
+        .leaderboard-item { display: flex; justify-content: space-between; padding: 15px 20px; margin: 10px 0; border-radius: 12px; background: rgba(250, 220, 154, 0.1); color: #fadc9a; }
+
         @keyframes correctPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); box-shadow: 0 0 30px rgba(62, 85, 38, 0.6); } }
         @keyframes wrongShake { 0%, 100% { transform: translateX(0); } 10%, 30%, 50%, 70%, 90% { transform: translateX(-8px); } 20%, 40%, 60%, 80% { transform: translateX(8px); } }
         @keyframes sequencePulse { 0%, 100% { box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); transform: scale(1); } 50% { box-shadow: 0 0 25px rgba(242, 211, 117, 0.6); transform: scale(1.02); } }
@@ -83,12 +85,9 @@
             .game-hud, .lives-display { font-size: 14px; }
             .heart { font-size: 20px; }
             .cards-container { gap: 8px; }
-            .card {
-                width: 55px;
-                height: 55px;
-                font-size: 28px;
-                border-radius: 8px;
-            }
+            .card { width: 55px; height: 55px; font-size: 28px; border-radius: 8px; }
+            .tictactoe-board { max-width: 250px; gap: 10px; }
+            .tictactoe-cell { font-size: 2.5rem; }
         }
         .form-container { width: 100%; max-width: 400px; margin: 0 auto; }
         .form-title { color: #f2d375; margin-bottom: 20px; font-size: 1.5rem; }
@@ -106,20 +105,104 @@
 <body>
     <audio id="bgm" src="arcade.mp3" loop></audio>
 
-    <div id="loader" class="loader-overlay" style="display: none;">
-        <div class="loader-spinner"></div>
-    </div>
+    <div id="loader" class="loader-overlay" style="display: none;"><div class="loader-spinner"></div></div>
 
     <div class="container">
-        <div id="loginScreen" class="screen active glass"><h1>🥟 Memorize Dimsum</h1><div id="loginForm" class="form-container"><div class="login-form"><input type="text" id="username" placeholder="Username" required=""><input type="password" id="password" placeholder="Password" required=""><button class="btn" onclick="login()">Masuk Game</button><button class="btn btn-secondary" onclick="showRegisterForm()">Daftar Akun Baru</button><button class="btn btn-secondary" onclick="fetchAndShowLeaderboard()">Lihat Leaderboard</button><a href="#" class="text-center mt-2" style="color: #fadc9a;" onclick="showForgotPasswordModal()">Lupa Password?</a></div></div><div id="registerForm" class="form-container" style="display: none;"><h3 class="form-title">Daftar Akun Baru</h3><div class="login-form"><input type="text" id="regUsername" placeholder="Username (3-20 karakter)" required=""><input type="password" id="regPassword" placeholder="Password (min 6 karakter)" required=""><input type="password" id="regConfirmPassword" placeholder="Konfirmasi Password" required=""><button class="btn" onclick="register()">Daftar</button><button class="btn btn-secondary" onclick="showLoginForm()">Kembali ke Login</button></div></div></div>
-        <div id="mainMenu" class="screen glass"><button class="back-btn" onclick="logout()">Keluar</button><div class="user-info"><span id="currentUser"></span></div><h1>🥟 Memorize Dimsum</h1><h2>Pilih Mode Permainan</h2><div class="game-modes"><div class="mode-card glass" onclick="selectMode('memorize')"><div class="mode-icon">🃏</div><h3 style="color: #f2d375;">Memorize Card</h3><p style="color: #fadc9a; margin-top: 10px;">Ingat urutan kartu dan klik sesuai urutan</p></div><div class="mode-card glass" onclick="selectMode('pickme')"><div class="mode-icon">🎯</div><h3 style="color: #f2d375;">Pick Me Dimsum</h3><p style="color: #fadc9a; margin-top: 10px;">Temukan kartu merah setelah diacak</p></div><div class="mode-card glass" onclick="selectMode('dimdamdoe')"><div class="mode-icon">🥟🎮</div><h3 style="color: #f2d375;">DimDamDoe</h3><p style="color: #fadc9a; margin-top: 10px;">Tic Tac Toe dengan Cita Rasa Dimsum!</p></div></div></div>
-        <div id="levelScreen" class="screen glass"><button class="back-btn" onclick="showMainMenu()">Kembali</button><div class="user-info"><span id="levelUser"></span></div><h2 id="modeTitle">Pilih Level</h2><div class="score-display"><span>Total Bintang: <span id="totalWins">0</span></span><span>High Score: <span id="highScore">0</span></span></div><div class="level-grid" id="levelGrid"></div></div>
-        <div id="gameScreen" class="screen glass"><button class="back-btn" onclick="showLevelScreen()">Kembali</button><div class="user-info"><span id="gameUser"></span></div><h2 id="gameTitle">Level 1</h2><div class="game-hud"><div>Skor: <span id="currentScore">0</span></div><div class="lives-display"><span>Nyawa:</span><div id="livesContainer"><span class="heart">❤️</span><span class="heart">❤️</span><span class="heart">❤️</span></div></div><div>Level: <span id="currentLevel">1</span></div></div><div class="timer" id="timer">10</div><div id="gameInstructions" style="color: #fadc9a; margin-bottom: 20px;"></div><div class="game-area"><div class="cards-container" id="cardsContainer"></div></div><div id="gameControls" style="margin-top: 20px;"><button class="btn btn-secondary" id="nextBtn" onclick="nextLevel()" style="display: none;">Level Selanjutnya</button></div></div>
-        <div id="dimdamdoeScreen" class="screen glass"><button class="back-btn" onclick="showMainMenu()">Kembali</button><div class="user-info"><span id="dimdamdoeUser"></span></div><h2>DimDamDoe 🥟🎮</h2><div id="dimdamdoeGameContainer" style="/* styles for this container */"></div></div>
-        <div id="leaderboardScreen" class="screen glass"><button class="back-btn" onclick="isLoggedIn() ? showMainMenu() : showLoginScreen()">Kembali</button><h2>🏆 Leaderboard</h2><div style="margin: 20px 0;" id="leaderboardModeSelector"><button class="btn" onclick="fetchAndShowLeaderboard('memorize')" style="margin: 5px;">Memorize Card</button><button class="btn" onclick="fetchAndShowLeaderboard('pickme')" style="margin: 5px;">Pick Me Dimsum</button><button class="btn" onclick="fetchAndShowLeaderboard('dimdamdoe')" style="margin: 5px;">DimDamDoe</button></div><div class="leaderboard" id="leaderboardList"></div></div>
+        <div id="loginScreen" class="screen active glass">
+            <h1>🥟 Memorize Dimsum</h1>
+            <div id="loginForm" class="form-container">
+                <div class="login-form">
+                    <input type="text" id="username" placeholder="Username" required>
+                    <input type="password" id="password" placeholder="Password" required>
+                    <button class="btn" onclick="login()">Masuk Game</button>
+                    <button class="btn btn-secondary" onclick="showRegisterForm()">Daftar Akun Baru</button>
+                    <button class="btn btn-secondary" onclick="fetchAndShowLeaderboard()">Lihat Leaderboard</button>
+                    <a href="#" class="text-center mt-2" style="color: #fadc9a;" onclick="showForgotPasswordModal()">Lupa Password?</a>
+                </div>
+            </div>
+            <div id="registerForm" class="form-container" style="display: none;">
+                <h3 class="form-title">Daftar Akun Baru</h3>
+                <div class="login-form">
+                    <input type="text" id="regUsername" placeholder="Username (3-20 karakter)" required>
+                    <input type="password" id="regPassword" placeholder="Password (min 6 karakter)" required>
+                    <input type="password" id="regConfirmPassword" placeholder="Konfirmasi Password" required>
+                    <button class="btn" onclick="register()">Daftar</button>
+                    <button class="btn btn-secondary" onclick="showLoginForm()">Kembali ke Login</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="mainMenu" class="screen glass">
+            <button class="back-btn" onclick="logout()">Keluar</button>
+            <div class="user-info"><span id="currentUser"></span></div>
+            <h1>🥟 Memorize Dimsum</h1>
+            <h2>Pilih Mode Permainan</h2>
+            <div class="game-modes">
+                <div class="mode-card glass" onclick="selectMode('memorize')"><div class="mode-icon">🃏</div><h3 style="color: #f2d375;">Memorize Card</h3><p style="color: #fadc9a; margin-top: 10px;">Ingat urutan kartu dan klik sesuai urutan</p></div>
+                <div class="mode-card glass" onclick="selectMode('pickme')"><div class="mode-icon">🎯</div><h3 style="color: #f2d375;">Pick Me Dimsum</h3><p style="color: #fadc9a; margin-top: 10px;">Temukan kartu spesial setelah diacak</p></div>
+                <div class="mode-card glass" onclick="selectMode('dimdamdoe')"><div class="mode-icon">🥟🎮</div><h3 style="color: #f2d375;">DimDamDoe</h3><p style="color: #fadc9a; margin-top: 10px;">Tic Tac Toe dengan Cita Rasa Dimsum!</p></div>
+            </div>
+        </div>
+
+        <div id="levelScreen" class="screen glass">
+            <button class="back-btn" onclick="showMainMenu()">Kembali</button>
+            <div class="user-info"><span id="levelUser"></span></div>
+            <h2 id="modeTitle">Pilih Level</h2>
+            <div class="score-display"><span>Total Bintang: <span id="totalWins">0</span></span><span>High Score: <span id="highScore">0</span></span></div>
+            <div class="level-grid" id="levelGrid"></div>
+        </div>
+
+        <div id="gameScreen" class="screen glass">
+            <button class="back-btn" onclick="showLevelScreen()">Kembali</button>
+            <div class="user-info"><span id="gameUser"></span></div>
+            <h2 id="gameTitle">Level 1</h2>
+            <div class="game-hud">
+                <div>Skor: <span id="currentScore">0</span></div>
+                <div class="lives-display"><span>Nyawa:</span><div id="livesContainer"><span class="heart">❤️</span><span class="heart">❤️</span><span class="heart">❤️</span></div></div>
+                <div>Level: <span id="currentLevel">1</span></div>
+            </div>
+            <div class="timer" id="timer">10</div>
+            <div id="gameInstructions" style="color: #fadc9a; margin-bottom: 20px;"></div>
+            <div class="game-area"><div class="cards-container" id="cardsContainer"></div></div>
+            <div id="gameControls" style="margin-top: 20px;"><button class="btn btn-secondary" id="nextBtn" onclick="nextLevel()" style="display: none;">Level Selanjutnya</button></div>
+        </div>
+
+        <div id="dimdamdoeScreen" class="screen glass">
+            <button class="back-btn" onclick="showMainMenu()">Kembali</button>
+            <div class="user-info"><span id="dimdamdoeUser"></span></div>
+            <h2>DimDamDoe 🥟🎮</h2>
+            <p style="color: #f2d375; margin-bottom: 20px;">Tic Tac Toe dengan Cita Rasa Dimsum!</p>
+            <div class="difficulty-selector">
+                <label class="difficulty-label">Pilih Tingkat Kesulitan:</label>
+                <div class="difficulty-buttons">
+                    <button class="difficulty-btn active" data-level="easy">Mudah 🥢</button>
+                    <button class="difficulty-btn" data-level="medium">Sedang 🥟</button>
+                    <button class="difficulty-btn" data-level="hard">Sulit 🔥</button>
+                </div>
+            </div>
+            <div class="status" id="dimdamdoeStatus"></div>
+            <div class="tictactoe-board" id="dimdamdoeBoard">
+                <div class="tictactoe-cell" data-index="0"></div><div class="tictactoe-cell" data-index="1"></div><div class="tictactoe-cell" data-index="2"></div>
+                <div class="tictactoe-cell" data-index="3"></div><div class="tictactoe-cell" data-index="4"></div><div class="tictactoe-cell" data-index="5"></div>
+                <div class="tictactoe-cell" data-index="6"></div><div class="tictactoe-cell" data-index="7"></div><div class="tictactoe-cell" data-index="8"></div>
+            </div>
+            <div class="controls"><button class="btn" onclick="dimDamDoeGame.reset()">🔄 Main Lagi</button></div>
+        </div>
+
+        <div id="leaderboardScreen" class="screen glass">
+            <button class="back-btn" onclick="isLoggedIn() ? showMainMenu() : showLoginScreen()">Kembali</button>
+            <h2>🏆 Leaderboard</h2>
+            <div style="margin: 20px 0;" id="leaderboardModeSelector">
+                <button class="btn" onclick="fetchAndShowLeaderboard('memorize')">Memorize Card</button>
+                <button class="btn" onclick="fetchAndShowLeaderboard('pickme')">Pick Me Dimsum</button>
+                <button class="btn" onclick="fetchAndShowLeaderboard('dimdamdoe')">DimDamDoe</button>
+            </div>
+            <div class="leaderboard" id="leaderboardList"></div>
+        </div>
     </div>
-    <div class="modal fade" id="infoModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content glass"><div class="modal-header"><h5 class="modal-title" id="infoModalLabel">Notifikasi</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body" id="infoModalBody"></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button></div></div></div></div>
-    <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content glass"><div class="modal-header"><h5 class="modal-title">Lupa Password</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body"><div id="reset-step-1"><p>Masukkan username dan nomor WhatsApp Anda untuk menerima kode verifikasi.</p><input type="text" id="resetUsername" class="form-control mb-2" placeholder="Username"><input type="tel" id="resetWaNumber" class="form-control" placeholder="Nomor WhatsApp (cth: 628123)"><button class="btn mt-3 w-100" onclick="initiatePasswordReset()">Kirim Kode</button></div><div id="reset-step-2" style="display:none;"><p>Kode verifikasi telah dibuat. Masukkan kode tersebut di bawah beserta password baru Anda.</p><div class="alert alert-success" id="resetCodeDisplay"></div><input type="text" id="resetCode" class="form-control mb-2" placeholder="Kode Verifikasi"><input type="password" id="resetNewPassword" class="form-control" placeholder="Password Baru"><button class="btn mt-3 w-100" onclick="verifyPasswordReset()">Reset Password</button></div></div></div></div>
+
+    <div class="modal fade" id="infoModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content glass"><div class="modal-header"><h5 class="modal-title" id="infoModalLabel"></h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body" id="infoModalBody"></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button></div></div></div></div>
+    <div class="modal fade" id="forgotPasswordModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content glass"><div class="modal-header"><h5 class="modal-title">Lupa Password</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div id="reset-step-1"><p>Masukkan username dan nomor WhatsApp Anda.</p><input type="text" id="resetUsername" class="form-control mb-2" placeholder="Username"><input type="tel" id="resetWaNumber" class="form-control" placeholder="Nomor WhatsApp (cth: 628123)"><button class="btn mt-3 w-100" onclick="initiatePasswordReset()">Kirim Kode</button></div><div id="reset-step-2" style="display:none;"><p>Masukkan kode verifikasi dan password baru.</p><div class="alert alert-success" id="resetCodeDisplay"></div><input type="text" id="resetCode" class="form-control mb-2" placeholder="Kode Verifikasi"><input type="password" id="resetNewPassword" class="form-control" placeholder="Password Baru"><button class="btn mt-3 w-100" onclick="verifyPasswordReset()">Reset Password</button></div></div></div></div></div>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
@@ -133,9 +216,8 @@
         
         async function apiCall(endpoint, body) {
             const loader = document.getElementById('loader');
-            const isUpdateScore = endpoint === 'update-score';
-            if (!isUpdateScore) loader.style.display = 'flex';
-            
+            const isSilent = endpoint === 'update-score';
+            if (!isSilent) loader.style.display = 'flex';
             try {
                 const response = await fetch(`${API_BASE}/${endpoint}`, {
                     method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
@@ -145,7 +227,7 @@
             } catch (error) {
                 showModal('Error', error.message); console.error(error); throw error;
             } finally {
-                if (!isUpdateScore) loader.style.display = 'none';
+                if (!isSilent) loader.style.display = 'none';
             }
         }
 
@@ -204,50 +286,18 @@
             if (container) container.innerHTML = '';
         }
 
-        function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(screenId).classList.add('active');
-        }
+        function showScreen(screenId) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(screenId).classList.add('active'); }
         function showLoginScreen() { stopAllGameLogic(); showScreen('loginScreen'); showLoginForm(); }
-        function showLoginForm() {
-            document.getElementById('loginForm').style.display = 'block';
-            document.getElementById('registerForm').style.display = 'none';
-            document.getElementById('username').value = ''; document.getElementById('password').value = '';
-        }
-        function showRegisterForm() {
-            document.getElementById('loginForm').style.display = 'none';
-            document.getElementById('registerForm').style.display = 'block';
-            document.getElementById('regUsername').value = ''; document.getElementById('regPassword').value = ''; document.getElementById('regConfirmPassword').value = '';
-        }
+        function showLoginForm() { document.getElementById('loginForm').style.display = 'block'; document.getElementById('registerForm').style.display = 'none'; document.getElementById('username').value = ''; document.getElementById('password').value = ''; }
+        function showRegisterForm() { document.getElementById('loginForm').style.display = 'none'; document.getElementById('registerForm').style.display = 'block'; document.getElementById('regUsername').value = ''; document.getElementById('regPassword').value = ''; document.getElementById('regConfirmPassword').value = ''; }
         
-        function showMainMenu() {
-            stopAllGameLogic();
-            document.getElementById('currentUser').textContent = `👤 ${currentUser}`;
-            showScreen('mainMenu');
-        }
-        function selectMode(mode) {
-            currentMode = mode;
-            if (mode === 'dimdamdoe') {
-                showDimDamDoeGame();
-            } else {
-                showLevelScreen();
-            }
-        }
+        function showMainMenu() { stopAllGameLogic(); document.getElementById('currentUser').textContent = `👤 ${currentUser}`; showScreen('mainMenu'); }
+        function selectMode(mode) { currentMode = mode; if (mode === 'dimdamdoe') showDimDamDoeGame(); else showLevelScreen(); }
 
         function showDimDamDoeGame() {
             stopAllGameLogic();
             document.getElementById('dimdamdoeUser').textContent = `👤 ${currentUser}`;
-            const gameContainer = document.getElementById('dimdamdoeGameContainer');
-            gameContainer.innerHTML = `
-                <p style="color: #f2d375; margin-bottom: 20px;">Tic Tac Toe dengan Cita Rasa Dimsum!</p>
-                <div class="difficulty-selector"><label class="difficulty-label">Pilih Tingkat Kesulitan:</label><div class="difficulty-buttons"><button class="difficulty-btn active" data-level="easy">Mudah 🥢</button><button class="difficulty-btn" data-level="medium">Sedang 🥟</button><button class="difficulty-btn" data-level="hard">Sulit 🔥</button></div></div>
-                <div class="status" id="dimdamdoeStatus">Giliran Anda! Pilih kotak untuk menaruh dimsum ayam 🥟</div>
-                <div class="tictactoe-board" id="dimdamdoeBoard">${Array(9).fill(0).map((_, i) => `<div class="tictactoe-cell" data-index="${i}"></div>`).join('')}</div>
-                <div class="controls"><button class="btn" onclick="dimDamDoeGame.reset()">🔄 Main Lagi</button></div>
-            `;
-            if (!dimDamDoeGame) {
-                dimDamDoeGame = new DimDamDoe();
-            }
+            if (!dimDamDoeGame) dimDamDoeGame = new DimDamDoe();
             dimDamDoeGame.reset();
             showScreen('dimdamdoeScreen');
         }
@@ -259,12 +309,9 @@
             document.getElementById('modeTitle').textContent = currentMode === 'memorize' ? 'Memorize Card - Pilih Level' : 'Pick Me Dimsum - Pilih Level';
             document.getElementById('highScore').textContent = userData.high_score;
             document.getElementById('totalWins').textContent = userData.total_stars;
-            const levelGrid = document.getElementById('levelGrid');
-            levelGrid.innerHTML = '';
+            const levelGrid = document.getElementById('levelGrid'); levelGrid.innerHTML = '';
             for (let i = 0; i < 30; i++) {
-                const btn = document.createElement('button');
-                btn.className = 'level-btn';
-                btn.textContent = i + 1;
+                const btn = document.createElement('button'); btn.className = 'level-btn'; btn.textContent = i + 1;
                 btn.onclick = () => startLevel(i + 1);
                 levelGrid.appendChild(btn);
             }
@@ -272,17 +319,36 @@
         }
 
         class DimDamDoe {
-             constructor() { this.winningConditions = [ [0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6] ]; }
+             constructor() {
+                this.winningConditions = [ [0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6] ];
+                this.playerSymbol = '🥟'; this.aiSymbol = '🦐';
+                this.bindEvents();
+             }
             bindEvents() {
-                document.querySelectorAll('.tictactoe-cell').forEach(c => c.addEventListener('click', (e) => this.handleCellClick(e)));
-                document.querySelectorAll('.difficulty-btn').forEach(b => b.addEventListener('click', (e) => this.changeDifficulty(e)));
+                document.querySelectorAll('#dimdamdoeBoard .tictactoe-cell').forEach(c => c.addEventListener('click', (e) => this.handleCellClick(e)));
+                document.querySelectorAll('#dimdamdoeScreen .difficulty-btn').forEach(b => b.addEventListener('click', (e) => this.changeDifficulty(e)));
             }
             handleCellClick(e) { const index = parseInt(e.target.dataset.index); if (this.board[index] !== '' || !this.gameActive || this.currentPlayer !== 'player') return; this.makeMove(index, 'player'); playSound(800, 0.1); if (this.gameActive && this.currentPlayer === 'ai') customSetTimeout(() => this.aiMove(), 500); }
-            makeMove(index, player) { this.board[index] = player; const cell = document.querySelector(`[data-index="${index}"]`); cell.textContent = player === 'player' ? '🥟' : '🦐'; cell.classList.add('taken'); if (this.checkWinner()) { this.endGame(player); } else if (this.board.every(c => c !== '')) { this.endGame('tie'); } else { this.currentPlayer = player === 'player' ? 'ai' : 'player'; this.updateStatus(); } }
+            makeMove(index, player) {
+                this.board[index] = player;
+                const cell = document.querySelector(`#dimdamdoeBoard [data-index="${index}"]`);
+                cell.textContent = player === 'player' ? this.playerSymbol : this.aiSymbol; cell.classList.add('taken');
+                const winner = this.checkWinner();
+                if (winner) { this.endGame(winner); }
+                else if (this.board.every(c => c !== '')) { this.endGame('tie'); }
+                else { this.currentPlayer = player === 'player' ? 'ai' : 'player'; this.updateStatus(); }
+            }
             aiMove() { let move; switch (this.difficulty) { case 'easy': move = this.getRandomMove(); break; case 'medium': move = Math.random() < 0.5 ? this.getBestMove() : this.getRandomMove(); break; case 'hard': move = this.getBestMove(); break; } if (move !== -1) { this.makeMove(move, 'ai'); playSound(600, 0.1); } }
             getRandomMove() { const m = this.board.map((c, i) => c === '' ? i : null).filter(v => v !== null); return m.length > 0 ? m[Math.floor(Math.random() * m.length)] : -1; }
-            getBestMove() { for (let i = 0; i < 9; i++) { if (this.board[i] === '') { this.board[i] = 'ai'; if (this.checkWinner() === 'ai') { this.board[i] = ''; return i; } this.board[i] = ''; } } for (let i = 0; i < 9; i++) { if (this.board[i] === '') { this.board[i] = 'player'; if (this.checkWinner() === 'player') { this.board[i] = ''; return i; } this.board[i] = ''; } } if (this.board[4] === '') return 4; const corners = [0, 2, 6, 8].filter(i => this.board[i] === ''); if (corners.length > 0) return corners[Math.floor(Math.random() * corners.length)]; return this.getRandomMove(); }
-            checkWinner() { for (let cond of this.winningConditions) { const [a, b, c] = cond; if (this.board[a] && this.board[a] === this.board[b] && this.board[a] === this.board[c]) { cond.forEach(i => { document.querySelector(`[data-index="${i}"]`).style.background = 'rgba(242, 211, 117, 0.6)'; }); return this.board[a]; } } return null; }
+            getBestMove() {
+                for (let i = 0; i < 9; i++) { if (this.board[i] === '') { this.board[i] = 'ai'; if (this.checkWinner() === 'ai') { this.board[i] = ''; return i; } this.board[i] = ''; } }
+                for (let i = 0; i < 9; i++) { if (this.board[i] === '') { this.board[i] = 'player'; if (this.checkWinner() === 'player') { this.board[i] = ''; return i; } this.board[i] = ''; } }
+                if (this.board[4] === '') return 4;
+                const corners = [0, 2, 6, 8].filter(i => this.board[i] === '');
+                if (corners.length > 0) return corners[Math.floor(Math.random() * corners.length)];
+                return this.getRandomMove();
+            }
+            checkWinner() { for (let cond of this.winningConditions) { const [a, b, c] = cond; if (this.board[a] && this.board[a] === this.board[b] && this.board[a] === this.board[c]) { cond.forEach(i => { document.querySelector(`#dimdamdoeBoard [data-index="${i}"]`).style.background = 'rgba(242, 211, 117, 0.6)'; }); return this.board[a]; } } return null; }
             endGame(winner) {
                 if (!this.gameActive) return; this.gameActive = false; let score = 0, message = '';
                 if (winner === 'player') {
@@ -296,8 +362,13 @@
                     .catch(e => console.error("Gagal update skor dimdamdoe", e));
             }
             updateStatus() { document.getElementById('dimdamdoeStatus').textContent = this.currentPlayer === 'player' ? 'Giliran Anda! 🥟' : 'AI sedang berpikir... 🤔'; }
-            changeDifficulty(e) { document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.remove('active')); e.target.classList.add('active'); this.difficulty = e.target.dataset.level; }
-            reset() { this.board = Array(9).fill(''); this.currentPlayer = 'player'; this.gameActive = true; this.difficulty = 'easy'; this.bindEvents(); this.updateStatus(); }
+            changeDifficulty(e) { document.querySelectorAll('#dimdamdoeScreen .difficulty-btn').forEach(b => b.classList.remove('active')); e.target.classList.add('active'); this.difficulty = e.target.dataset.level; }
+            reset() { this.board = Array(9).fill(''); this.currentPlayer = 'player'; this.gameActive = true; this.difficulty = 'easy';
+                document.querySelectorAll('#dimdamdoeBoard .tictactoe-cell').forEach(c => { c.textContent = ''; c.classList.remove('taken'); c.style.background = ''; });
+                document.querySelectorAll('#dimdamdoeScreen .difficulty-btn').forEach(b => b.classList.remove('active'));
+                document.querySelector('#dimdamdoeScreen .difficulty-btn[data-level="easy"]').classList.add('active');
+                this.updateStatus();
+            }
         }
 
         function startLevel(level) {
@@ -320,11 +391,7 @@
             showCount();
         }
 
-        function setupGame() {
-            const timeLimit = Math.max(20 - Math.floor(currentLevel / 3), 8);
-            document.getElementById('timer').textContent = timeLimit; timeLeft = timeLimit;
-            document.getElementById('nextBtn').style.display = 'none';
-        }
+        function setupGame() { document.getElementById('timer').textContent = Math.max(20 - Math.floor(currentLevel / 3), 8); document.getElementById('nextBtn').style.display = 'none'; }
         
         function startGame() {
             isGameActive = false; playerSequence = []; gameStartTime = Date.now();
@@ -351,7 +418,7 @@
             container.style.display = 'grid'; container.style.gridTemplateColumns = `repeat(${Math.min(cardsCount, 5)}, auto)`;
             container.style.maxWidth = '800px'; container.style.margin = '0 auto';
             sequence = [...dimsumImages].sort(() => 0.5 - Math.random()).slice(0, cardsCount);
-            sequence.forEach((image, index) => {
+            sequence.forEach(image => {
                 const card = document.createElement('div'); card.className = 'card sequence-card';
                 card.textContent = image; card.dataset.image = image; container.appendChild(card);
             });
@@ -370,15 +437,13 @@
             }
         }
 
-        function startGameTimer(gameTime) {
-            clearGameTimer(); const endTime = Date.now() + gameTime * 1000;
+        function startMemoryTimer(duration) { clearGameTimer(); const end = Date.now() + duration * 1000; const update = () => { const rem = Math.max(0, Math.ceil((end - Date.now()) / 1000)); document.getElementById('timer').textContent = rem; if (rem <= 0) clearGameTimer(); }; update(); gameTimer = setInterval(update, 100); }
+        function startGameTimer(duration) {
+            clearGameTimer(); const end = Date.now() + duration * 1000;
             const update = () => {
-                const remaining = Math.max(0, Math.ceil((endTime - Date.now()) / 1000));
-                document.getElementById('timer').textContent = remaining; timeLeft = remaining;
-                if (remaining <= 0) {
-                    clearGameTimer(); timeLeft = 0;
-                    if (isGameActive) endGame(false, 'time');
-                }
+                timeLeft = Math.max(0, Math.ceil((end - Date.now()) / 1000));
+                document.getElementById('timer').textContent = timeLeft;
+                if (timeLeft <= 0) { clearGameTimer(); if (isGameActive) endGame(false, 'time'); }
             };
             update(); gameTimer = setInterval(update, 100);
         }
@@ -419,6 +484,7 @@
             const doSwap = () => {
                 if (swapIndex++ < 6) {
                     let i = Math.floor(Math.random() * cards.length), j = Math.floor(Math.random() * cards.length);
+                    while(i === j) j = Math.floor(Math.random() * cards.length);
                     [cards[i].style.top, cards[j].style.top] = [cards[j].style.top, cards[i].style.top];
                     [cards[i].style.left, cards[j].style.left] = [cards[j].style.left, cards[i].style.left];
                     customSetTimeout(doSwap, 600);
@@ -456,7 +522,7 @@
             document.querySelectorAll('.card').forEach(c => c.onclick = null);
             if (success) {
                 playWinSound();
-                let score = 5; // Base score
+                let score = 5; 
                 if (lives === 3) score += 3; else if (lives === 2) score += 1;
                 if ((Date.now() - gameStartTime) / 1000 < 10) score += 2;
                 document.getElementById('currentScore').textContent = score;
@@ -474,10 +540,11 @@
         }
 
         function nextLevel() { if (currentLevel < 30) startLevel(currentLevel + 1); }
-        async function fetchAndShowLeaderboard(mode = 'memorize') {
+        async function fetchAndShowLeaderboard(mode) {
+            if(!mode && isLoggedIn()) { showMainMenu(); return; }
             const loader = document.getElementById('loader'); loader.style.display = 'flex';
             try {
-                const response = await fetch(`${API_BASE}/leaderboard?mode=${mode}`);
+                const response = await fetch(`${API_BASE}/leaderboard?mode=${mode || 'memorize'}`);
                 if (!response.ok) throw new Error('Gagal memuat data.');
                 const data = await response.json();
                 const list = document.getElementById('leaderboardList'); list.innerHTML = '';
@@ -487,12 +554,13 @@
             } finally { loader.style.display = 'none'; }
             showScreen('leaderboardScreen');
         }
-        function playSound(frequency, duration) { if (!audioContext) return; try { const o = audioContext.createOscillator(); const g = audioContext.createGain(); o.connect(g); g.connect(audioContext.destination); o.frequency.value = frequency; g.gain.setValueAtTime(0.2, audioContext.currentTime); g.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration); o.start(); o.stop(audioContext.currentTime + duration); } catch (e) { console.log('Sound error:', e); } }
+        function playSound(frequency, duration) { if (!audioContext) return; try { const o = audioContext.createOscillator(); const g = audioContext.createGain(); o.connect(g); g.connect(audioContext.destination); o.frequency.value = frequency; g.gain.setValueAtTime(0.2, audioContext.currentTime); g.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration); o.start(); o.stop(audioContext.currentTime + duration); } catch (e) {} }
         function playCorrectSound() { playSound(523.25, 0.2); }
         function playWrongSound() { playSound(220, 0.3); }
         function playWinSound() { playSound(659.25, 0.2); customSetTimeout(() => playSound(783.99, 0.2), 100); customSetTimeout(() => playSound(1046.50, 0.4), 200); }
         function playLoseSound() { playSound(196, 0.5); }
         function playClickSound() { playSound(440, 0.1); }
+        function showForgotPasswordModal() { const modal = new bootstrap.Modal(document.getElementById('forgotPasswordModal')); modal.show(); }
         async function initiatePasswordReset() { const username = document.getElementById('resetUsername').value; const waNumber = document.getElementById('resetWaNumber').value; if (!username || !waNumber) return showModal('Input Tidak Lengkap', 'Masukkan username dan nomor WhatsApp.'); try { const data = await apiCall('password-reset', { action: 'initiate', username, waNumber }); document.getElementById('resetCodeDisplay').textContent = `(Simulasi) Kode Anda: ${data.resetCode}`; document.getElementById('reset-step-1').style.display = 'none'; document.getElementById('reset-step-2').style.display = 'block'; } catch(error) { console.error('Reset Gagal:', error); } }
         async function verifyPasswordReset() { const username = document.getElementById('resetUsername').value; const code = document.getElementById('resetCode').value; const newPassword = document.getElementById('resetNewPassword').value; if (!code || !newPassword) return showModal('Input Tidak Lengkap', 'Masukkan kode dan password baru.'); try { const data = await apiCall('password-reset', { action: 'verify', username, code, newPassword }); showModal('Berhasil', data.message); bootstrap.Modal.getInstance(document.getElementById('forgotPasswordModal')).hide(); showLoginForm(); } catch (error) { console.error('Verifikasi Gagal:', error); } }
         window.addEventListener('load', () => { showLoginScreen(); });
