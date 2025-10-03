@@ -2,8 +2,9 @@ const pg = require('pg');
 const bcrypt = require('bcryptjs');
 
 const { Pool } = pg;
+// UBAH SEMENTARA UNTUK TES
 const pool = new Pool({
-  connectionString: process.env.NETLIFY_DATABASE_URL,
+  connectionString: "postgresql://neondb_owner:npg_GHkjMZh7Xv2q@ep-dark-snow-a13x0p6y-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require",
 });
 
 exports.handler = async (event) => {
