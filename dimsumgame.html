@@ -48,7 +48,7 @@
         .heart { font-size: 24px; transition: all 0.3s ease; }
         .heart.lost { opacity: 0.3; transform: scale(0.8); }
         .timer { font-size: 2rem; color: #f2d375; margin: 10px 0 20px 0; font-weight: 700; animation: pulseTimer 1s infinite; }
-        .back-btn { position: absolute; top: 20px; left: 20px; background: rgba(250, 220, 154, 0.2); color: #fadc9a; border: none; padding: 10px 15px; border-radius: 10px; cursor: pointer; font-size: 16px; transition: all 0.3s ease; }
+        .back-btn { position: absolute; top: 20px; left: 20px; background: rgba(250, 220, 154, 0.2); color: #fadc9a; border: none; padding: 10px 15px; border-radius: 10px; cursor: pointer; font-size: 16px; transition: all 0.3s ease; z-index: 10; }
         .back-btn:hover { background: rgba(250, 220, 154, 0.3); }
         .user-info { position: absolute; top: 20px; right: 20px; color: #fadc9a; font-size: 16px; }
         .countdown { font-size: 4rem; color: #f2d375; font-weight: 700; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); animation: countdownPulse 1s ease-in-out; }
@@ -468,32 +468,60 @@
         function hideSpecialCards() { document.querySelectorAll('.card').forEach(c => { c.classList.remove('red-marked'); c.textContent = '🥢'; }); }
         function loseLife() { if (lives > 0) { lives--; document.querySelectorAll('.heart')[lives].classList.add('lost'); if (lives <= 0) endGame(false, 'lives'); } }
         
-        // --- BUG FIX: SHUFFLE LOGIC REBUILT ---
         function shuffleCards(callback) {
             const container = document.getElementById('cardsContainer');
-            const cards = Array.from(container.children);
-            if (cards.length === 0) { if (callback) callback(); return; }
+            let cards = Array.from(container.children);
+            
+            const containerRect = container.getBoundingClientRect();
+            container.style.height = `${containerRect.height}px`; // Lock height
 
-            // Fade out
-            container.style.transition = 'opacity 0.3s ease-out';
-            container.style.opacity = '0';
+            const positions = cards.map(card => ({
+                top: card.offsetTop,
+                left: card.offsetLeft,
+                width: card.offsetWidth,
+                height: card.offsetHeight
+            }));
 
-            setTimeout(() => {
-                // Shuffle the cards in the background (no animation)
-                for (let i = cards.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    container.appendChild(cards[j]); // This reorders the DOM elements
-                }
+            cards.forEach((card, i) => {
+                card.style.position = 'absolute';
+                card.style.top = `${positions[i].top}px`;
+                card.style.left = `${positions[i].left}px`;
+                card.style.width = `${positions[i].width}px`;
+                card.style.height = `${positions[i].height}px`;
+                card.style.margin = '0';
+                card.style.transition = 'top 0.5s ease, left 0.5s ease';
+            });
 
-                // Fade in
-                container.style.transition = 'opacity 0.3s ease-in';
-                container.style.opacity = '1';
+            let swapIndex = 0;
+            const doSwap = () => {
+                if (swapIndex++ < 6) {
+                    let i = Math.floor(Math.random() * cards.length);
+                    let j = Math.floor(Math.random() * cards.length);
+                    while (i === j) j = Math.floor(Math.random() * cards.length);
 
-                setTimeout(() => {
-                    container.style.transition = '';
+                    const cardA = cards[i];
+                    const cardB = cards[j];
+
+                    // Swap visual positions
+                    [cardA.style.top, cardB.style.top] = [cardB.style.top, cardA.style.top];
+                    [cardA.style.left, cardB.style.left] = [cardB.style.left, cardA.style.left];
+
+                    // Swap the elements in the JS array to match the visuals
+                    [cards[i], cards[j]] = [cards[j], cards[i]];
+
+                    customSetTimeout(doSwap, 600);
+                } else {
+                    // Animation finished
+                    cards.forEach(card => card.style = ''); // Reset all styles
+                    container.style.height = ''; // Unlock height
+                    
+                    // Re-append cards in the now correctly shuffled order
+                    cards.forEach(card => container.appendChild(card));
+                    
                     if (callback) callback();
-                }, 300);
-            }, 300);
+                }
+            };
+            doSwap();
         }
 
         function enableCardClicks() { document.querySelectorAll('.card').forEach(c => c.onclick = () => handleCardClick(c)); }
