@@ -1,4 +1,16 @@
+# Blok ini mendefinisikan pengaturan build untuk situs Anda.
 [build]
-  command = "npm install"
-  functions = "netlify/functions"
-  publish = "/"
+  command = "npm install"        # Perintah yang dijalankan saat build (bisa dikosongkan jika tidak perlu)
+  functions = "netlify/functions"  # Menentukan direktori untuk serverless functions Anda
+  publish = "/"                  # Direktori yang akan di-publish
+
+# Blok ini mendefinisikan pengaturan untuk semua serverless functions.
+[functions]
+  # Baris ini memastikan file database Anda dapat diakses oleh functions.
+  included_files = ["database/**"]
+
+# Blok ini mendefinisikan fungsi terjadwal bernama "reset-scores".
+[functions."reset-scores"]
+  # Ini adalah cron expression yang berarti "pada pukul 00:00 setiap hari Senin".
+  # Ini akan menjalankan fungsi reset-scores sekali seminggu.
+  schedule = "0 0 * * 1"
