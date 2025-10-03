@@ -4,2089 +4,273 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Memorize Dimsum</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #ab2902 0%, #c08429 50%, #3e5526 100%);
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        .glass {
-            background: rgba(250, 220, 154, 0.15);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(250, 220, 154, 0.2);
-            border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .screen {
-            display: none;
-            width: 100%;
-            max-width: 800px;
-            padding: 40px;
-            text-align: center;
-        }
-
-        .screen.active {
-            display: block;
-        }
-
-        h1 {
-            color: #fadc9a;
-            font-size: 3rem;
-            font-weight: 700;
-            margin-bottom: 30px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        h2 {
-            color: #f2d375;
-            font-size: 2rem;
-            margin-bottom: 20px;
-        }
-
-        .login-form {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            max-width: 400px;
-            margin: 0 auto;
-        }
-
-        input {
-            padding: 15px 20px;
-            border: none;
-            border-radius: 15px;
-            background: rgba(250, 220, 154, 0.2);
-            color: #3e5526;
-            font-size: 16px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(250, 220, 154, 0.3);
-        }
-
-        input::placeholder {
-            color: rgba(62, 85, 38, 0.7);
-        }
-
-        input:focus {
-            outline: none;
-            border-color: rgba(242, 211, 117, 0.6);
-            background: rgba(250, 220, 154, 0.3);
-        }
-
-        .btn {
-            padding: 15px 30px;
-            border: none;
-            border-radius: 15px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background: linear-gradient(135deg, #f2d375, #c08429);
-            color: #3e5526;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .btn-secondary {
-            background: linear-gradient(135deg, #ab2902, #c08429);
-            color: #fadc9a;
-        }
-
-        .game-modes {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
-            margin: 30px 0;
-        }
-
-        .mode-card {
-            padding: 30px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .mode-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .mode-icon {
-            font-size: 4rem;
-            margin-bottom: 20px;
-        }
-
-        .level-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-            gap: 15px;
-            margin: 30px 0;
-        }
-
-        .level-btn {
-            aspect-ratio: 1;
-            border: none;
-            border-radius: 15px;
-            font-size: 18px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background: linear-gradient(135deg, #f2d375, #c08429);
-            color: #3e5526;
-            position: relative;
-        }
-
-        .level-btn:disabled {
-            background: rgba(62, 85, 38, 0.3);
-            color: rgba(250, 220, 154, 0.5);
-            cursor: not-allowed;
-        }
-
-        .level-btn.completed {
-            background: linear-gradient(135deg, #3e5526, #ab2902);
-            color: #fadc9a;
-        }
-
-        .stars {
-            position: absolute;
-            bottom: 5px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 12px;
-        }
-
-        .game-area {
-            margin: 30px 0;
-        }
-
-        .cards-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
-            max-width: 500px;
-            margin: 20px auto;
-            position: relative;
-            min-height: 220px;
-        }
-
-        .card {
-            width: 100px;
-            height: 100px;
-            font-size: 48px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #fadc9a, #f2d375);
-            color: #3e5526;
-            font-weight: bold;
-            border-radius: 12px;
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            cursor: pointer;
-            position: relative;
-        }
-
-        .card:hover {
-            transform: scale(1.03);
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
-        }
-
-        .card.red-marked {
-            background: linear-gradient(135deg, #ab2902, #c08429);
-            color: #fadc9a;
-            box-shadow: 0 0 20px rgba(171, 41, 2, 0.5);
-        }
-
-        .card.selected {
-            border: 3px solid #3e5526;
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 6px 20px rgba(62, 85, 38, 0.4);
-        }
-
-        .card.correct {
-            background: linear-gradient(135deg, #3e5526, #ab2902);
-            color: #fadc9a;
-            animation: correctPulse 0.6s ease-in-out;
-            border: 3px solid #4ade80 !important;
-        }
-
-        .card.wrong {
-            background: linear-gradient(135deg, #ab2902, #3e5526);
-            animation: wrongShake 0.6s ease-in-out;
-            border: 3px solid #ef4444 !important;
-        }
-
-        .card.sequence-card {
-            background: linear-gradient(135deg, #f2d375, #fadc9a);
-            color: #3e5526;
-            border: 3px solid #c08429;
-            animation: sequencePulse 2s ease-in-out infinite;
-        }
-
-        .card.input-card {
-            background: linear-gradient(135deg, #c08429, #ab2902);
-            color: #fadc9a;
-            cursor: pointer;
-        }
-
-        .card.input-card:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-        }
-
-        .tictactoe-board {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin: 30px auto;
-            max-width: 300px;
-        }
-
-        .tictactoe-cell {
-            aspect-ratio: 1;
-            background: rgba(250, 220, 154, 0.1);
-            backdrop-filter: blur(15px);
-            border: 2px solid rgba(250, 220, 154, 0.3);
-            border-radius: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 3rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .tictactoe-cell:hover {
-            background: rgba(250, 220, 154, 0.2);
-            transform: scale(1.05);
-            border-color: rgba(242, 211, 117, 0.5);
-        }
-
-        .tictactoe-cell.taken {
-            cursor: not-allowed;
-        }
-
-        .tictactoe-cell.taken:hover {
-            transform: none;
-        }
-
-        .difficulty-selector {
-            margin-bottom: 30px;
-        }
-
-        .difficulty-label {
-            color: #fadc9a;
-            font-weight: 600;
-            margin-bottom: 15px;
-            display: block;
-        }
-
-        .difficulty-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .difficulty-btn {
-            background: rgba(242, 211, 117, 0.2);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(242, 211, 117, 0.3);
-            border-radius: 16px;
-            padding: 10px 20px;
-            color: #fadc9a;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: inherit;
-        }
-
-        .difficulty-btn:hover {
-            background: rgba(242, 211, 117, 0.3);
-            transform: translateY(-2px);
-        }
-
-        .difficulty-btn.active {
-            background: rgba(192, 132, 41, 0.6);
-            border-color: #c08429;
-            color: #fadc9a;
-        }
-
-        .score-board {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 20px;
-            padding: 15px;
-            background: rgba(62, 85, 38, 0.3);
-            backdrop-filter: blur(10px);
-            border-radius: 16px;
-            border: 1px solid rgba(62, 85, 38, 0.5);
-        }
-
-        .score-board .score-item:first-child {
-            grid-column: 1 / -1;
-            background: rgba(192, 132, 41, 0.3);
-            padding: 10px;
-            border-radius: 12px;
-            border: 1px solid rgba(192, 132, 41, 0.5);
-        }
-
-        .score-item {
-            text-align: center;
-            color: #fadc9a;
-        }
-
-        .score-label {
-            font-size: 0.9rem;
-            opacity: 0.8;
-            margin-bottom: 5px;
-        }
-
-        .score-value {
-            font-size: 1.5rem;
-            font-weight: 700;
-        }
-
-        .timer {
-            font-size: 2rem;
-            color: #f2d375;
-            margin: 20px 0;
-            font-weight: 700;
-            animation: pulseTimer 1s infinite;
-        }
-
-        .score-display {
-            display: flex;
-            justify-content: space-between;
-            margin: 20px 0;
-            color: #fadc9a;
-            font-size: 18px;
-        }
-
-        .lives-display {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin: 15px 0;
-            color: #fadc9a;
-            font-size: 18px;
-        }
-
-        .heart {
-            font-size: 24px;
-            transition: all 0.3s ease;
-        }
-
-        .heart.lost {
-            opacity: 0.3;
-            transform: scale(0.8);
-        }
-
-        .leaderboard {
-            max-width: 500px;
-            margin: 0 auto;
-        }
-
-        .leaderboard-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 15px 20px;
-            margin: 10px 0;
-            border-radius: 12px;
-            background: rgba(250, 220, 154, 0.1);
-            color: #fadc9a;
-        }
-
-        .back-btn {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background: rgba(250, 220, 154, 0.2);
-            color: #fadc9a;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: all 0.3s ease;
-        }
-
-        .back-btn:hover {
-            background: rgba(250, 220, 154, 0.3);
-        }
-
-        .user-info {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            color: #fadc9a;
-            font-size: 16px;
-        }
-
-        .countdown {
-            font-size: 4rem;
-            color: #f2d375;
-            font-weight: 700;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-            animation: countdownPulse 1s ease-in-out;
-        }
-
-        .status {
-            color: #fadc9a;
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 20px;
-            min-height: 30px;
-        }
-
-        .controls {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-top: 20px;
-        }
-
-        /* Animations */
-        @keyframes correctPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); box-shadow: 0 0 30px rgba(62, 85, 38, 0.6); }
-        }
-
-        @keyframes wrongShake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-8px); }
-            20%, 40%, 60%, 80% { transform: translateX(8px); }
-        }
-
-        @keyframes sequencePulse {
-            0%, 100% { 
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-                transform: scale(1);
-            }
-            50% { 
-                box-shadow: 0 0 25px rgba(242, 211, 117, 0.6);
-                transform: scale(1.02);
-            }
-        }
-
-        @keyframes countdownPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-        }
-
-        @keyframes pulseTimer {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        @keyframes winningGlow {
-            from { opacity: 0.6; }
-            to { opacity: 1; }
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .container {
-                padding: 10px;
-            }
-            
-            h1 {
-                font-size: 2rem;
-            }
-            
-            .level-grid {
-                grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-            }
-
-            .lives-display {
-                font-size: 16px;
-            }
-
-            .heart {
-                font-size: 20px;
-            }
-
-            .tictactoe-board {
-                max-width: 250px;
-                gap: 10px;
-            }
-
-            .tictactoe-cell {
-                font-size: 2.5rem;
-            }
-
-            .screen {
-                padding: 20px;
-            }
-        }
-
-        /* Form specific fixes */
-        .form-container {
-            width: 100%;
-            max-width: 400px;
-            margin: 0 auto;
-        }
-
-        .form-title {
-            color: #f2d375;
-            margin-bottom: 20px;
-            font-size: 1.5rem;
-        }
-
-        .error-message {
-            color: #ef4444;
-            font-size: 14px;
-            margin-top: 5px;
-            text-align: left;
-        }
-
-        .success-message {
-            color: #4ade80;
-            font-size: 14px;
-            margin-top: 5px;
-            text-align: center;
-        }
+        /* CSS Lengkap tidak diubah, untuk menghemat tempat */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #ab2902 0%, #c08429 50%, #3e5526 100%); min-height: 100vh; overflow-x: hidden; }
+        .glass { background: rgba(250, 220, 154, 0.15); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(250, 220, 154, 0.2); border-radius: 20px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .screen { display: none; width: 100%; max-width: 800px; padding: 40px; text-align: center; }
+        .screen.active { display: block; }
+        h1 { color: #fadc9a; font-size: 3rem; font-weight: 700; margin-bottom: 30px; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); }
+        h2 { color: #f2d375; font-size: 2rem; margin-bottom: 20px; }
+        .login-form { display: flex; flex-direction: column; gap: 20px; max-width: 400px; margin: 0 auto; }
+        input { padding: 15px 20px; border: none; border-radius: 15px; background: rgba(250, 220, 154, 0.2); color: #3e5526; font-size: 16px; backdrop-filter: blur(10px); border: 1px solid rgba(250, 220, 154, 0.3); }
+        input::placeholder { color: rgba(62, 85, 38, 0.7); }
+        input:focus { outline: none; border-color: rgba(242, 211, 117, 0.6); background: rgba(250, 220, 154, 0.3); }
+        .btn { padding: 15px 30px; border: none; border-radius: 15px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; background: linear-gradient(135deg, #f2d375, #c08429); color: #3e5526; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3); }
+        .btn-secondary { background: linear-gradient(135deg, #ab2902, #c08429); color: #fadc9a; }
+        .game-modes { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; margin: 30px 0; }
+        .mode-card { padding: 30px; text-align: center; cursor: pointer; transition: all 0.3s ease; }
+        .mode-card:hover { transform: translateY(-5px); }
+        .mode-icon { font-size: 4rem; margin-bottom: 20px; }
+        .level-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 15px; margin: 30px 0; }
+        .level-btn { aspect-ratio: 1; border: none; border-radius: 15px; font-size: 18px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; background: linear-gradient(135deg, #f2d375, #c08429); color: #3e5526; position: relative; }
+        .level-btn:disabled { background: rgba(62, 85, 38, 0.3); color: rgba(250, 220, 154, 0.5); cursor: not-allowed; }
+        .level-btn.completed { background: linear-gradient(135deg, #3e5526, #ab2902); color: #fadc9a; }
+        .stars { position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%); font-size: 12px; }
+        .game-area { margin: 30px 0; }
+        .cards-container { display: flex; justify-content: center; align-items: center; gap: 15px; flex-wrap: wrap; max-width: 500px; margin: 20px auto; position: relative; min-height: 220px; }
+        .card { width: 100px; height: 100px; font-size: 48px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #fadc9a, #f2d375); color: #3e5526; font-weight: bold; border-radius: 12px; transition: transform 0.4s ease, box-shadow 0.4s ease; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); cursor: pointer; position: relative; }
+        .card:hover { transform: scale(1.03); box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25); }
+        .card.red-marked { background: linear-gradient(135deg, #ab2902, #c08429); color: #fadc9a; box-shadow: 0 0 20px rgba(171, 41, 2, 0.5); }
+        .card.selected { border: 3px solid #3e5526; transform: translateY(-3px) scale(1.02); box-shadow: 0 6px 20px rgba(62, 85, 38, 0.4); }
+        .card.correct { background: linear-gradient(135deg, #3e5526, #ab2902); color: #fadc9a; animation: correctPulse 0.6s ease-in-out; border: 3px solid #4ade80 !important; }
+        .card.wrong { background: linear-gradient(135deg, #ab2902, #3e5526); animation: wrongShake 0.6s ease-in-out; border: 3px solid #ef4444 !important; }
+        .card.sequence-card { background: linear-gradient(135deg, #f2d375, #fadc9a); color: #3e5526; border: 3px solid #c08429; animation: sequencePulse 2s ease-in-out infinite; }
+        .card.input-card { background: linear-gradient(135deg, #c08429, #ab2902); color: #fadc9a; cursor: pointer; }
+        .card.input-card:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4); }
+        .tictactoe-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 30px auto; max-width: 300px; }
+        .tictactoe-cell { aspect-ratio: 1; background: rgba(250, 220, 154, 0.1); backdrop-filter: blur(15px); border: 2px solid rgba(250, 220, 154, 0.3); border-radius: 20px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: all 0.3s ease; font-size: 3rem; position: relative; overflow: hidden; }
+        .tictactoe-cell:hover { background: rgba(250, 220, 154, 0.2); transform: scale(1.05); border-color: rgba(242, 211, 117, 0.5); }
+        .tictactoe-cell.taken { cursor: not-allowed; }
+        .tictactoe-cell.taken:hover { transform: none; }
+        .difficulty-selector { margin-bottom: 30px; }
+        .difficulty-label { color: #fadc9a; font-weight: 600; margin-bottom: 15px; display: block; }
+        .difficulty-buttons { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+        .difficulty-btn { background: rgba(242, 211, 117, 0.2); backdrop-filter: blur(10px); border: 1px solid rgba(242, 211, 117, 0.3); border-radius: 16px; padding: 10px 20px; color: #fadc9a; font-weight: 600; cursor: pointer; transition: all 0.3s ease; font-family: inherit; }
+        .difficulty-btn:hover { background: rgba(242, 211, 117, 0.3); transform: translateY(-2px); }
+        .difficulty-btn.active { background: rgba(192, 132, 41, 0.6); border-color: #c08429; color: #fadc9a; }
+        .score-board { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; padding: 15px; background: rgba(62, 85, 38, 0.3); backdrop-filter: blur(10px); border-radius: 16px; border: 1px solid rgba(62, 85, 38, 0.5); }
+        .score-board .score-item:first-child { grid-column: 1 / -1; background: rgba(192, 132, 41, 0.3); padding: 10px; border-radius: 12px; border: 1px solid rgba(192, 132, 41, 0.5); }
+        .score-item { text-align: center; color: #fadc9a; }
+        .score-label { font-size: 0.9rem; opacity: 0.8; margin-bottom: 5px; }
+        .score-value { font-size: 1.5rem; font-weight: 700; }
+        .timer { font-size: 2rem; color: #f2d375; margin: 20px 0; font-weight: 700; animation: pulseTimer 1s infinite; }
+        .score-display { display: flex; justify-content: space-between; margin: 20px 0; color: #fadc9a; font-size: 18px; }
+        .lives-display { display: flex; align-items: center; gap: 10px; margin: 15px 0; color: #fadc9a; font-size: 18px; }
+        .heart { font-size: 24px; transition: all 0.3s ease; }
+        .heart.lost { opacity: 0.3; transform: scale(0.8); }
+        .leaderboard { max-width: 500px; margin: 0 auto; }
+        .leaderboard-item { display: flex; justify-content: space-between; padding: 15px 20px; margin: 10px 0; border-radius: 12px; background: rgba(250, 220, 154, 0.1); color: #fadc9a; }
+        .back-btn { position: absolute; top: 20px; left: 20px; background: rgba(250, 220, 154, 0.2); color: #fadc9a; border: none; padding: 10px 15px; border-radius: 10px; cursor: pointer; font-size: 16px; transition: all 0.3s ease; }
+        .back-btn:hover { background: rgba(250, 220, 154, 0.3); }
+        .user-info { position: absolute; top: 20px; right: 20px; color: #fadc9a; font-size: 16px; }
+        .countdown { font-size: 4rem; color: #f2d375; font-weight: 700; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); animation: countdownPulse 1s ease-in-out; }
+        .status { color: #fadc9a; font-size: 1.2rem; font-weight: 600; margin-bottom: 20px; min-height: 30px; }
+        .controls { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-top: 20px; }
+        @keyframes correctPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); box-shadow: 0 0 30px rgba(62, 85, 38, 0.6); } }
+        @keyframes wrongShake { 0%, 100% { transform: translateX(0); } 10%, 30%, 50%, 70%, 90% { transform: translateX(-8px); } 20%, 40%, 60%, 80% { transform: translateX(8px); } }
+        @keyframes sequencePulse { 0%, 100% { box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); transform: scale(1); } 50% { box-shadow: 0 0 25px rgba(242, 211, 117, 0.6); transform: scale(1.02); } }
+        @keyframes countdownPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
+        @keyframes pulseTimer { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        @keyframes winningGlow { from { opacity: 0.6; } to { opacity: 1; } }
+        @media (max-width: 768px) { .container { padding: 10px; } h1 { font-size: 2rem; } .level-grid { grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); } .lives-display { font-size: 16px; } .heart { font-size: 20px; } .tictactoe-board { max-width: 250px; gap: 10px; } .tictactoe-cell { font-size: 2.5rem; } .screen { padding: 20px; } }
+        .form-container { width: 100%; max-width: 400px; margin: 0 auto; }
+        .form-title { color: #f2d375; margin-bottom: 20px; font-size: 1.5rem; }
+        .modal-content { background: rgba(62, 85, 38, 0.6); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(250, 220, 154, 0.2); color: #fadc9a; }
+        .modal-header { border-bottom: 1px solid rgba(250, 220, 154, 0.2); }
+        .modal-footer { border-top: 1px solid rgba(250, 220, 154, 0.2); }
+        .btn-close { filter: invert(1) grayscale(100%) brightness(200%); }
+        
+        #infoModal { z-index: 1060; }
     </style>
 </head>
 <body>
+    <audio id="bgm" src="arcade.mp3" loop></audio>
     <div class="container">
-        <!-- Login Screen -->
-        <div id="loginScreen" class="screen active glass">
-            <h1>🥟 Memorize Dimsum</h1>
-            
-            <!-- Login Form -->
-            <div id="loginForm" class="form-container">
-                <div class="login-form">
-                    <input type="text" id="username" placeholder="Username" required>
-                    <input type="password" id="password" placeholder="Password" required>
-                    <button class="btn" onclick="login()">Masuk Game</button>
-                    <button class="btn btn-secondary" onclick="showRegisterForm()">Daftar Akun Baru</button>
-                    <button class="btn btn-secondary" onclick="showLeaderboard()">Lihat Leaderboard</button>
-                </div>
-            </div>
-
-            <!-- Register Form -->
-            <div id="registerForm" class="form-container" style="display: none;">
-                <h3 class="form-title">Daftar Akun Baru</h3>
-                <div class="login-form">
-                    <input type="text" id="regUsername" placeholder="Username (3-20 karakter)" required>
-                    <input type="password" id="regPassword" placeholder="Password (min 6 karakter)" required>
-                    <input type="password" id="regConfirmPassword" placeholder="Konfirmasi Password" required>
-                    <button class="btn" onclick="register()">Daftar</button>
-                    <button class="btn btn-secondary" onclick="showLoginForm()">Kembali ke Login</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Main Menu -->
-        <div id="mainMenu" class="screen glass">
-            <button class="back-btn" onclick="logout()">Keluar</button>
-            <div class="user-info">
-                <span id="currentUser"></span>
-            </div>
-            <h1>🥟 Memorize Dimsum</h1>
-            <h2>Pilih Mode Permainan</h2>
-            <div class="game-modes">
-                <div class="mode-card glass" onclick="selectMode('memorize')">
-                    <div class="mode-icon">🃏</div>
-                    <h3 style="color: #f2d375;">Memorize Card</h3>
-                    <p style="color: #fadc9a; margin-top: 10px;">Ingat urutan kartu dan klik sesuai urutan</p>
-                </div>
-                <div class="mode-card glass" onclick="selectMode('pickme')">
-                    <div class="mode-icon">🎯</div>
-                    <h3 style="color: #f2d375;">Pick Me Dimsum</h3>
-                    <p style="color: #fadc9a; margin-top: 10px;">Temukan kartu merah setelah diacak</p>
-                </div>
-                <div class="mode-card glass" onclick="selectMode('dimdamdoe')">
-                    <div class="mode-icon">🥟🎮</div>
-                    <h3 style="color: #f2d375;">DimDamDoe</h3>
-                    <p style="color: #fadc9a; margin-top: 10px;">Tic Tac Toe dengan Cita Rasa Dimsum!</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Level Selection -->
-        <div id="levelScreen" class="screen glass">
-            <button class="back-btn" onclick="showMainMenu()">Kembali</button>
-            <div class="user-info">
-                <span id="levelUser"></span>
-            </div>
-            <h2 id="modeTitle">Pilih Level</h2>
-            <div class="score-display">
-                <span>Total Bintang: <span id="totalWins">0</span></span>
-                <span>High Score: <span id="highScore">0</span></span>
-            </div>
-            <div class="level-grid" id="levelGrid"></div>
-        </div>
-
-        <!-- Game Screen -->
-        <div id="gameScreen" class="screen glass">
-            <button class="back-btn" onclick="showLevelScreen()">Kembali</button>
-            <div class="user-info">
-                <span id="gameUser"></span>
-            </div>
-            <h2 id="gameTitle">Level 1</h2>
-            <div class="score-display">
-                <span>Skor: <span id="currentScore">0</span></span>
-                <span>Level: <span id="currentLevel">1</span></span>
-            </div>
-            <div class="lives-display">
-                <span>Nyawa:</span>
-                <div id="livesContainer">
-                    <span class="heart">❤️</span>
-                    <span class="heart">❤️</span>
-                    <span class="heart">❤️</span>
-                </div>
-            </div>
-            <div class="timer" id="timer">10</div>
-            <div id="gameInstructions" style="color: #fadc9a; margin: 20px 0;"></div>
-            <div class="game-area">
-                <div class="cards-container" id="cardsContainer"></div>
-            </div>
-            <div id="gameControls" style="margin-top: 20px;">
-                <button class="btn btn-secondary" id="nextBtn" onclick="nextLevel()" style="display: none;">Level Selanjutnya</button>
-            </div>
-        </div>
-
-        <!-- DimDamDoe Game Screen -->
-        <div id="dimdamdoeScreen" class="screen glass">
-            <button class="back-btn" onclick="showMainMenu()">Kembali</button>
-            <div class="user-info">
-                <span id="dimdamdoeUser"></span>
-            </div>
-            <h2>DimDamDoe 🥟🎮</h2>
-            <p style="color: #f2d375; margin-bottom: 20px;">Tic Tac Toe dengan Cita Rasa Dimsum!</p>
-            
-            <div class="difficulty-selector">
-                <label class="difficulty-label">Pilih Tingkat Kesulitan:</label>
-                <div class="difficulty-buttons">
-                    <button class="difficulty-btn active" data-level="easy">Mudah 🥢</button>
-                    <button class="difficulty-btn" data-level="medium">Sedang 🥟</button>
-                    <button class="difficulty-btn" data-level="hard">Sulit 🔥</button>
-                </div>
-            </div>
-            
-            <div class="status" id="dimdamdoeStatus">Giliran Anda! Pilih kotak untuk menaruh dimsum ayam 🥟</div>
-            
-            <div class="tictactoe-board" id="dimdamdoeBoard">
-                <div class="tictactoe-cell" data-index="0"></div>
-                <div class="tictactoe-cell" data-index="1"></div>
-                <div class="tictactoe-cell" data-index="2"></div>
-                <div class="tictactoe-cell" data-index="3"></div>
-                <div class="tictactoe-cell" data-index="4"></div>
-                <div class="tictactoe-cell" data-index="5"></div>
-                <div class="tictactoe-cell" data-index="6"></div>
-                <div class="tictactoe-cell" data-index="7"></div>
-                <div class="tictactoe-cell" data-index="8"></div>
-            </div>
-            
-            <div class="controls">
-                <button class="btn" onclick="resetDimDamDoe()">🔄 Main Lagi</button>
-                <button class="btn btn-secondary" onclick="toggleDimDamDoeSound()">🔊 Suara: ON</button>
-            </div>
-            
-            <div class="score-board">
-                <div class="score-item">
-                    <div class="score-label">Total Poin 🏆</div>
-                    <div class="score-value" id="dimdamdoeTotalPoints">0</div>
-                </div>
-                <div class="score-item">
-                    <div class="score-label">Menang 🥟</div>
-                    <div class="score-value" id="dimdamdoePlayerScore">0</div>
-                </div>
-                <div class="score-item">
-                    <div class="score-label">Seri 🤝</div>
-                    <div class="score-value" id="dimdamdoeTieScore">0</div>
-                </div>
-                <div class="score-item">
-                    <div class="score-label">Kalah 🦐</div>
-                    <div class="score-value" id="dimdamdoeAiScore">0</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Leaderboard Screen -->
-        <div id="leaderboardScreen" class="screen glass">
-            <button class="back-btn" onclick="showLoginScreen()">Kembali</button>
-            <h2>🏆 Leaderboard</h2>
-            <div style="margin: 20px 0;">
-                <button class="btn" onclick="showLeaderboard('memorize')" style="margin: 5px;">Memorize Card</button>
-                <button class="btn" onclick="showLeaderboard('pickme')" style="margin: 5px;">Pick Me Dimsum</button>
-                <button class="btn" onclick="showLeaderboard('dimdamdoe')" style="margin: 5px;">DimDamDoe</button>
-            </div>
-            <div class="leaderboard" id="leaderboardList"></div>
-        </div>
+        <div id="loginScreen" class="screen active glass"><h1>🥟 Memorize Dimsum</h1><div id="loginForm" class="form-container"><div class="login-form"><input type="text" id="username" placeholder="Username" required=""><input type="password" id="password" placeholder="Password" required=""><button class="btn" onclick="login()">Masuk Game</button><button class="btn btn-secondary" onclick="showRegisterForm()">Daftar Akun Baru</button><button class="btn btn-secondary" onclick="fetchAndShowLeaderboard()">Lihat Leaderboard</button><a href="#" class="text-center mt-2" style="color: #fadc9a;" onclick="showForgotPasswordModal()">Lupa Password?</a></div></div><div id="registerForm" class="form-container" style="display: none;"><h3 class="form-title">Daftar Akun Baru</h3><div class="login-form"><input type="text" id="regUsername" placeholder="Username (3-20 karakter)" required=""><input type="password" id="regPassword" placeholder="Password (min 6 karakter)" required=""><input type="password" id="regConfirmPassword" placeholder="Konfirmasi Password" required=""><button class="btn" onclick="register()">Daftar</button><button class="btn btn-secondary" onclick="showLoginForm()">Kembali ke Login</button></div></div></div>
+        <div id="mainMenu" class="screen glass"><button class="back-btn" onclick="logout()">Keluar</button><div class="user-info"><span id="currentUser"></span></div><h1>🥟 Memorize Dimsum</h1><h2>Pilih Mode Permainan</h2><div class="game-modes"><div class="mode-card glass" onclick="selectMode('memorize')"><div class="mode-icon">🃏</div><h3 style="color: #f2d375;">Memorize Card</h3><p style="color: #fadc9a; margin-top: 10px;">Ingat urutan kartu dan klik sesuai urutan</p></div><div class="mode-card glass" onclick="selectMode('pickme')"><div class="mode-icon">🎯</div><h3 style="color: #f2d375;">Pick Me Dimsum</h3><p style="color: #fadc9a; margin-top: 10px;">Temukan kartu merah setelah diacak</p></div><div class="mode-card glass" onclick="selectMode('dimdamdoe')"><div class="mode-icon">🥟🎮</div><h3 style="color: #f2d375;">DimDamDoe</h3><p style="color: #fadc9a; margin-top: 10px;">Tic Tac Toe dengan Cita Rasa Dimsum!</p></div></div></div>
+        <div id="levelScreen" class="screen glass"><button class="back-btn" onclick="showMainMenu()">Kembali</button><div class="user-info"><span id="levelUser"></span></div><h2 id="modeTitle">Pilih Level</h2><div class="score-display"><span>Total Bintang: <span id="totalWins">0</span></span><span>High Score: <span id="highScore">0</span></span></div><div class="level-grid" id="levelGrid"></div></div>
+        <div id="gameScreen" class="screen glass"><button class="back-btn" onclick="showLevelScreen()">Kembali</button><div class="user-info"><span id="gameUser"></span></div><h2 id="gameTitle">Level 1</h2><div class="score-display"><span>Skor: <span id="currentScore">0</span></span><span>Level: <span id="currentLevel">1</span></span></div><div class="lives-display"><span>Nyawa:</span><div id="livesContainer"><span class="heart">❤️</span><span class="heart">❤️</span><span class="heart">❤️</span></div></div><div class="timer" id="timer">10</div><div id="gameInstructions" style="color: #fadc9a; margin: 20px 0;"></div><div class="game-area"><div class="cards-container" id="cardsContainer"></div></div><div id="gameControls" style="margin-top: 20px;"><button class="btn btn-secondary" id="nextBtn" onclick="nextLevel()" style="display: none;">Level Selanjutnya</button></div></div>
+        <div id="dimdamdoeScreen" class="screen glass"><button class="back-btn" onclick="showMainMenu()">Kembali</button><div class="user-info"><span id="dimdamdoeUser"></span></div><h2>DimDamDoe 🥟🎮</h2><p style="color: #f2d375; margin-bottom: 20px;">Tic Tac Toe dengan Cita Rasa Dimsum!</p><div class="difficulty-selector"><label class="difficulty-label">Pilih Tingkat Kesulitan:</label><div class="difficulty-buttons"><button class="difficulty-btn active" data-level="easy">Mudah 🥢</button><button class="difficulty-btn" data-level="medium">Sedang 🥟</button><button class="difficulty-btn" data-level="hard">Sulit 🔥</button></div></div><div class="status" id="dimdamdoeStatus">Giliran Anda! Pilih kotak untuk menaruh dimsum ayam 🥟</div><div class="tictactoe-board" id="dimdamdoeBoard"><div class="tictactoe-cell" data-index="0"></div><div class="tictactoe-cell" data-index="1"></div><div class="tictactoe-cell" data-index="2"></div><div class="tictactoe-cell" data-index="3"></div><div class="tictactoe-cell" data-index="4"></div><div class="tictactoe-cell" data-index="5"></div><div class="tictactoe-cell" data-index="6"></div><div class="tictactoe-cell" data-index="7"></div><div class="tictactoe-cell" data-index="8"></div></div><div class="controls"><button class="btn" onclick="resetDimDamDoe()">🔄 Main Lagi</button><button class="btn btn-secondary" id="dimdamdoeSoundBtn" onclick="toggleDimDamDoeSound()">🔊 Suara: ON</button></div><div class="score-board"><div class="score-item"><div class="score-label">Total Poin 🏆</div><div class="score-value" id="dimdamdoeTotalPoints">0</div></div><div class="score-item"><div class="score-label">Menang 🥟</div><div class="score-value" id="dimdamdoePlayerScore">0</div></div><div class="score-item"><div class="score-label">Seri 🤝</div><div class="score-value" id="dimdamdoeTieScore">0</div></div><div class="score-item"><div class="score-label">Kalah 🦐</div><div class="score-value" id="dimdamdoeAiScore">0</div></div></div></div>
+        <div id="leaderboardScreen" class="screen glass"><button class="back-btn" onclick="isLoggedIn() ? showMainMenu() : showLoginScreen()">Kembali</button><h2>🏆 Leaderboard</h2><div style="margin: 20px 0;" id="leaderboardModeSelector"><button class="btn" onclick="fetchAndShowLeaderboard('memorize')" style="margin: 5px;">Memorize Card</button><button class="btn" onclick="fetchAndShowLeaderboard('pickme')" style="margin: 5px;">Pick Me Dimsum</button><button class="btn" onclick="fetchAndShowLeaderboard('dimdamdoe')" style="margin: 5px;">DimDamDoe</button></div><div class="leaderboard" id="leaderboardList"></div></div>
     </div>
-
+    <div class="modal fade" id="infoModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content glass"><div class="modal-header"><h5 class="modal-title" id="infoModalLabel">Notifikasi</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body" id="infoModalBody"></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button></div></div></div></div>
+    <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content glass"><div class="modal-header"><h5 class="modal-title">Lupa Password</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body"><div id="reset-step-1"><p>Masukkan username dan nomor WhatsApp Anda untuk menerima kode verifikasi.</p><input type="text" id="resetUsername" class="form-control mb-2" placeholder="Username"><input type="tel" id="resetWaNumber" class="form-control" placeholder="Nomor WhatsApp (cth: 628123)"><button class="btn mt-3 w-100" onclick="initiatePasswordReset()">Kirim Kode</button></div><div id="reset-step-2" style="display:none;"><p>Kode verifikasi telah dibuat. Masukkan kode tersebut di bawah beserta password baru Anda.</p><div class="alert alert-success" id="resetCodeDisplay"></div><input type="text" id="resetCode" class="form-control mb-2" placeholder="Kode Verifikasi"><input type="password" id="resetNewPassword" class="form-control" placeholder="Password Baru"><button class="btn mt-3 w-100" onclick="verifyPasswordReset()">Reset Password</button></div></div></div></div></div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        // Game State
+        AOS.init();
+    
+        let infoModal;
+        document.addEventListener('DOMContentLoaded', () => { infoModal = new bootstrap.Modal(document.getElementById('infoModal')); });
+        function showModal(title, message) { document.getElementById('infoModalLabel').textContent = title; document.getElementById('infoModalBody').innerHTML = message; infoModal.show(); }
+        const API_BASE = '/.netlify/functions';
+        async function apiCall(endpoint, body) { try { const response = await fetch(`${API_BASE}/${endpoint}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), }); if (!response.ok) { const errorText = await response.text(); throw new Error(`Server error: ${errorText}`); } const data = await response.json(); return data; } catch (error) { showModal('Error', error.message); console.error(error); throw error; } }
+
         let currentUser = '';
         let currentMode = '';
         let currentLevel = 1;
-        let gameData = { users: {}, leaderboards: { memorize: [], pickme: [], dimdamdoe: [] } };
-        let sequence = [];
-        let playerSequence = [];
-        let redCards = [];
-        let gameTimer = null;
-        let timeLeft = 0;
-        let isGameActive = false;
-        let lives = 3;
-        let flippedCards = [];
-        let matchedPairs = 0;
-        let canFlip = true;
-        let shuffleSpeedMultiplier = 1;
-        let gameStartTime = 0;
-
-        // DimDamDoe Game State
+        let currentUserData = null;
+        let sequence = [], playerSequence = [], redCards = [], flippedCards = [];
+        let gameTimer = null, timeLeft = 0, isGameActive = false, lives = 3;
+        let shuffleSpeedMultiplier = 1, gameStartTime = 0;
         let dimDamDoeGame = null;
-
-        // Audio Context for sound effects
         let audioContext;
-        let backgroundMusic = null;
-        let backgroundGain = null;
+        const dimsumImages = ['🥟', '🥠', '🍤', '🍜', '🍲', '🥢', '🍱', '🍙', '🍘', '🍚', '🥮', '🧧', '🏮', '🎋', '🍵', '🫖', '🥡', '🍛', '🍝', '🍳', '🥗', '🍖', '🍗', '🥓', '🌶️', '🧄', '🧅', '🥕', '🌽', '🥒', '🍅', '🥬'];
+        
+        // PERBAIKAN FREEZE: Sistem baru untuk mengelola dan membersihkan semua setTimeout
+        let activeTimeouts = [];
+        function customSetTimeout(callback, delay) {
+            const timeoutId = setTimeout(() => {
+                // Hapus timeout dari daftar setelah selesai dieksekusi
+                activeTimeouts = activeTimeouts.filter(id => id !== timeoutId);
+                callback();
+            }, delay);
+            activeTimeouts.push(timeoutId);
+            return timeoutId;
+        }
+        function clearAllTimeouts() {
+            activeTimeouts.forEach(id => clearTimeout(id));
+            activeTimeouts = [];
+        }
+        // ---
 
-        // Dimsum images array
-        const dimsumImages = [
-            '🥟', '🥠', '🍤', '🍜', '🍲', '🥢', '🍱', '🍙', 
-            '🍘', '🍚', '🥮', '🧧', '🏮', '🎋', '🍵', '🫖',
-            '🥡', '🍛', '🍝', '🍳', '🥗', '🍖', '🍗', '🥓',
-            '🌶️', '🧄', '🧅', '🥕', '🌽', '🥒', '🍅', '🥬'
-        ];
-
-        // Game Data Management (Simplified for offline use)
-        function saveGameData() {
+        async function login() {
+            const username = document.getElementById('username').value.trim(); const password = document.getElementById('password').value.trim();
+            if (!username || !password) return showModal('Input Tidak Lengkap', 'Masukkan username dan password!');
             try {
-                localStorage.setItem('memorize_dimsum_data', JSON.stringify(gameData));
-            } catch (e) {
-                console.log('Save failed:', e);
-            }
+                const data = await apiCall('auth', { action: 'login', username, password });
+                currentUserData = data.userData; currentUser = data.userData.username;
+                if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const bgm = document.getElementById('bgm'); bgm.volume = 0.2; bgm.play().catch(e => {});
+                playClickSound(); showMainMenu();
+            } catch (error) { console.error('Login Gagal:', error); }
         }
-
-        function loadGameData() {
+        async function register() {
+            const username = document.getElementById('regUsername').value.trim(); const password = document.getElementById('regPassword').value.trim(); const confirmPassword = document.getElementById('regConfirmPassword').value.trim();
+            if (!username || !password || !confirmPassword) return showModal('Input Tidak Lengkap', 'Semua field harus diisi!');
+            if (username.length < 3 || username.length > 20) return showModal('Input Salah', 'Username harus antara 3-20 karakter!');
+            if (password.length < 6) return showModal('Input Salah', 'Password minimal 6 karakter!');
+            if (password !== confirmPassword) return showModal('Input Salah', 'Password tidak cocok!');
             try {
-                const saved = localStorage.getItem('memorize_dimsum_data');
-                if (saved) {
-                    gameData = JSON.parse(saved);
-                } else {
-                    initializeGameData();
-                }
-            } catch (e) {
-                console.log('Load failed:', e);
-                initializeGameData();
-            }
+                const data = await apiCall('auth', { action: 'register', username, password });
+                showModal('Registrasi Berhasil', data.message); showLoginForm();
+            } catch (error) { console.error('Registrasi Gagal:', error); }
+        }
+        function logout() { currentUser = ''; currentUserData = null; document.getElementById('bgm').pause(); document.getElementById('bgm').currentTime = 0; showLoginScreen(); }
+        function isLoggedIn() { return currentUser !== '' && currentUserData !== null; }
+        
+        function stopAllGameLogic() {
+            clearGameTimer(); // Hentikan setInterval
+            clearAllTimeouts(); // Hentikan semua setTimeout yang tertunda
+            isGameActive = false;
+            sequence = []; playerSequence = []; redCards = [];
+            if(dimDamDoeGame) { dimDamDoeGame.gameActive = false; }
+            const container = document.getElementById('cardsContainer');
+            if (container) container.innerHTML = '';
         }
 
-        function initializeGameData() {
-            gameData = {
-                users: {},
-                leaderboards: { memorize: [], pickme: [], dimdamdoe: [] }
-            };
-        }
-
-        // Authentication Functions
-        function login() {
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value.trim();
-            
-            if (!username || !password) {
-                alert('Masukkan username dan password!');
-                return;
-            }
-            
-            // Simple authentication (for demo purposes)
-            if (!gameData.users[username]) {
-                alert('Username tidak ditemukan! Silakan daftar terlebih dahulu.');
-                return;
-            }
-            
-            if (gameData.users[username].password !== password) {
-                alert('Password salah!');
-                return;
-            }
-            
-            currentUser = username;
-            
-            // Initialize audio
-            if (!audioContext) {
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                if (audioContext.state === 'suspended') {
-                    audioContext.resume().then(() => {
-                        startBackgroundMusic();
-                        playClickSound();
-                    });
-                } else {
-                    startBackgroundMusic();
-                    playClickSound();
-                }
-            } else {
-                playClickSound();
-            }
-            
-            showMainMenu();
-        }
-
-        function register() {
-            const username = document.getElementById('regUsername').value.trim();
-            const password = document.getElementById('regPassword').value.trim();
-            const confirmPassword = document.getElementById('regConfirmPassword').value.trim();
-            
-            if (!username || !password || !confirmPassword) {
-                alert('Semua field harus diisi!');
-                return;
-            }
-            
-            if (username.length < 3 || username.length > 20) {
-                alert('Username harus antara 3-20 karakter!');
-                return;
-            }
-            
-            if (password.length < 6) {
-                alert('Password minimal 6 karakter!');
-                return;
-            }
-            
-            if (password !== confirmPassword) {
-                alert('Password tidak cocok!');
-                return;
-            }
-            
-            if (gameData.users[username]) {
-                alert('Username sudah digunakan!');
-                return;
-            }
-            
-            // Create new user
-            gameData.users[username] = {
-                password: password,
-                memorize: { levels: Array(30).fill(0), highScore: 0, totalStars: 0 },
-                pickme: { levels: Array(30).fill(0), highScore: 0, totalStars: 0 },
-                dimdamdoe: { highScore: 0, totalWins: 0, gameScores: null }
-            };
-            
-            // Unlock first level for both modes
-            gameData.users[username].memorize.levels[0] = 1;
-            gameData.users[username].pickme.levels[0] = 1;
-            
-            saveGameData();
-            alert('Registrasi berhasil! Silakan login.');
-            showLoginForm();
-        }
-
-        function logout() {
-            currentUser = '';
-            showLoginScreen();
-        }
-
-        // Screen Management Functions
-        function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(screen => {
-                screen.classList.remove('active');
-            });
-            document.getElementById(screenId).classList.add('active');
-        }
-
-        function showLoginScreen() {
-            showScreen('loginScreen');
-            showLoginForm();
-        }
-
-        function showLoginForm() {
-            document.getElementById('loginForm').style.display = 'block';
-            document.getElementById('registerForm').style.display = 'none';
-            // Clear form fields
-            document.getElementById('username').value = '';
-            document.getElementById('password').value = '';
-        }
-
-        function showRegisterForm() {
-            document.getElementById('loginForm').style.display = 'none';
-            document.getElementById('registerForm').style.display = 'block';
-            // Clear form fields
-            document.getElementById('regUsername').value = '';
-            document.getElementById('regPassword').value = '';
-            document.getElementById('regConfirmPassword').value = '';
-        }
-
-        function showMainMenu() {
-            document.getElementById('currentUser').textContent = `👤 ${currentUser}`;
-            showScreen('mainMenu');
-        }
-
-        function selectMode(mode) {
-            currentMode = mode;
-            if (mode === 'dimdamdoe') {
-                showDimDamDoeGame();
-            } else {
-                showLevelScreen();
-            }
-        }
-
-        function showDimDamDoeGame() {
-            document.getElementById('dimdamdoeUser').textContent = `👤 ${currentUser}`;
-            
-            // Initialize or reset DimDamDoe game
-            if (dimDamDoeGame) {
-                dimDamDoeGame.reset();
-            } else {
-                dimDamDoeGame = new DimDamDoe();
-            }
-            
-            showScreen('dimdamdoeScreen');
-        }
-
+        function showScreen(screenId) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(screenId).classList.add('active'); }
+        function showLoginScreen() { stopAllGameLogic(); showScreen('loginScreen'); showLoginForm(); }
+        function showLoginForm() { document.getElementById('loginForm').style.display = 'block'; document.getElementById('registerForm').style.display = 'none'; document.getElementById('username').value = ''; document.getElementById('password').value = ''; }
+        function showRegisterForm() { document.getElementById('loginForm').style.display = 'none'; document.getElementById('registerForm').style.display = 'block'; document.getElementById('regUsername').value = ''; document.getElementById('regPassword').value = ''; document.getElementById('regConfirmPassword').value = ''; }
+        
+        function showMainMenu() { stopAllGameLogic(); document.getElementById('currentUser').textContent = `👤 ${currentUser}`; showScreen('mainMenu'); }
+        function selectMode(mode) { currentMode = mode; if (mode === 'dimdamdoe') { showDimDamDoeGame(); } else { showLevelScreen(); } }
+        function showDimDamDoeGame() { stopAllGameLogic(); document.getElementById('dimdamdoeUser').textContent = `👤 ${currentUser}`; if (!dimDamDoeGame) { dimDamDoeGame = new DimDamDoe(); } dimDamDoeGame.reset(); showScreen('dimdamdoeScreen'); }
         function showLevelScreen() {
-            const userData = gameData.users[currentUser][currentMode];
+            stopAllGameLogic();
+            const userData = currentUserData.scores[currentMode] || { high_score: 0, total_stars: 0 };
             document.getElementById('levelUser').textContent = `👤 ${currentUser}`;
             document.getElementById('modeTitle').textContent = currentMode === 'memorize' ? 'Memorize Card - Pilih Level' : 'Pick Me Dimsum - Pilih Level';
-            
-            document.getElementById('highScore').textContent = userData.highScore;
-            document.getElementById('totalWins').textContent = userData.totalStars;
-
-            const levelGrid = document.getElementById('levelGrid');
-            levelGrid.innerHTML = '';
-
-            for (let i = 0; i < 30; i++) {
-                const btn = document.createElement('button');
-                btn.className = 'level-btn';
-                btn.textContent = i + 1;
-                
-                const stars = userData.levels[i];
-                if (stars > 0) {
-                    btn.classList.add('completed');
-                    btn.onclick = () => startLevel(i + 1);
-                    
-                    const starsDiv = document.createElement('div');
-                    starsDiv.className = 'stars';
-                    starsDiv.textContent = '⭐'.repeat(stars);
-                    btn.appendChild(starsDiv);
-                } else if (i === 0 || userData.levels[i - 1] >= 3) {
-                    btn.onclick = () => startLevel(i + 1);
-                } else {
-                    btn.disabled = true;
-                }
-
-                levelGrid.appendChild(btn);
-            }
-
+            document.getElementById('highScore').textContent = userData.high_score;
+            document.getElementById('totalWins').textContent = userData.total_stars;
+            const levelGrid = document.getElementById('levelGrid'); levelGrid.innerHTML = '';
+            for (let i = 0; i < 30; i++) { const btn = document.createElement('button'); btn.className = 'level-btn'; btn.textContent = i + 1; btn.onclick = () => startLevel(i + 1); levelGrid.appendChild(btn); }
             showScreen('levelScreen');
         }
 
-        // DimDamDoe Class
         class DimDamDoe {
-            constructor() {
-                this.board = Array(9).fill('');
-                this.currentPlayer = 'player';
-                this.gameActive = true;
-                this.difficulty = 'easy';
-                this.soundEnabled = true;
-                this.scores = {
-                    player: 0,
-                    ai: 0,
-                    tie: 0,
-                    points: 0
-                };
-                this.moveCount = 0;
-                this.startTime = 0;
-                
-                this.playerSymbol = '🥟';
-                this.aiSymbol = '🦐';
-                
-                this.winningConditions = [
-                    [0, 1, 2], [3, 4, 5], [6, 7, 8],
-                    [0, 3, 6], [1, 4, 7], [2, 5, 8],
-                    [0, 4, 8], [2, 4, 6]
-                ];
-                
-                this.initializeGame();
+            constructor() { this.board = Array(9).fill(''); this.currentPlayer = 'player'; this.gameActive = true; this.difficulty = 'easy'; this.soundEnabled = true; this.scores = { player: 0, ai: 0, tie: 0, points: 0 }; this.moveCount = 0; this.startTime = 0; this.playerSymbol = '🥟'; this.aiSymbol = '🦐'; this.winningConditions = [ [0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6] ]; this.initializeGame(); }
+            initializeGame() { this.bindEvents(); this.updateStatus(); this.loadScores(); }
+            bindEvents() { document.querySelectorAll('.tictactoe-cell').forEach(c => c.addEventListener('click', (e) => this.handleCellClick(e))); document.querySelectorAll('.difficulty-btn').forEach(b => b.addEventListener('click', (e) => this.changeDifficulty(e))); }
+            handleCellClick(e) { const index = parseInt(e.target.dataset.index); if (this.board[index] !== '' || !this.gameActive || this.currentPlayer !== 'player') return; this.makeMove(index, 'player'); this.playSound('move'); if (this.gameActive && this.currentPlayer === 'ai') customSetTimeout(() => this.aiMove(), 500); }
+            makeMove(index, player) { this.board[index] = player; this.moveCount++; const cell = document.querySelector(`[data-index="${index}"]`); cell.textContent = player === 'player' ? this.playerSymbol : this.aiSymbol; cell.classList.add('taken'); if (this.checkWinner()) { this.endGame(player); } else if (this.board.every(c => c !== '')) { this.endGame('tie'); } else { this.currentPlayer = player === 'player' ? 'ai' : 'player'; this.updateStatus(); } }
+            aiMove() { let move; switch (this.difficulty) { case 'easy': move = this.getRandomMove(); break; case 'medium': move = this.getMediumMove(); break; case 'hard': move = this.getHardMove(); break; } if (move !== -1) { this.makeMove(move, 'ai'); this.playSound('move'); } }
+            getRandomMove() { const m = this.board.map((c, i) => c === '' ? i : null).filter(v => v !== null); return m.length > 0 ? m[Math.floor(Math.random() * m.length)] : -1; }
+            getMediumMove() { return Math.random() < 0.5 ? this.getHardMove() : this.getRandomMove(); }
+            getHardMove() { for (let i = 0; i < 9; i++) { if (this.board[i] === '') { this.board[i] = 'ai'; if (this.checkWinner() === 'ai') { this.board[i] = ''; return i; } this.board[i] = ''; } } for (let i = 0; i < 9; i++) { if (this.board[i] === '') { this.board[i] = 'player'; if (this.checkWinner() === 'player') { this.board[i] = ''; return i; } this.board[i] = ''; } } if (this.board[4] === '') return 4; const c = [0, 2, 6, 8].filter(i => this.board[i] === ''); if (c.length > 0) return c[Math.floor(Math.random() * c.length)]; return this.getRandomMove(); }
+            checkWinner() { for (let cond of this.winningConditions) { const [a, b, c] = cond; if (this.board[a] && this.board[a] === this.board[b] && this.board[a] === this.board[c]) { this.highlightWinningLine(cond); return this.board[a]; } } return null; }
+            highlightWinningLine(cond) { cond.forEach(i => { const c = document.querySelector(`[data-index="${i}"]`); c.style.background = 'rgba(242, 211, 117, 0.6)'; c.style.animation = 'winningGlow 0.5s ease-in-out infinite alternate'; }); }
+            async endGame(winner) {
+                if (!this.gameActive) return; this.gameActive = false; 
+                const gameTime = (Date.now() - this.startTime) / 1000; let pointsEarned = 0; let message = '';
+                if (winner === 'player') { this.scores.player++; let basePoints = 0; switch (this.difficulty) { case 'easy': basePoints = 100; break; case 'medium': basePoints = 200; break; case 'hard': basePoints = 300; break; } const speedBonus = Math.max(0, Math.floor((20 - gameTime) * 5)); const moveBonus = Math.max(0, (9 - this.moveCount) * 10); pointsEarned = basePoints + speedBonus + moveBonus; this.scores.points += pointsEarned; message = `🎉 Anda menang!<br>Total: +${pointsEarned} poin!`; this.playSound('win');
+                } else if (winner === 'ai') { this.scores.ai++; switch (this.difficulty) { case 'easy': pointsEarned = -50; break; case 'medium': pointsEarned = -25; break; case 'hard': pointsEarned = 0; break; } if (this.scores.points + pointsEarned < 0) { pointsEarned = -this.scores.points; } this.scores.points += pointsEarned; message = `🦐 AI menang!<br>${pointsEarned === 0 ? 'Tidak ada pengurangan poin!' : pointsEarned + ' poin'}`; this.playSound('lose');
+                } else { this.scores.tie++; switch (this.difficulty) { case 'easy': pointsEarned = 25; break; case 'medium': pointsEarned = 50; break; case 'hard': pointsEarned = 100; break; } this.scores.points += pointsEarned; message = `🤝 Seri!<br>+${pointsEarned} poin!`; this.playSound('tie'); }
+                this.updateScores(); showModal('Permainan Selesai', message);
+                try {
+                    const scoreToSend = Number(this.scores.points) || 0;
+                    await apiCall('update-score', { username: currentUser, mode: 'dimdamdoe', score: scoreToSend, stars: (winner === 'player' ? 1 : 0) });
+                    if (!currentUserData.scores['dimdamdoe']) { currentUserData.scores['dimdamdoe'] = { high_score: 0, total_stars: 0 }; }
+                    currentUserData.scores['dimdamdoe'].high_score = Math.max(currentUserData.scores['dimdamdoe'].high_score, scoreToSend);
+                } catch (e) { console.error("Gagal update skor dimdamdoe", e); }
             }
-            
-            initializeGame() {
-                this.bindEvents();
-                this.updateStatus();
-                this.loadScores();
-                this.startTime = Date.now();
-            }
-            
-            bindEvents() {
-                document.querySelectorAll('.tictactoe-cell').forEach(cell => {
-                    cell.addEventListener('click', (e) => this.handleCellClick(e));
-                });
-                
-                document.querySelectorAll('.difficulty-btn').forEach(btn => {
-                    btn.addEventListener('click', (e) => this.changeDifficulty(e));
-                });
-            }
-            
-            handleCellClick(e) {
-                const index = parseInt(e.target.dataset.index);
-                
-                if (this.board[index] !== '' || !this.gameActive || this.currentPlayer !== 'player') {
-                    return;
-                }
-                
-                this.makeMove(index, 'player');
-                this.playSound('move');
-                
-                if (this.gameActive && this.currentPlayer === 'ai') {
-                    setTimeout(() => this.aiMove(), 500);
-                }
-            }
-            
-            makeMove(index, player) {
-                this.board[index] = player;
-                this.moveCount++;
-                
-                const cell = document.querySelector(`[data-index="${index}"]`);
-                cell.textContent = player === 'player' ? this.playerSymbol : this.aiSymbol;
-                cell.classList.add('taken');
-                
-                if (this.checkWinner()) {
-                    this.endGame(player);
-                } else if (this.board.every(cell => cell !== '')) {
-                    this.endGame('tie');
-                } else {
-                    this.currentPlayer = player === 'player' ? 'ai' : 'player';
-                    this.updateStatus();
-                }
-            }
-            
-            aiMove() {
-                let move;
-                
-                switch (this.difficulty) {
-                    case 'easy':
-                        move = this.getRandomMove();
-                        break;
-                    case 'medium':
-                        move = this.getMediumMove();
-                        break;
-                    case 'hard':
-                        move = this.getHardMove();
-                        break;
-                }
-                
-                if (move !== -1) {
-                    this.makeMove(move, 'ai');
-                    this.playSound('move');
-                }
-            }
-            
-            getRandomMove() {
-                const availableMoves = this.board
-                    .map((cell, index) => cell === '' ? index : null)
-                    .filter(val => val !== null);
-                
-                return availableMoves.length > 0 
-                    ? availableMoves[Math.floor(Math.random() * availableMoves.length)]
-                    : -1;
-            }
-            
-            getMediumMove() {
-                return Math.random() < 0.5 ? this.getHardMove() : this.getRandomMove();
-            }
-            
-            getHardMove() {
-                // Try to win
-                for (let i = 0; i < 9; i++) {
-                    if (this.board[i] === '') {
-                        this.board[i] = 'ai';
-                        if (this.checkWinner() === 'ai') {
-                            this.board[i] = '';
-                            return i;
-                        }
-                        this.board[i] = '';
-                    }
-                }
-                
-                // Try to block player
-                for (let i = 0; i < 9; i++) {
-                    if (this.board[i] === '') {
-                        this.board[i] = 'player';
-                        if (this.checkWinner() === 'player') {
-                            this.board[i] = '';
-                            return i;
-                        }
-                        this.board[i] = '';
-                    }
-                }
-                
-                // Take center if available
-                if (this.board[4] === '') return 4;
-                
-                // Take corners
-                const corners = [0, 2, 6, 8];
-                const availableCorners = corners.filter(i => this.board[i] === '');
-                if (availableCorners.length > 0) {
-                    return availableCorners[Math.floor(Math.random() * availableCorners.length)];
-                }
-                
-                return this.getRandomMove();
-            }
-            
-            checkWinner() {
-                for (let condition of this.winningConditions) {
-                    const [a, b, c] = condition;
-                    if (this.board[a] && this.board[a] === this.board[b] && this.board[a] === this.board[c]) {
-                        this.highlightWinningLine(condition);
-                        return this.board[a];
-                    }
-                }
-                return null;
-            }
-            
-            highlightWinningLine(condition) {
-                condition.forEach(index => {
-                    const cell = document.querySelector(`[data-index="${index}"]`);
-                    cell.style.background = 'rgba(242, 211, 117, 0.6)';
-                    cell.style.animation = 'winningGlow 0.5s ease-in-out infinite alternate';
-                });
-            }
-            
-            endGame(winner) {
-                this.gameActive = false;
-                const gameTime = (Date.now() - this.startTime) / 1000;
-                let pointsEarned = 0;
-                let message = '';
-                
-                if (winner === 'player') {
-                    this.scores.player++;
-                    
-                    let basePoints = 0;
-                    switch (this.difficulty) {
-                        case 'easy': basePoints = 100; break;
-                        case 'medium': basePoints = 200; break;
-                        case 'hard': basePoints = 300; break;
-                    }
-                    
-                    const speedBonus = Math.max(0, Math.floor((20 - gameTime) * 5));
-                    const moveBonus = Math.max(0, (9 - this.moveCount) * 10);
-                    
-                    pointsEarned = basePoints + speedBonus + moveBonus;
-                    this.scores.points += pointsEarned;
-                    
-                    message = `🎉 Anda menang! Dimsum ayam menguasai papan! 🥟✨\n` +
-                             `Base: ${basePoints} | Speed: +${speedBonus} | Efisiensi: +${moveBonus}\n` +
-                             `Total: +${pointsEarned} poin!`;
-                    this.playSound('win');
-                    
-                } else if (winner === 'ai') {
-                    this.scores.ai++;
-                    
-                    switch (this.difficulty) {
-                        case 'easy': pointsEarned = -50; break;
-                        case 'medium': pointsEarned = -25; break;
-                        case 'hard': pointsEarned = 0; break;
-                    }
-                    
-                    if (this.scores.points + pointsEarned < 0) {
-                        pointsEarned = -this.scores.points;
-                    }
-                    
-                    this.scores.points += pointsEarned;
-                    
-                    message = `🦐 AI menang! Dimsum udang lebih unggul kali ini!\n` +
-                             `${pointsEarned === 0 ? 'Tidak ada pengurangan poin di level sulit!' : pointsEarned + ' poin'}`;
-                    this.playSound('lose');
-                    
-                } else {
-                    this.scores.tie++;
-                    
-                    switch (this.difficulty) {
-                        case 'easy': pointsEarned = 25; break;
-                        case 'medium': pointsEarned = 50; break;
-                        case 'hard': pointsEarned = 100; break;
-                    }
-                    
-                    this.scores.points += pointsEarned;
-                    message = `🤝 Permainan seri! Kedua dimsum sama kuatnya!\n+${pointsEarned} poin!`;
-                    this.playSound('tie');
-                }
-                
-                this.updateLeaderboard();
-                this.updateScores();
-                this.saveScores();
-                
-                alert(message);
-            }
-            
-            updateStatus() {
-                const status = document.getElementById('dimdamdoeStatus');
-                if (this.currentPlayer === 'player') {
-                    status.textContent = 'Giliran Anda! Pilih kotak untuk menaruh dimsum ayam 🥟';
-                } else {
-                    status.textContent = 'AI sedang berpikir... 🤔';
-                }
-            }
-            
-            updateScores() {
-                document.getElementById('dimdamdoeTotalPoints').textContent = this.scores.points;
-                document.getElementById('dimdamdoePlayerScore').textContent = this.scores.player;
-                document.getElementById('dimdamdoeAiScore').textContent = this.scores.ai;
-                document.getElementById('dimdamdoeTieScore').textContent = this.scores.tie;
-            }
-            
-            updateLeaderboard() {
-                const leaderboard = gameData.leaderboards.dimdamdoe;
-                const existingIndex = leaderboard.findIndex(entry => entry.user === currentUser);
-                
-                if (existingIndex >= 0) {
-                    if (this.scores.points > leaderboard[existingIndex].score) {
-                        leaderboard[existingIndex].score = this.scores.points;
-                        leaderboard[existingIndex].wins = this.scores.player;
-                        leaderboard[existingIndex].ties = this.scores.tie;
-                        leaderboard[existingIndex].losses = this.scores.ai;
-                    }
-                } else {
-                    leaderboard.push({ 
-                        user: currentUser, 
-                        score: this.scores.points,
-                        wins: this.scores.player,
-                        ties: this.scores.tie,
-                        losses: this.scores.ai
-                    });
-                }
-                
-                leaderboard.sort((a, b) => b.score - a.score);
-                leaderboard.splice(10);
-                
-                if (!gameData.users[currentUser].dimdamdoe) {
-                    gameData.users[currentUser].dimdamdoe = {
-                        highScore: 0,
-                        totalWins: 0,
-                        gameScores: null
-                    };
-                }
-                
-                gameData.users[currentUser].dimdamdoe.highScore = Math.max(
-                    gameData.users[currentUser].dimdamdoe.highScore, 
-                    this.scores.points
-                );
-                gameData.users[currentUser].dimdamdoe.totalWins = this.scores.player;
-                
-                saveGameData();
-            }
-            
-            changeDifficulty(e) {
-                document.querySelectorAll('.difficulty-btn').forEach(btn => {
-                    btn.classList.remove('active');
-                });
-                e.target.classList.add('active');
-                this.difficulty = e.target.dataset.level;
-            }
-            
-            playSound(type) {
-                if (!this.soundEnabled || !audioContext) return;
-                
-                const createTone = (frequency, duration, type = 'sine') => {
-                    try {
-                        const oscillator = audioContext.createOscillator();
-                        const gainNode = audioContext.createGain();
-                        
-                        oscillator.connect(gainNode);
-                        gainNode.connect(audioContext.destination);
-                        
-                        oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
-                        oscillator.type = type;
-                        
-                        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
-                        
-                        oscillator.start(audioContext.currentTime);
-                        oscillator.stop(audioContext.currentTime + duration);
-                    } catch (e) {
-                        console.log('Sound error:', e);
-                    }
-                };
-                
-                switch (type) {
-                    case 'move': createTone(800, 0.1); break;
-                    case 'win':
-                        createTone(523, 0.2);
-                        setTimeout(() => createTone(659, 0.2), 100);
-                        setTimeout(() => createTone(784, 0.3), 200);
-                        break;
-                    case 'lose':
-                        createTone(400, 0.3);
-                        setTimeout(() => createTone(300, 0.3), 150);
-                        break;
-                    case 'tie':
-                        createTone(500, 0.2);
-                        setTimeout(() => createTone(500, 0.2), 200);
-                        break;
-                }
-            }
-            
-            saveScores() {
-                const saved = JSON.stringify(this.scores);
-                if (gameData.users[currentUser] && gameData.users[currentUser].dimdamdoe) {
-                    gameData.users[currentUser].dimdamdoe.gameScores = saved;
-                }
-                saveGameData();
-            }
-            
-            loadScores() {
-                if (gameData.users[currentUser] && gameData.users[currentUser].dimdamdoe && gameData.users[currentUser].dimdamdoe.gameScores) {
-                    try {
-                        this.scores = JSON.parse(gameData.users[currentUser].dimdamdoe.gameScores);
-                        this.updateScores();
-                    } catch (e) {
-                        console.log('Error loading scores:', e);
-                    }
-                }
-            }
-            
-            reset() {
-                this.board = Array(9).fill('');
-                this.currentPlayer = 'player';
-                this.gameActive = true;
-                this.moveCount = 0;
-                this.startTime = Date.now();
-                
-                document.querySelectorAll('.tictactoe-cell').forEach(cell => {
-                    cell.textContent = '';
-                    cell.classList.remove('taken');
-                    cell.style.background = '';
-                    cell.style.animation = '';
-                });
-                
-                this.updateStatus();
-            }
+            updateStatus() { const s = document.getElementById('dimdamdoeStatus'); s.textContent = this.currentPlayer === 'player' ? 'Giliran Anda! 🥟' : 'AI sedang berpikir... 🤔'; }
+            updateScores() { document.getElementById('dimdamdoeTotalPoints').textContent = this.scores.points; document.getElementById('dimdamdoePlayerScore').textContent = this.scores.player; document.getElementById('dimdamdoeAiScore').textContent = this.scores.ai; document.getElementById('dimdamdoeTieScore').textContent = this.scores.tie; }
+            changeDifficulty(e) { document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.remove('active')); e.target.classList.add('active'); this.difficulty = e.target.dataset.level; }
+            playSound(type) { if (!this.soundEnabled || !audioContext) return; const createTone = (frequency, duration, type = 'sine') => { try { const osc = audioContext.createOscillator(); const gain = audioContext.createGain(); osc.connect(gain); gain.connect(audioContext.destination); osc.frequency.setValueAtTime(frequency, audioContext.currentTime); osc.type = type; gain.gain.setValueAtTime(0.1, audioContext.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration); osc.start(audioContext.currentTime); osc.stop(audioContext.currentTime + duration); } catch (e) { console.log('Sound error:', e); } }; switch (type) { case 'move': createTone(800, 0.1); break; case 'win': createTone(523, 0.2); customSetTimeout(() => createTone(659, 0.2), 100); customSetTimeout(() => createTone(784, 0.3), 200); break; case 'lose': createTone(400, 0.3); customSetTimeout(() => createTone(300, 0.3), 150); break; case 'tie': createTone(500, 0.2); customSetTimeout(() => createTone(500, 0.2), 200); break; } }
+            loadScores() { const savedScores = currentUserData?.scores?.dimdamdoe; this.scores.points = savedScores ? savedScores.high_score || 0 : 0; this.scores.player = 0; this.scores.ai = 0; this.scores.tie = 0; this.updateScores(); }
+            reset() { this.board = Array(9).fill(''); this.currentPlayer = 'player'; this.gameActive = true; this.moveCount = 0; this.startTime = Date.now(); document.querySelectorAll('.tictactoe-cell').forEach(c => { c.textContent = ''; c.classList.remove('taken'); c.style.background = ''; c.style.animation = ''; }); this.updateStatus(); }
         }
 
-        function resetDimDamDoe() {
-            if (dimDamDoeGame) {
-                dimDamDoeGame.reset();
-            }
-        }
-
-        function toggleDimDamDoeSound() {
-            if (dimDamDoeGame) {
-                dimDamDoeGame.soundEnabled = !dimDamDoeGame.soundEnabled;
-                const btn = document.querySelector('.controls .btn-secondary');
-                btn.textContent = dimDamDoeGame.soundEnabled ? '🔊 Suara: ON' : '🔇 Suara: OFF';
-            }
-        }
-
-        // Game Logic Functions
-        function startLevel(level) {
-            shuffleSpeedMultiplier = 1 + Math.floor((level - 1) / 5) * 0.8;
-            currentLevel = level;
-            document.getElementById('gameUser').textContent = `👤 ${currentUser}`;
-            document.getElementById('gameTitle').textContent = `Level ${level}`;
-            document.getElementById('currentLevel').textContent = level;
-            document.getElementById('currentScore').textContent = '0';
-
-            sequence = [];
-            playerSequence = [];
-            redCards = [];
-            flippedCards = [];
-            matchedPairs = 0;
-            lives = 3;
-            isGameActive = false;
-            canFlip = true;
-
-            const hearts = document.querySelectorAll('.heart');
-            hearts.forEach(heart => heart.classList.remove('lost'));
-
-            setupGame();
-            showScreen('gameScreen');
-            startCountdown();
-        }
-
+        function resetDimDamDoe() { if (dimDamDoeGame) dimDamDoeGame.reset(); }
+        function toggleDimDamDoeSound() { if (dimDamDoeGame) { dimDamDoeGame.soundEnabled = !dimDamDoeGame.soundEnabled; const btn = document.getElementById('dimdamdoeSoundBtn'); btn.textContent = dimDamDoeGame.soundEnabled ? '🔊 Suara: ON' : '🔇 Suara: OFF'; } }
+        
+        function clearGameTimer() { if (gameTimer) { clearInterval(gameTimer); gameTimer = null; } }
+        
+        function startLevel(level) { clearGameTimer(); shuffleSpeedMultiplier = 1 + Math.floor((level - 1) / 5) * 0.8; currentLevel = level; document.getElementById('gameUser').textContent = `👤 ${currentUser}`; document.getElementById('gameTitle').textContent = `Level ${level}`; document.getElementById('currentLevel').textContent = level; document.getElementById('currentScore').textContent = '0'; sequence = []; playerSequence = []; redCards = []; flippedCards = []; lives = 3; isGameActive = false; document.querySelectorAll('.heart').forEach(h => h.classList.remove('lost')); setupGame(); showScreen('gameScreen'); startCountdown(); }
         function startCountdown() {
-            let count = 3;
-            const container = document.getElementById('cardsContainer');
-            
+            clearGameTimer(); let count = 3; const container = document.getElementById('cardsContainer');
             function showCount() {
                 container.innerHTML = `<div class="countdown">${count > 0 ? count : 'GO!'}</div>`;
-                
-                if (count > 0) {
-                    count--;
-                    setTimeout(showCount, 1000);
-                } else {
-                    setTimeout(() => {
-                        startGame();
-                    }, 500);
-                }
+                if (count > 0) { count--; customSetTimeout(showCount, 1000); } 
+                else { customSetTimeout(() => startGame(), 500); }
             }
-            
             showCount();
         }
-
-        function setupGame() {
-            const cardsCount = Math.min(3 + Math.floor((currentLevel - 1) / 2), 25);
-            const timeLimit = Math.max(20 - Math.floor(currentLevel / 3), 8);
-            
-            document.getElementById('timer').textContent = timeLimit;
-            timeLeft = timeLimit;
-
-            if (currentMode === 'memorize') {
-                document.getElementById('gameInstructions').textContent = 
-                    `Ingat urutan dimsum ini!`;
-            } else {
-                const redCount = Math.min(1 + Math.floor((currentLevel - 1) / 3), 10);
-                document.getElementById('gameInstructions').textContent = 
-                    `Ingat posisi ${redCount} dimsum spesial, lalu temukan setelah diacak!`;
-            }
-
-            document.getElementById('nextBtn').style.display = 'none';
-        }
-
-        function startGame() {
-            isGameActive = false;
-            playerSequence = [];
-            flippedCards = [];
-            gameStartTime = Date.now();
-
-            if (currentMode === 'memorize') {
-                const cardsCount = Math.min(3 + Math.floor((currentLevel - 1) / 2), 25);
-                const memoryTime = Math.max(8 - Math.floor(currentLevel / 5), 3);
-                
-                document.getElementById('gameInstructions').textContent = 
-                    `Ingat urutan dimsum ini! Waktu: ${memoryTime} detik`;
-                
-                setupMemorizeSequence(cardsCount);
-                startMemoryTimer(memoryTime);
-                
-                setTimeout(() => {
-                    switchToInputMode();
-                    isGameActive = true;
-                    startGameTimer(20);
-                }, memoryTime * 1000 + 300);
-
-            } else {
-                const cardsCount = Math.min(3 + Math.floor((currentLevel - 1) / 2), 25);
-                const redCount = Math.min(1 + Math.floor((currentLevel - 1) / 3), 10);
-                const memoryTime = Math.min(3 + Math.floor(currentLevel / 3), 8);
-                
-                document.getElementById('gameInstructions').textContent = 
-                    `Ingat posisi dimsum spesial! Waktu: ${memoryTime} detik`;
-                
-                setupPickMeCards(cardsCount, redCount);
-                startMemoryTimer(memoryTime);
-                showSpecialCards();
-                
-                setTimeout(() => {
-                    hideSpecialCards();
-                    document.getElementById('gameInstructions').textContent = 
-                        `Kartu sedang diacak...`;
-                    
-                    shuffleCards(() => {
-                        isGameActive = true;
-                        startGameTimer(15);
-                        enableCardClicks();
-                        document.getElementById('gameInstructions').textContent = 
-                            `Temukan semua dimsum spesial!`;
-                    });
-                }, memoryTime * 1000);
-            }
-        }
-
-        function setupMemorizeSequence(cardsCount) {
-            const container = document.getElementById('cardsContainer');
-            container.innerHTML = '';
-            
-            container.style.gridTemplateColumns = `repeat(${Math.min(cardsCount, 5)}, 1fr)`;
-            container.style.maxWidth = '800px';
-            container.style.margin = '0 auto';
-
-            sequence = [];
-            const selectedImages = dimsumImages.slice(0, cardsCount);
-            const shuffledImages = selectedImages.sort(() => Math.random() - 0.5);
-            
-            shuffledImages.forEach((image, index) => {
-                sequence.push(image);
-                const card = document.createElement('div');
-                card.className = 'card sequence-card';
-                card.textContent = image;
-                card.dataset.image = image;
-                card.dataset.index = index;
-                container.appendChild(card);
-            });
-
-            playerSequence = [];
-        }
-
-        function setupPickMeCards(cardsCount, redCount) {
-            const container = document.getElementById('cardsContainer');
-            container.innerHTML = '';
-            
-            const cols = Math.ceil(Math.sqrt(cardsCount));
-            container.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-
-            sequence = [];
-            redCards = [];
-            
-            const indices = Array.from({length: cardsCount}, (_, i) => i);
-            const shuffledIndices = indices.sort(() => Math.random() - 0.5);
-            redCards = shuffledIndices.slice(0, redCount);
-
-            for (let i = 0; i < cardsCount; i++) {
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.textContent = '🥢';
-                card.dataset.index = i;
-                card.dataset.hasSpecial = redCards.includes(i) ? 'true' : 'false';
-                
-                if (redCards.includes(i)) {
-                    card.dataset.hiddenContent = '🥟';
-                } else {
-                    card.dataset.hiddenContent = '🍚';
-                }
-                
-                container.appendChild(card);
-            }
-
-            playerSequence = [];
-        }
-
-        function startMemoryTimer(memoryTime) {
-            const endTime = Date.now() + memoryTime * 1000;
-
-            function update() {
-                const now = Date.now();
-                const remaining = Math.max(0, Math.ceil((endTime - now) / 1000));
-                document.getElementById('timer').textContent = remaining;
-
-                if (remaining <= 0) {
-                    clearInterval(gameTimer);
-                    gameTimer = null;
-                    return;
-                }
-            }
-
-            update();
-            gameTimer = setInterval(update, 100);
-        }
-
-        function startGameTimer(gameTime) {
-            const endTime = Date.now() + gameTime * 1000;
-
-            function update() {
-                const now = Date.now();
-                const remaining = Math.max(0, Math.ceil((endTime - now) / 1000));
-                document.getElementById('timer').textContent = remaining;
-                timeLeft = remaining;
-
-                if (remaining <= 0) {
-                    clearInterval(gameTimer);
-                    gameTimer = null;
-                    timeLeft = 0;
-                    if (isGameActive) {
-                        if (currentMode === 'pickme') {
-                            endGame(false);
-                        } else {
-                            loseLife();
-                        }
-                    }
-                    return;
-                }
-            }
-
-            update();
-            gameTimer = setInterval(update, 100);
-        }
-
-        function switchToInputMode() {
-            const container = document.getElementById('cardsContainer');
-            container.innerHTML = '';
-            
-            container.style.gridTemplateColumns = 'repeat(5, 1fr)';
-            container.style.maxWidth = '500px';
-            
-            const allImages = [...dimsumImages];
-            const shuffledImages = allImages.sort(() => Math.random() - 0.5).slice(0, 25);
-            
-            sequence.forEach((seqImage, index) => {
-                if (!shuffledImages.includes(seqImage)) {
-                    shuffledImages[index] = seqImage;
-                }
-            });
-            
-            shuffledImages.sort(() => Math.random() - 0.5);
-            
-            shuffledImages.forEach((image, index) => {
-                const card = document.createElement('div');
-                card.className = 'card input-card';
-                card.textContent = image;
-                card.dataset.image = image;
-                card.dataset.index = index;
-                card.dataset.clicked = 'false';
-                container.appendChild(card);
-            });
-            
-            document.getElementById('gameInstructions').textContent = 
-                `Klik dimsum sesuai urutan yang tadi ditampilkan! Waktu: 20 detik`;
-            
-            enableCardClicks();
-        }
-
-        function showSpecialCards() {
-            const cards = document.querySelectorAll('.card');
-            cards.forEach(card => {
-                if (card.dataset.hasSpecial === 'true') {
-                    card.classList.add('red-marked');
-                    card.textContent = card.dataset.hiddenContent;
-                }
-            });
-        }
-
-        function hideSpecialCards() {
-            const cards = document.querySelectorAll('.card');
-            cards.forEach(card => {
-                card.classList.remove('red-marked');
-                card.textContent = '🥢';
-            });
-        }
-
-        function loseLife() {
-            if (lives <= 0) return;
-
-            lives--;
-            const hearts = document.querySelectorAll('.heart');
-            if (hearts[lives]) {
-                hearts[lives].classList.add('lost');
-            }
-
-            if (lives <= 0) {
-                endGame(false);
-            } else {
-                isGameActive = false;
-                if (gameTimer) {
-                    clearInterval(gameTimer);
-                    gameTimer = null;
-                }
-                alert(`⏰ Waktu habis! Nyawa tersisa: ${lives}\nCoba lagi!`);
-                
-                if (currentMode === 'memorize') {
-                    playerSequence = [];
-                    const cards = document.querySelectorAll('.card');
-                    cards.forEach(card => {
-                        card.classList.remove('selected', 'correct', 'wrong');
-                        card.dataset.clicked = 'false';
-                        card.style.opacity = '';
-                        card.style.border = '';
-                        card.onclick = null;
-                    });
-                } else {
-                    playerSequence = [];
-                    const cards = document.querySelectorAll('.card');
-                    cards.forEach(card => {
-                        card.classList.remove('selected', 'correct', 'wrong');
-                        card.textContent = '🥢';
-                        card.onclick = null;
-                    });
-                }
-                
-                const timeLimit = Math.max(20 - Math.floor(currentLevel / 3), 8);
-                timeLeft = timeLimit;
-                document.getElementById('timer').textContent = timeLimit;
-                
-                setTimeout(() => {
-                    startCountdown();
-                }, 1000);
-            }
-        }
-
-        function shuffleCards(callback) {
-            const container = document.getElementById('cardsContainer');
-            const cards = Array.from(container.children);
-            const positions = cards.map(card => {
-                const rect = card.getBoundingClientRect();
-                return {card, top: rect.top, left: rect.left};
-            });
-            const containerRect = container.getBoundingClientRect();
-
-            cards.forEach((card, i) => {
-                const pos = positions[i];
-                card.style.position = 'absolute';
-                card.style.top = (pos.top - containerRect.top) + 'px';
-                card.style.left = (pos.left - containerRect.left) + 'px';
-                card.style.width = '100px';
-                card.style.height = '100px';
-                card.style.margin = '0';
-                card.style.transition = 'top 0.5s ease, left 0.5s ease';
-            });
-
-            const swapCount = 6;
-            let swapIndex = 0;
-            const delay = 600 / shuffleSpeedMultiplier;
-
-            function doSwap() {
-                if (swapIndex >= swapCount) {
-                    cards.forEach(card => {
-                        card.style.position = '';
-                        card.style.top = '';
-                        card.style.left = '';
-                        card.style.margin = '';
-                        card.style.transition = '';
-                    });
-
-                    cards.forEach(card => container.appendChild(card));
-                    if (callback) callback();
-                    return;
-                }
-
-                let i = Math.floor(Math.random() * cards.length);
-                let j = Math.floor(Math.random() * cards.length);
-                while (i === j) j = Math.floor(Math.random() * cards.length);
-
-                const cardA = cards[i];
-                const cardB = cards[j];
-
-                const topA = parseFloat(cardA.style.top);
-                const leftA = parseFloat(cardA.style.left);
-                const topB = parseFloat(cardB.style.top);
-                const leftB = parseFloat(cardB.style.left);
-
-                cardA.style.top = `${topB}px`;
-                cardA.style.left = `${leftB}px`;
-
-                cardB.style.top = `${topA}px`;
-                cardB.style.left = `${leftA}px`;
-
-                [cards[i], cards[j]] = [cards[j], cards[i]];
-
-                swapIndex++;
-                setTimeout(doSwap, 600);
-            }
-
-            setTimeout(doSwap, delay);
-        }
-
-        function enableCardClicks() {
-            const cards = document.querySelectorAll('.card');
-            cards.forEach(card => {
-                card.onclick = () => handleCardClick(card);
-            });
-        }
-
-        function handleCardClick(card) {
-            if (!isGameActive) return;
-            if (timeLeft <= 0) return;
-
-            if (currentMode === 'memorize') {
-                if (card.dataset.clicked === 'true') return;
-                
-                const clickedImage = card.dataset.image;
-                const expectedImage = sequence[playerSequence.length];
-                
-                card.classList.add('selected');
-                card.dataset.clicked = 'true';
-                
-                if (clickedImage === expectedImage) {
-                    playCorrectSound();
-                    card.classList.add('correct');
-                    playerSequence.push(clickedImage);
-                    
-                    card.onclick = null;
-                    card.style.opacity = '0.8';
-                    
-                    if (playerSequence.length === sequence.length) {
-                        setTimeout(() => endGame(true), 500);
-                    }
-                } else {
-                    playWrongSound();
-                    card.classList.add('wrong');
-                    
-                    setTimeout(() => {
-                        card.classList.remove('selected', 'wrong');
-                        card.dataset.clicked = 'false';
-                        
-                        lives--;
-                        const hearts = document.querySelectorAll('.heart');
-                        if (hearts[lives]) {
-                            hearts[lives].classList.add('lost');
-                        }
-                        
-                        if (lives <= 0) {
-                            endGame(false);
-                        }
-                    }, 800);
-                }
-            } else {
-                const index = parseInt(card.dataset.index);
-                card.classList.add('selected');
-                card.textContent = card.dataset.hiddenContent;
-
-                if (card.dataset.hasSpecial === 'true') {
-                    playCorrectSound();
-                    card.classList.add('correct');
-                    card.classList.add('red-marked');
-                    playerSequence.push(index);
-                    
-                    card.onclick = null;
-                    
-                    if (playerSequence.length === redCards.length) {
-                        setTimeout(() => endGame(true), 500);
-                    }
-                } else {
-                    playWrongSound();
-                    card.classList.add('wrong');
-                    
-                    setTimeout(() => {
-                        lives--;
-                        const hearts = document.querySelectorAll('.heart');
-                        if (hearts[lives]) {
-                            hearts[lives].classList.add('lost');
-                        }
-                        
-                        if (lives <= 0) {
-                            endGame(false);
-                        }
-                    }, 800);
-                }
-            }
-        }
-
-        function endGame(success) {
-            isGameActive = false;
-            if (gameTimer) {
-                clearInterval(gameTimer);
-                gameTimer = null;
-            }
-            
-            const cards = document.querySelectorAll('.card');
-            cards.forEach(card => {
-                card.onclick = null;
-            });
-
-            if (success) {
-                playWinSound();
-                const gameEndTime = Date.now();
-                const totalGameTime = Math.max(1, Math.floor((gameEndTime - gameStartTime) / 1000));
-                
-                const baseScore = currentLevel * 100;
-                const timeBonus = Math.max(0, timeLeft * 10);
-                const livesBonus = lives * 50;
-                const speedBonus = Math.max(0, Math.floor((60 - totalGameTime) * 5));
-                const totalScore = baseScore + timeBonus + livesBonus + speedBonus;
-                
-                document.getElementById('currentScore').textContent = totalScore;
-                
-                let stars = 1;
-                if (lives >= 2) stars = 2;
-                if (lives === 3) stars = 3;
-                
-                const userData = gameData.users[currentUser][currentMode];
-                userData.levels[currentLevel - 1] = Math.max(userData.levels[currentLevel - 1], stars);
-                userData.highScore = Math.max(userData.highScore, totalScore);
-                userData.totalStars = userData.levels.reduce((sum, s) => sum + s, 0);
-                
-                if (currentLevel < 30) {
-                    userData.levels[currentLevel] = Math.max(userData.levels[currentLevel], 1);
-                }
-                
-                updateLeaderboard(totalScore);
-                saveGameData();
-                
-                alert(`🎉 Level ${currentLevel} Selesai!\nSkor: ${totalScore}\nBintang: ${'⭐'.repeat(stars)}\nNyawa tersisa: ${lives}`);
-                
-                if (currentLevel < 30) {
-                    document.getElementById('nextBtn').style.display = 'block';
-                }
-            } else {
-                playLoseSound();
-                alert('💔 Game Over!\nSemua nyawa habis!');
-                setTimeout(() => {
-                    showLevelScreen();
-                }, 1000);
-            }
-        }
-
-        function nextLevel() {
-            if (currentLevel < 30) {
-                startLevel(currentLevel + 1);
-            }
-        }
-
-        function updateLeaderboard(score) {
-            const leaderboard = gameData.leaderboards[currentMode];
-            const existingIndex = leaderboard.findIndex(entry => entry.user === currentUser);
-            
-            if (existingIndex >= 0) {
-                if (score > leaderboard[existingIndex].score) {
-                    leaderboard[existingIndex].score = score;
-                }
-            } else {
-                leaderboard.push({ user: currentUser, score: score });
-            }
-            
-            leaderboard.sort((a, b) => b.score - a.score);
-            leaderboard.splice(10);
-        }
-
-        function showLeaderboard(mode = 'memorize') {
-            const leaderboard = gameData.leaderboards[mode] || [];
-            const list = document.getElementById('leaderboardList');
-            list.innerHTML = '';
-            
-            if (leaderboard.length === 0) {
-                list.innerHTML = '<p style="color: #fadc9a; text-align: center;">Belum ada data leaderboard</p>';
-            } else {
-                leaderboard.forEach((entry, index) => {
-                    const item = document.createElement('div');
-                    item.className = 'leaderboard-item';
-                    
-                    if (mode === 'dimdamdoe' && entry.wins !== undefined) {
-                        item.innerHTML = `
-                            <div>
-                                <strong>${index + 1}. ${entry.user}</strong>
-                                <div style="font-size: 0.8em; opacity: 0.8;">
-                                    🥟${entry.wins || 0} 🤝${entry.ties || 0} 🦐${entry.losses || 0}
-                                </div>
-                            </div>
-                            <div>
-                                <strong>${entry.score}</strong>
-                                <div style="font-size: 0.8em; opacity: 0.8;">poin</div>
-                            </div>
-                        `;
-                    } else {
-                        item.innerHTML = `
-                            <span>${index + 1}. ${entry.user}</span>
-                            <span>${entry.score}</span>
-                        `;
-                    }
-                    list.appendChild(item);
-                });
-            }
-            
-            showScreen('leaderboardScreen');
-        }
-
-        // Audio Functions
-        function startBackgroundMusic() {
-            if (backgroundMusic || !audioContext) return;
-            
-            try {
-                backgroundGain = audioContext.createGain();
-                backgroundGain.connect(audioContext.destination);
-                backgroundGain.gain.setValueAtTime(0.05, audioContext.currentTime);
-                
-                function playBackgroundNote(frequency, startTime, duration) {
-                    try {
-                        const oscillator = audioContext.createOscillator();
-                        const noteGain = audioContext.createGain();
-                        
-                        oscillator.connect(noteGain);
-                        noteGain.connect(backgroundGain);
-                        
-                        oscillator.frequency.setValueAtTime(frequency, startTime);
-                        oscillator.type = 'sine';
-                        
-                        noteGain.gain.setValueAtTime(0, startTime);
-                        noteGain.gain.linearRampToValueAtTime(0.03, startTime + 0.1);
-                        noteGain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
-                        
-                        oscillator.start(startTime);
-                        oscillator.stop(startTime + duration);
-                    } catch (e) {
-                        console.log('Background note error:', e);
-                    }
-                }
-                
-                function playBackgroundLoop() {
-                    if (!audioContext || audioContext.state === 'closed') return;
-                    
-                    const now = audioContext.currentTime;
-                    const melody = [
-                        523.25, 659.25, 783.99, 659.25,
-                        493.88, 587.33, 698.46, 587.33
-                    ];
-                    
-                    melody.forEach((freq, index) => {
-                        playBackgroundNote(freq, now + index * 0.6, 0.5);
-                    });
-                    
-                    setTimeout(playBackgroundLoop, 4800);
-                }
-                
-                backgroundMusic = true;
-                playBackgroundLoop();
-            } catch (e) {
-                console.log('Background music error:', e);
-            }
-        }
-
-        function playSound(frequency, duration, type = 'sine') {
-            if (!audioContext || audioContext.state === 'closed') return;
-            
-            try {
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                
-                oscillator.frequency.value = frequency;
-                oscillator.type = type;
-                
-                gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
-                
-                oscillator.start(audioContext.currentTime);
-                oscillator.stop(audioContext.currentTime + duration);
-            } catch (e) {
-                console.log('Sound effect error:', e);
-            }
-        }
-
-        function playCorrectSound() {
-            playSound(523.25, 0.2);
-        }
-
-        function playWrongSound() {
-            playSound(220, 0.3, 'sawtooth');
-        }
-
-        function playWinSound() {
-            playSound(659.25, 0.2);
-            setTimeout(() => playSound(783.99, 0.2), 100);
-            setTimeout(() => playSound(1046.50, 0.4), 200);
-        }
-
-        function playLoseSound() {
-            playSound(196, 0.5, 'sawtooth');
-        }
-
-        function playClickSound() {
-            playSound(440, 0.1);
-        }
-
-        // Initialize game
-        window.addEventListener('load', () => {
-            loadGameData();
-            showLoginScreen();
-        });
+        function setupGame() { const cardsCount = Math.min(3 + Math.floor((currentLevel - 1) / 2), 25); const timeLimit = Math.max(20 - Math.floor(currentLevel / 3), 8); document.getElementById('timer').textContent = timeLimit; timeLeft = timeLimit; if (currentMode === 'memorize') { document.getElementById('gameInstructions').textContent = `Ingat urutan dimsum ini!`; } else { const redCount = Math.min(1 + Math.floor((currentLevel - 1) / 3), 10); document.getElementById('gameInstructions').textContent = `Ingat posisi ${redCount} dimsum spesial, lalu temukan setelah diacak!`; } document.getElementById('nextBtn').style.display = 'none'; }
+        function startGame() { isGameActive = false; playerSequence = []; flippedCards = []; gameStartTime = Date.now(); if (currentMode === 'memorize') { const cardsCount = Math.min(3 + Math.floor((currentLevel - 1) / 2), 25); const memoryTime = Math.max(8 - Math.floor(currentLevel / 5), 3); document.getElementById('gameInstructions').textContent = `Ingat urutan dimsum ini! Waktu: ${memoryTime} detik`; setupMemorizeSequence(cardsCount); startMemoryTimer(memoryTime); customSetTimeout(() => { switchToInputMode(); isGameActive = true; startGameTimer(20); }, memoryTime * 1000 + 300); } else { const cardsCount = Math.min(3 + Math.floor((currentLevel - 1) / 2), 25); const redCount = Math.min(1 + Math.floor((currentLevel - 1) / 3), 10); const memoryTime = Math.min(3 + Math.floor(currentLevel / 3), 8); document.getElementById('gameInstructions').textContent = `Ingat posisi dimsum spesial! Waktu: ${memoryTime} detik`; setupPickMeCards(cardsCount, redCount); startMemoryTimer(memoryTime); showSpecialCards(); customSetTimeout(() => { hideSpecialCards(); document.getElementById('gameInstructions').textContent = `Kartu sedang diacak...`; shuffleCards(() => { isGameActive = true; startGameTimer(15); enableCardClicks(); document.getElementById('gameInstructions').textContent = `Temukan semua dimsum spesial!`; }); }, memoryTime * 1000); } }
+        function setupMemorizeSequence(cardsCount) { const container = document.getElementById('cardsContainer'); container.innerHTML = ''; container.style.gridTemplateColumns = `repeat(${Math.min(cardsCount, 5)}, 1fr)`; container.style.maxWidth = '800px'; container.style.margin = '0 auto'; sequence = []; const selectedImages = dimsumImages.slice(0, cardsCount); const shuffledImages = selectedImages.sort(() => Math.random() - 0.5); shuffledImages.forEach((image, index) => { sequence.push(image); const card = document.createElement('div'); card.className = 'card sequence-card'; card.textContent = image; card.dataset.image = image; card.dataset.index = index; container.appendChild(card); }); playerSequence = []; }
+        function setupPickMeCards(cardsCount, redCount) { const container = document.getElementById('cardsContainer'); container.innerHTML = ''; const cols = Math.ceil(Math.sqrt(cardsCount)); container.style.gridTemplateColumns = `repeat(${cols}, 1fr)`; sequence = []; redCards = []; const indices = Array.from({length: cardsCount}, (_, i) => i); const shuffledIndices = indices.sort(() => Math.random() - 0.5); redCards = shuffledIndices.slice(0, redCount); for (let i = 0; i < cardsCount; i++) { const card = document.createElement('div'); card.className = 'card'; card.textContent = '🥢'; card.dataset.index = i; card.dataset.hasSpecial = redCards.includes(i) ? 'true' : 'false'; if (redCards.includes(i)) { card.dataset.hiddenContent = '🥟'; } else { card.dataset.hiddenContent = '🍚'; } container.appendChild(card); } playerSequence = []; }
+        function startMemoryTimer(memoryTime) { clearGameTimer(); const endTime = Date.now() + memoryTime * 1000; function update() { const remaining = Math.max(0, Math.ceil((endTime - Date.now()) / 1000)); document.getElementById('timer').textContent = remaining; if (remaining <= 0) clearGameTimer(); } update(); gameTimer = setInterval(update, 100); }
+        function startGameTimer(gameTime) { clearGameTimer(); const endTime = Date.now() + gameTime * 1000; function update() { const remaining = Math.max(0, Math.ceil((endTime - Date.now()) / 1000)); document.getElementById('timer').textContent = remaining; timeLeft = remaining; if (remaining <= 0) { clearGameTimer(); timeLeft = 0; if (isGameActive) { if (currentMode === 'pickme') { endGame(false); } else { loseLife(); } } } } update(); gameTimer = setInterval(update, 100); }
+        function switchToInputMode() { const container = document.getElementById('cardsContainer'); container.innerHTML = ''; container.style.gridTemplateColumns = 'repeat(5, 1fr)'; container.style.maxWidth = '500px'; const allImages = [...dimsumImages]; const shuffledImages = allImages.sort(() => Math.random() - 0.5).slice(0, 25); sequence.forEach((seqImage, index) => { if (!shuffledImages.includes(seqImage)) { shuffledImages[index] = seqImage; } }); shuffledImages.sort(() => Math.random() - 0.5); shuffledImages.forEach((image, index) => { const card = document.createElement('div'); card.className = 'card input-card'; card.textContent = image; card.dataset.image = image; card.dataset.index = index; card.dataset.clicked = 'false'; container.appendChild(card); }); document.getElementById('gameInstructions').textContent = `Klik dimsum sesuai urutan yang tadi ditampilkan! Waktu: 20 detik`; enableCardClicks(); }
+        function showSpecialCards() { document.querySelectorAll('.card').forEach(c => { if (c.dataset.hasSpecial === 'true') { c.classList.add('red-marked'); c.textContent = c.dataset.hiddenContent; } }); }
+        function hideSpecialCards() { document.querySelectorAll('.card').forEach(c => { c.classList.remove('red-marked'); c.textContent = '🥢'; }); }
+        function loseLife() { if (lives <= 0) return; lives--; const hearts = document.querySelectorAll('.heart'); if (hearts[lives]) hearts[lives].classList.add('lost'); if (lives <= 0) { endGame(false); } else { isGameActive = false; clearGameTimer(); showModal('Waktu Habis!', `Nyawa tersisa: ${lives}<br>Coba lagi!`); if (currentMode === 'memorize') { playerSequence = []; document.querySelectorAll('.card').forEach(c => { c.classList.remove('selected', 'correct', 'wrong'); c.dataset.clicked = 'false'; c.style.opacity = ''; c.style.border = ''; c.onclick = null; }); } else { playerSequence = []; document.querySelectorAll('.card').forEach(c => { c.classList.remove('selected', 'correct', 'wrong'); c.textContent = '🥢'; c.onclick = null; }); } const timeLimit = Math.max(20 - Math.floor(currentLevel / 3), 8); timeLeft = timeLimit; document.getElementById('timer').textContent = timeLimit; customSetTimeout(() => startCountdown(), 1000); } }
+        function shuffleCards(callback) { const container = document.getElementById('cardsContainer'); const cards = Array.from(container.children); const positions = cards.map(card => { const rect = card.getBoundingClientRect(); return { card, top: rect.top, left: rect.left }; }); const containerRect = container.getBoundingClientRect(); cards.forEach((card, i) => { const pos = positions[i]; card.style.position = 'absolute'; card.style.top = (pos.top - containerRect.top) + 'px'; card.style.left = (pos.left - containerRect.left) + 'px'; card.style.width = '100px'; card.style.height = '100px'; card.style.margin = '0'; card.style.transition = 'top 0.5s ease, left 0.5s ease'; }); const swapCount = 6; let swapIndex = 0; const delay = 600 / shuffleSpeedMultiplier; function doSwap() { if (swapIndex >= swapCount) { cards.forEach(card => { card.style.position = ''; card.style.top = ''; card.style.left = ''; card.style.margin = ''; card.style.transition = ''; }); cards.forEach(card => container.appendChild(card)); if (callback) callback(); return; } let i = Math.floor(Math.random() * cards.length); let j = Math.floor(Math.random() * cards.length); while (i === j) j = Math.floor(Math.random() * cards.length); const cardA = cards[i]; const cardB = cards[j]; const topA = parseFloat(cardA.style.top); const leftA = parseFloat(cardA.style.left); const topB = parseFloat(cardB.style.top); const leftB = parseFloat(cardB.style.left); cardA.style.top = `${topB}px`; cardA.style.left = `${leftB}px`; cardB.style.top = `${topA}px`; cardB.style.left = `${leftA}px`; [cards[i], cards[j]] = [cards[j], cards[i]]; swapIndex++; customSetTimeout(doSwap, 600); } customSetTimeout(doSwap, delay); }
+        function enableCardClicks() { document.querySelectorAll('.card').forEach(c => c.onclick = () => handleCardClick(c)); }
+        function handleCardClick(card) { if (!isGameActive || timeLeft <= 0) return; if (currentMode === 'memorize') { if (card.dataset.clicked === 'true') return; const clickedImage = card.dataset.image; const expectedImage = sequence[playerSequence.length]; card.classList.add('selected'); card.dataset.clicked = 'true'; if (clickedImage === expectedImage) { playCorrectSound(); card.classList.add('correct'); playerSequence.push(clickedImage); card.onclick = null; card.style.opacity = '0.8'; if (playerSequence.length === sequence.length) customSetTimeout(() => endGame(true), 500); } else { playWrongSound(); card.classList.add('wrong'); customSetTimeout(() => { card.classList.remove('selected', 'wrong'); card.dataset.clicked = 'false'; lives--; const hearts = document.querySelectorAll('.heart'); if (hearts[lives]) hearts[lives].classList.add('lost'); if (lives <= 0) endGame(false); }, 800); } } else { const index = parseInt(card.dataset.index); card.classList.add('selected'); card.textContent = card.dataset.hiddenContent; if (card.dataset.hasSpecial === 'true') { playCorrectSound(); card.classList.add('correct'); card.classList.add('red-marked'); playerSequence.push(index); card.onclick = null; if (playerSequence.length === redCards.length) customSetTimeout(() => endGame(true), 500); } else { playWrongSound(); card.classList.add('wrong'); customSetTimeout(() => { lives--; const hearts = document.querySelectorAll('.heart'); if (hearts[lives]) hearts[lives].classList.add('lost'); if (lives <= 0) endGame(false); }, 800); } } }
+        async function endGame(success) { if(!isGameActive && success) return; isGameActive = false; clearGameTimer(); document.querySelectorAll('.card').forEach(c => c.onclick = null); if (success) { playWinSound(); const totalGameTime = Math.max(1, Math.floor((Date.now() - gameStartTime) / 1000)); const baseScore = currentLevel * 100; const timeBonus = Math.max(0, timeLeft * 10); const livesBonus = lives * 50; const speedBonus = Math.max(0, Math.floor((60 - totalGameTime) * 5)); const totalScore = baseScore + timeBonus + livesBonus + speedBonus; document.getElementById('currentScore').textContent = totalScore; let stars = 1; if (lives >= 2) stars = 2; if (lives === 3) stars = 3; try { await apiCall('update-score', { username: currentUser, mode: currentMode, score: totalScore, stars: stars }); if (!currentUserData.scores[currentMode]) { currentUserData.scores[currentMode] = { high_score: 0, total_stars: 0 }; } currentUserData.scores[currentMode].high_score = Math.max(currentUserData.scores[currentMode].high_score, totalScore); currentUserData.scores[currentMode].total_stars += stars; } catch (e) { console.error("Gagal update skor ke server", e) } showModal(`Level Selesai!`, `🎉 Level ${currentLevel} Selesai!<br>Skor: ${totalScore}<br>Bintang: ${'⭐'.repeat(stars)}<br>Nyawa tersisa: ${lives}`); if (currentLevel < 30) document.getElementById('nextBtn').style.display = 'block'; } else { playLoseSound(); showModal('Game Over!', '💔 Semua nyawa habis!'); customSetTimeout(() => showLevelScreen(), 2000); } }
+        function nextLevel() { if (currentLevel < 30) startLevel(currentLevel + 1); }
+        async function fetchAndShowLeaderboard(mode = 'memorize') { try { const response = await fetch(`${API_BASE}/leaderboard?mode=${mode}`); if (!response.ok) throw new Error('Gagal memuat data.'); const data = await response.json(); const list = document.getElementById('leaderboardList'); list.innerHTML = ''; if (data.leaderboard.length === 0) { list.innerHTML = '<p style="color: #fadc9a; text-align: center;">Belum ada data</p>'; } else { data.leaderboard.forEach((entry, index) => { const item = document.createElement('div'); item.className = 'leaderboard-item'; item.innerHTML = `<span>${index + 1}. ${entry.username}</span> <span>${entry.high_score}</span>`; list.appendChild(item); }); } } catch (error) { showModal('Error', error.message); } showScreen('leaderboardScreen'); }
+        function playSound(frequency, duration, type = 'sine') { if (!audioContext) return; try { const o = audioContext.createOscillator(); const g = audioContext.createGain(); o.connect(g); g.connect(audioContext.destination); o.frequency.value = frequency; o.type = type; g.gain.setValueAtTime(0.2, audioContext.currentTime); g.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration); o.start(audioContext.currentTime); o.stop(audioContext.currentTime + duration); } catch (e) { console.log('Sound error:', e); } }
+        function playCorrectSound() { playSound(523.25, 0.2); }
+        function playWrongSound() { playSound(220, 0.3, 'sawtooth'); }
+        function playWinSound() { playSound(659.25, 0.2); customSetTimeout(() => playSound(783.99, 0.2), 100); customSetTimeout(() => playSound(1046.50, 0.4), 200); }
+        function playLoseSound() { playSound(196, 0.5, 'sawtooth'); }
+        function playClickSound() { playSound(440, 0.1); }
+        function showForgotPasswordModal() { const modal = new bootstrap.Modal(document.getElementById('forgotPasswordModal')); document.getElementById('reset-step-1').style.display = 'block'; document.getElementById('reset-step-2').style.display = 'none'; modal.show(); }
+        async function initiatePasswordReset() { const username = document.getElementById('resetUsername').value; const waNumber = document.getElementById('resetWaNumber').value; if (!username || !waNumber) return showModal('Input Tidak Lengkap', 'Masukkan username dan nomor WhatsApp.'); try { const data = await apiCall('password-reset', { action: 'initiate', username, waNumber }); document.getElementById('resetCodeDisplay').textContent = `(Simulasi) Kode Anda: ${data.resetCode}`; document.getElementById('reset-step-1').style.display = 'none'; document.getElementById('reset-step-2').style.display = 'block'; } catch(error) { console.error('Reset Gagal:', error); } }
+        async function verifyPasswordReset() { const username = document.getElementById('resetUsername').value; const code = document.getElementById('resetCode').value; const newPassword = document.getElementById('resetNewPassword').value; if (!code || !newPassword) return showModal('Input Tidak Lengkap', 'Masukkan kode dan password baru.'); try { const data = await apiCall('password-reset', { action: 'verify', username, code, newPassword }); showModal('Berhasil', data.message); bootstrap.Modal.getInstance(document.getElementById('forgotPasswordModal')).hide(); showLoginForm(); } catch (error) { console.error('Verifikasi Gagal:', error); } }
+        window.addEventListener('load', () => { showLoginScreen(); });
     </script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hasna Game's - Koleksi Game Lucu</title>
+    <title>Hasna Game's</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
@@ -15,6 +15,66 @@
             font-family: 'Press Start 2P', cursive;
             position: relative;
             overflow-x: hidden;
+        }
+
+        /* Custom Scrollbar Styles */
+        ::-webkit-scrollbar {
+            width: 16px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: linear-gradient(135deg, #F5D3C4, #F2AEBB);
+            border: 2px solid #696FC7;
+            box-shadow: inset 4px 4px 0px rgba(0,0,0,0.1);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #696FC7, #A7AAE1);
+            border: 2px solid #F2AEBB;
+            box-shadow: 4px 4px 0px rgba(0,0,0,0.2);
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #5a60b8, #9498d4);
+            box-shadow: 6px 6px 0px rgba(0,0,0,0.3);
+            transform: scale(1.05);
+        }
+
+        ::-webkit-scrollbar-thumb:active {
+            background: linear-gradient(135deg, #4a50a8, #8488c4);
+            box-shadow: 2px 2px 0px rgba(0,0,0,0.4);
+        }
+
+        ::-webkit-scrollbar-corner {
+            background: linear-gradient(135deg, #F5D3C4, #F2AEBB);
+            border: 2px solid #696FC7;
+        }
+
+        /* Dark Mode Scrollbar */
+        body.dark-mode ::-webkit-scrollbar-track {
+            background: linear-gradient(135deg, #2f3640, #40407a);
+            border-color: #706fd3;
+        }
+
+        body.dark-mode ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #706fd3, #2c2c54);
+            border-color: #f1f2f6;
+        }
+
+        body.dark-mode ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #5a60b8, #40407a);
+        }
+
+        body.dark-mode ::-webkit-scrollbar-thumb:active {
+            background: linear-gradient(135deg, #4a50a8, #2c2c54);
+        }
+
+        body.dark-mode ::-webkit-scrollbar-corner {
+            background: linear-gradient(135deg, #2f3640, #40407a);
+            border-color: #706fd3;
         }
 
         /* Pixelated background pattern */
@@ -807,7 +867,7 @@
                         Game ular klasik yang tak pernah membosankan! Kendalikan ular 
                         untuk memakan makanan dan tumbuh semakin panjang tanpa menabrak dinding.
                     </p>
-                    <button class="play-btn" onclick="playGame('uler.game')">
+                    <button class="play-btn" onclick="playGame('uler.html')">
                         🎯 Mainkan
                     </button>
                 </div>
@@ -832,7 +892,7 @@
                         Uji keberuntungan dan skill kamu di mesin cakar! Ambil hadiah 
                         sebanyak mungkin dengan mengatur waktu dan posisi yang tepat.
                     </p>
-                    <button class="play-btn" onclick="playGame('claw.game')">
+                    <button class="play-btn" onclick="playGame('claw.html')">
                         🎯 Mainkan
                     </button>
                 </div>
@@ -858,7 +918,7 @@
                         Tantangan ketepatan dan timing! Tekan dan tahan untuk membuat 
                         tongkat dengan panjang yang pas untuk melewati setiap rintangan.
                     </p>
-                    <button class="play-btn" onclick="playGame('stick.game')">
+                    <button class="play-btn" onclick="playGame('stick.html')">
                         🎯 Mainkan
                     </button>
                 </div>
@@ -868,7 +928,7 @@
         <!-- Footer -->
         <div class="text-center mt-5">
             <p style="color: #F5D3C4; font-size: 0.8rem; font-family: 'Press Start 2P', cursive;">
-                Made with 💖 by Hasna | Happy Gaming! 🎮
+                Made with 💖 by Hasna | Thx for Visiting! 🎮
             </p>
         </div>
     </div>
@@ -1118,5 +1178,5 @@
             }
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9882aac9d197f8d6',t:'MTc1OTM5MjAzNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9885c81503027e32',t:'MTc1OTQyNDY5NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
