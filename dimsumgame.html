@@ -240,7 +240,6 @@
         let audioContext;
         const dimsumImages = ['🥟', '🥠', '🍤', '🍜', '🍲', '🥢', '🍱', '🍙', '🍘', '🍚', '🥮', '🧧', '🏮', '🎋', '🍵', '🫖', '🥡', '🍛', '🍝', '🍳', '🥗', '🍖', '🍗', '🥓', '🌶️', '🧄', '🧅', '🥕', '🌽', '🥒', '🍅', '🥬'];
         
-        // BUG FIX: Define core functions early to prevent ReferenceError
         function clearGameTimer() { if (gameTimer) { clearInterval(gameTimer); gameTimer = null; } }
 
         let activeTimeouts = [];
@@ -474,10 +473,11 @@
             if (cards.length === 0) { if (callback) callback(); return; }
             const cardSize = cards[0].getBoundingClientRect(); const containerRect = container.getBoundingClientRect();
             container.style.height = `${containerRect.height}px`;
-            const positions = cards.map(c => c.getBoundingClientRect());
+            const positions = cards.map(c => ({ top: c.offsetTop, left: c.offsetLeft }));
+            
             cards.forEach((card, i) => {
-                card.style.position = 'absolute'; card.style.top = `${positions[i].top - containerRect.top}px`;
-                card.style.left = `${positions[i].left - containerRect.left}px`;
+                card.style.position = 'absolute'; card.style.top = `${positions[i].top}px`;
+                card.style.left = `${positions[i].left}px`;
                 card.style.width = `${cardSize.width}px`; card.style.height = `${cardSize.height}px`;
                 card.style.margin = '0'; card.style.transition = 'top 0.5s ease, left 0.5s ease';
             });
@@ -486,12 +486,20 @@
                 if (swapIndex++ < 6) {
                     let i = Math.floor(Math.random() * cards.length), j = Math.floor(Math.random() * cards.length);
                     while(i === j) j = Math.floor(Math.random() * cards.length);
+                    
+                    // Swap visual positions
                     [cards[i].style.top, cards[j].style.top] = [cards[j].style.top, cards[i].style.top];
                     [cards[i].style.left, cards[j].style.left] = [cards[j].style.left, cards[i].style.left];
+                    
+                    // BUG FIX: Swap the actual elements in the array to match the visuals
+                    [cards[i], cards[j]] = [cards[j], cards[i]];
+
                     customSetTimeout(doSwap, 600);
                 } else {
                     cards.forEach(card => { card.style = ''; });
-                    container.style.height = ''; cards.forEach(card => container.appendChild(card));
+                    container.style.height = ''; 
+                    // Re-append cards in the now correctly shuffled order
+                    cards.forEach(card => container.appendChild(card));
                     if (callback) callback();
                 }
             };
@@ -568,3 +576,4 @@
     </script>
 </body>
 </html>
+
