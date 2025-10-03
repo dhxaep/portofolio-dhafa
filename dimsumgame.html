@@ -469,61 +469,67 @@
         function loseLife() { if (lives > 0) { lives--; document.querySelectorAll('.heart')[lives].classList.add('lost'); if (lives <= 0) endGame(false, 'lives'); } }
         
         function shuffleCards(callback) {
-            const container = document.getElementById('cardsContainer');
-            let cards = Array.from(container.children);
+    const container = document.getElementById('cardsContainer');
+    let cards = Array.from(container.children);
+    
+    const containerRect = container.getBoundingClientRect();
+    container.style.height = `${containerRect.height}px`;
+
+    const positions = cards.map(card => ({
+        top: card.offsetTop,
+        left: card.offsetLeft,
+        width: card.offsetWidth,
+        height: card.offsetHeight
+    }));
+
+    cards.forEach((card, i) => {
+        card.style.position = 'absolute';
+        card.style.top = `${positions[i].top}px`;
+        card.style.left = `${positions[i].left}px`;
+        card.style.width = `${positions[i].width}px`;
+        card.style.height = `${positions[i].height}px`;
+        card.style.margin = '0';
+        card.style.transition = 'top 0.5s ease, left 0.5s ease';
+    });
+
+    let swapIndex = 0;
+    const doSwap = () => {
+        if (swapIndex++ < 6) {
+            let i = Math.floor(Math.random() * cards.length);
+            let j = Math.floor(Math.random() * cards.length);
+            while (i === j) j = Math.floor(Math.random() * cards.length);
+
+            const cardA = cards[i];
+            const cardB = cards[j];
+
+            [cardA.style.top, cardB.style.top] = [cardB.style.top, cardA.style.top];
+            [cardA.style.left, cardB.style.left] = [cardB.style.left, cardA.style.left];
+
+            [cards[i], cards[j]] = [cards[j], cards[i]];
+
+            customSetTimeout(doSwap, 600);
+        } else {
+            cards.forEach(card => card.style = '');
+            container.style.height = '';
             
-            const containerRect = container.getBoundingClientRect();
-            container.style.height = `${containerRect.height}px`; // Lock height
-
-            const positions = cards.map(card => ({
-                top: card.offsetTop,
-                left: card.offsetLeft,
-                width: card.offsetWidth,
-                height: card.offsetHeight
-            }));
-
-            cards.forEach((card, i) => {
-                card.style.position = 'absolute';
-                card.style.top = `${positions[i].top}px`;
-                card.style.left = `${positions[i].left}px`;
-                card.style.width = `${positions[i].width}px`;
-                card.style.height = `${positions[i].height}px`;
-                card.style.margin = '0';
-                card.style.transition = 'top 0.5s ease, left 0.5s ease';
+            // BAGIAN BARU - Update index dan redCards setelah shuffle
+            cards.forEach((card, newIndex) => {
+                card.dataset.index = newIndex;
+                container.appendChild(card);
             });
-
-            let swapIndex = 0;
-            const doSwap = () => {
-                if (swapIndex++ < 6) {
-                    let i = Math.floor(Math.random() * cards.length);
-                    let j = Math.floor(Math.random() * cards.length);
-                    while (i === j) j = Math.floor(Math.random() * cards.length);
-
-                    const cardA = cards[i];
-                    const cardB = cards[j];
-
-                    // Swap visual positions
-                    [cardA.style.top, cardB.style.top] = [cardB.style.top, cardA.style.top];
-                    [cardA.style.left, cardB.style.left] = [cardB.style.left, cardA.style.left];
-
-                    // Swap the elements in the JS array to match the visuals
-                    [cards[i], cards[j]] = [cards[j], cards[i]];
-
-                    customSetTimeout(doSwap, 600);
-                } else {
-                    // Animation finished
-                    cards.forEach(card => card.style = ''); // Reset all styles
-                    container.style.height = ''; // Unlock height
-                    
-                    // Re-append cards in the now correctly shuffled order
-                    cards.forEach(card => container.appendChild(card));
-                    
-                    if (callback) callback();
+            
+            redCards = [];
+            cards.forEach((card, index) => {
+                if (card.dataset.hasSpecial === "true") {
+                    redCards.push(index);
                 }
-            };
-            doSwap();
+            });
+            
+            if (callback) callback();
         }
-
+    };
+    doSwap();
+}
         function enableCardClicks() { document.querySelectorAll('.card').forEach(c => c.onclick = () => handleCardClick(c)); }
         function handleCardClick(card) {
             if (!isGameActive || card.classList.contains('correct') || card.classList.contains('wrong')) return;
