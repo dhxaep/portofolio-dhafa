@@ -85,12 +85,21 @@
         .modal-header { border-bottom: 1px solid rgba(250, 220, 154, 0.2); }
         .modal-footer { border-top: 1px solid rgba(250, 220, 154, 0.2); }
         .btn-close { filter: invert(1) grayscale(100%) brightness(200%); }
-        
         #infoModal { z-index: 1060; }
+
+        /* Gaya untuk Animasi Loading */
+        .loader-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); display: flex; justify-content: center; align-items: center; z-index: 9999; backdrop-filter: blur(5px); }
+        .loader-spinner { border: 8px solid rgba(250, 220, 154, 0.3); border-top: 8px solid #f2d375; border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
     <audio id="bgm" src="arcade.mp3" loop></audio>
+
+    <div id="loader" class="loader-overlay" style="display: none;">
+        <div class="loader-spinner"></div>
+    </div>
+
     <div class="container">
         <div id="loginScreen" class="screen active glass"><h1>🥟 Memorize Dimsum</h1><div id="loginForm" class="form-container"><div class="login-form"><input type="text" id="username" placeholder="Username" required=""><input type="password" id="password" placeholder="Password" required=""><button class="btn" onclick="login()">Masuk Game</button><button class="btn btn-secondary" onclick="showRegisterForm()">Daftar Akun Baru</button><button class="btn btn-secondary" onclick="fetchAndShowLeaderboard()">Lihat Leaderboard</button><a href="#" class="text-center mt-2" style="color: #fadc9a;" onclick="showForgotPasswordModal()">Lupa Password?</a></div></div><div id="registerForm" class="form-container" style="display: none;"><h3 class="form-title">Daftar Akun Baru</h3><div class="login-form"><input type="text" id="regUsername" placeholder="Username (3-20 karakter)" required=""><input type="password" id="regPassword" placeholder="Password (min 6 karakter)" required=""><input type="password" id="regConfirmPassword" placeholder="Konfirmasi Password" required=""><button class="btn" onclick="register()">Daftar</button><button class="btn btn-secondary" onclick="showLoginForm()">Kembali ke Login</button></div></div></div>
         <div id="mainMenu" class="screen glass"><button class="back-btn" onclick="logout()">Keluar</button><div class="user-info"><span id="currentUser"></span></div><h1>🥟 Memorize Dimsum</h1><h2>Pilih Mode Permainan</h2><div class="game-modes"><div class="mode-card glass" onclick="selectMode('memorize')"><div class="mode-icon">🃏</div><h3 style="color: #f2d375;">Memorize Card</h3><p style="color: #fadc9a; margin-top: 10px;">Ingat urutan kartu dan klik sesuai urutan</p></div><div class="mode-card glass" onclick="selectMode('pickme')"><div class="mode-icon">🎯</div><h3 style="color: #f2d375;">Pick Me Dimsum</h3><p style="color: #fadc9a; margin-top: 10px;">Temukan kartu merah setelah diacak</p></div><div class="mode-card glass" onclick="selectMode('dimdamdoe')"><div class="mode-icon">🥟🎮</div><h3 style="color: #f2d375;">DimDamDoe</h3><p style="color: #fadc9a; margin-top: 10px;">Tic Tac Toe dengan Cita Rasa Dimsum!</p></div></div></div>
@@ -100,7 +109,7 @@
         <div id="leaderboardScreen" class="screen glass"><button class="back-btn" onclick="isLoggedIn() ? showMainMenu() : showLoginScreen()">Kembali</button><h2>🏆 Leaderboard</h2><div style="margin: 20px 0;" id="leaderboardModeSelector"><button class="btn" onclick="fetchAndShowLeaderboard('memorize')" style="margin: 5px;">Memorize Card</button><button class="btn" onclick="fetchAndShowLeaderboard('pickme')" style="margin: 5px;">Pick Me Dimsum</button><button class="btn" onclick="fetchAndShowLeaderboard('dimdamdoe')" style="margin: 5px;">DimDamDoe</button></div><div class="leaderboard" id="leaderboardList"></div></div>
     </div>
     <div class="modal fade" id="infoModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content glass"><div class="modal-header"><h5 class="modal-title" id="infoModalLabel">Notifikasi</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body" id="infoModalBody"></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button></div></div></div></div>
-    <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content glass"><div class="modal-header"><h5 class="modal-title">Lupa Password</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body"><div id="reset-step-1"><p>Masukkan username dan nomor WhatsApp Anda untuk menerima kode verifikasi.</p><input type="text" id="resetUsername" class="form-control mb-2" placeholder="Username"><input type="tel" id="resetWaNumber" class="form-control" placeholder="Nomor WhatsApp (cth: 628123)"><button class="btn mt-3 w-100" onclick="initiatePasswordReset()">Kirim Kode</button></div><div id="reset-step-2" style="display:none;"><p>Kode verifikasi telah dibuat. Masukkan kode tersebut di bawah beserta password baru Anda.</p><div class="alert alert-success" id="resetCodeDisplay"></div><input type="text" id="resetCode" class="form-control mb-2" placeholder="Kode Verifikasi"><input type="password" id="resetNewPassword" class="form-control" placeholder="Password Baru"><button class="btn mt-3 w-100" onclick="verifyPasswordReset()">Reset Password</button></div></div></div></div></div>
+    <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content glass"><div class="modal-header"><h5 class="modal-title">Lupa Password</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body"><div id="reset-step-1"><p>Masukkan username dan nomor WhatsApp Anda untuk menerima kode verifikasi.</p><input type="text" id="resetUsername" class="form-control mb-2" placeholder="Username"><input type="tel" id="resetWaNumber" class="form-control" placeholder="Nomor WhatsApp (cth: 628123)"><button class="btn mt-3 w-100" onclick="initiatePasswordReset()">Kirim Kode</button></div><div id="reset-step-2" style="display:none;"><p>Kode verifikasi telah dibuat. Masukkan kode tersebut di bawah beserta password baru Anda.</p><div class="alert alert-success" id="resetCodeDisplay"></div><input type="text" id="resetCode" class="form-control mb-2" placeholder="Kode Verifikasi"><input type="password" id="resetNewPassword" class="form-control" placeholder="Password Baru"><button class="btn mt-3 w-100" onclick="verifyPasswordReset()">Reset Password</button></div></div></div></div>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
@@ -111,7 +120,31 @@
         document.addEventListener('DOMContentLoaded', () => { infoModal = new bootstrap.Modal(document.getElementById('infoModal')); });
         function showModal(title, message) { document.getElementById('infoModalLabel').textContent = title; document.getElementById('infoModalBody').innerHTML = message; infoModal.show(); }
         const API_BASE = '/.netlify/functions';
-        async function apiCall(endpoint, body) { try { const response = await fetch(`${API_BASE}/${endpoint}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), }); if (!response.ok) { const errorText = await response.text(); throw new Error(`Server error: ${errorText}`); } const data = await response.json(); return data; } catch (error) { showModal('Error', error.message); console.error(error); throw error; } }
+
+        // --- PERBAIKAN: Fungsi apiCall dengan loading animation ---
+        async function apiCall(endpoint, body) {
+            const loader = document.getElementById('loader');
+            loader.style.display = 'flex'; // Tampilkan loading
+            try {
+                const response = await fetch(`${API_BASE}/${endpoint}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body),
+                });
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Server error: ${errorText}`);
+                }
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                showModal('Error', error.message);
+                console.error(error);
+                throw error;
+            } finally {
+                loader.style.display = 'none'; // Sembunyikan loading
+            }
+        }
 
         let currentUser = '';
         let currentMode = '';
@@ -247,8 +280,55 @@
         }
         function setupGame() { const cardsCount = Math.min(3 + Math.floor((currentLevel - 1) / 2), 25); const timeLimit = Math.max(20 - Math.floor(currentLevel / 3), 8); document.getElementById('timer').textContent = timeLimit; timeLeft = timeLimit; if (currentMode === 'memorize') { document.getElementById('gameInstructions').textContent = `Ingat urutan dimsum ini!`; } else { const redCount = Math.min(1 + Math.floor((currentLevel - 1) / 3), 10); document.getElementById('gameInstructions').textContent = `Ingat posisi ${redCount} dimsum spesial, lalu temukan setelah diacak!`; } document.getElementById('nextBtn').style.display = 'none'; }
         function startGame() { isGameActive = false; playerSequence = []; flippedCards = []; gameStartTime = Date.now(); if (currentMode === 'memorize') { const cardsCount = Math.min(3 + Math.floor((currentLevel - 1) / 2), 25); const memoryTime = Math.max(8 - Math.floor(currentLevel / 5), 3); document.getElementById('gameInstructions').textContent = `Ingat urutan dimsum ini! Waktu: ${memoryTime} detik`; setupMemorizeSequence(cardsCount); startMemoryTimer(memoryTime); customSetTimeout(() => { switchToInputMode(); isGameActive = true; startGameTimer(20); }, memoryTime * 1000 + 300); } else { const cardsCount = Math.min(3 + Math.floor((currentLevel - 1) / 2), 25); const redCount = Math.min(1 + Math.floor((currentLevel - 1) / 3), 10); const memoryTime = Math.min(3 + Math.floor(currentLevel / 3), 8); document.getElementById('gameInstructions').textContent = `Ingat posisi dimsum spesial! Waktu: ${memoryTime} detik`; setupPickMeCards(cardsCount, redCount); startMemoryTimer(memoryTime); showSpecialCards(); customSetTimeout(() => { hideSpecialCards(); document.getElementById('gameInstructions').textContent = `Kartu sedang diacak...`; shuffleCards(() => { isGameActive = true; startGameTimer(15); enableCardClicks(); document.getElementById('gameInstructions').textContent = `Temukan semua dimsum spesial!`; }); }, memoryTime * 1000); } }
-        function setupMemorizeSequence(cardsCount) { const container = document.getElementById('cardsContainer'); container.innerHTML = ''; container.style.gridTemplateColumns = `repeat(${Math.min(cardsCount, 5)}, 1fr)`; container.style.maxWidth = '800px'; container.style.margin = '0 auto'; sequence = []; const selectedImages = dimsumImages.slice(0, cardsCount); const shuffledImages = selectedImages.sort(() => Math.random() - 0.5); shuffledImages.forEach((image, index) => { sequence.push(image); const card = document.createElement('div'); card.className = 'card sequence-card'; card.textContent = image; card.dataset.image = image; card.dataset.index = index; container.appendChild(card); }); playerSequence = []; }
-        function setupPickMeCards(cardsCount, redCount) { const container = document.getElementById('cardsContainer'); container.innerHTML = ''; const cols = Math.ceil(Math.sqrt(cardsCount)); container.style.gridTemplateColumns = `repeat(${cols}, 1fr)`; sequence = []; redCards = []; const indices = Array.from({length: cardsCount}, (_, i) => i); const shuffledIndices = indices.sort(() => Math.random() - 0.5); redCards = shuffledIndices.slice(0, redCount); for (let i = 0; i < cardsCount; i++) { const card = document.createElement('div'); card.className = 'card'; card.textContent = '🥢'; card.dataset.index = i; card.dataset.hasSpecial = redCards.includes(i) ? 'true' : 'false'; if (redCards.includes(i)) { card.dataset.hiddenContent = '🥟'; } else { card.dataset.hiddenContent = '🍚'; } container.appendChild(card); } playerSequence = []; }
+        function setupMemorizeSequence(cardsCount) {
+            const container = document.getElementById('cardsContainer');
+            container.innerHTML = '';
+            // --- PERBAIKAN GRID ---
+            container.style.display = 'grid';
+            container.style.gridTemplateColumns = `repeat(${Math.min(cardsCount, 5)}, 1fr)`;
+            container.style.maxWidth = '800px';
+            container.style.margin = '0 auto';
+            sequence = [];
+            const selectedImages = dimsumImages.slice(0, cardsCount);
+            const shuffledImages = selectedImages.sort(() => Math.random() - 0.5);
+            shuffledImages.forEach((image, index) => {
+                sequence.push(image);
+                const card = document.createElement('div');
+                card.className = 'card sequence-card';
+                card.textContent = image;
+                card.dataset.image = image;
+                card.dataset.index = index;
+                container.appendChild(card);
+            });
+            playerSequence = [];
+        }
+        function setupPickMeCards(cardsCount, redCount) {
+            const container = document.getElementById('cardsContainer');
+            container.innerHTML = '';
+            const cols = Math.ceil(Math.sqrt(cardsCount));
+            // --- PERBAIKAN GRID ---
+            container.style.display = 'grid';
+            container.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+            sequence = [];
+            redCards = [];
+            const indices = Array.from({length: cardsCount}, (_, i) => i);
+            const shuffledIndices = indices.sort(() => Math.random() - 0.5);
+            redCards = shuffledIndices.slice(0, redCount);
+            for (let i = 0; i < cardsCount; i++) {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.textContent = '🥢';
+                card.dataset.index = i;
+                card.dataset.hasSpecial = redCards.includes(i) ? 'true' : 'false';
+                if (redCards.includes(i)) {
+                    card.dataset.hiddenContent = '🥟';
+                } else {
+                    card.dataset.hiddenContent = '🍚';
+                }
+                container.appendChild(card);
+            }
+            playerSequence = [];
+        }
         function startMemoryTimer(memoryTime) { clearGameTimer(); const endTime = Date.now() + memoryTime * 1000; function update() { const remaining = Math.max(0, Math.ceil((endTime - Date.now()) / 1000)); document.getElementById('timer').textContent = remaining; if (remaining <= 0) clearGameTimer(); } update(); gameTimer = setInterval(update, 100); }
         function startGameTimer(gameTime) { clearGameTimer(); const endTime = Date.now() + gameTime * 1000; function update() { const remaining = Math.max(0, Math.ceil((endTime - Date.now()) / 1000)); document.getElementById('timer').textContent = remaining; timeLeft = remaining; if (remaining <= 0) { clearGameTimer(); timeLeft = 0; if (isGameActive) { if (currentMode === 'pickme') { endGame(false); } else { loseLife(); } } } } update(); gameTimer = setInterval(update, 100); }
         function switchToInputMode() { const container = document.getElementById('cardsContainer'); container.innerHTML = ''; container.style.gridTemplateColumns = 'repeat(5, 1fr)'; container.style.maxWidth = '500px'; const allImages = [...dimsumImages]; const shuffledImages = allImages.sort(() => Math.random() - 0.5).slice(0, 25); sequence.forEach((seqImage, index) => { if (!shuffledImages.includes(seqImage)) { shuffledImages[index] = seqImage; } }); shuffledImages.sort(() => Math.random() - 0.5); shuffledImages.forEach((image, index) => { const card = document.createElement('div'); card.className = 'card input-card'; card.textContent = image; card.dataset.image = image; card.dataset.index = index; card.dataset.clicked = 'false'; container.appendChild(card); }); document.getElementById('gameInstructions').textContent = `Klik dimsum sesuai urutan yang tadi ditampilkan! Waktu: 20 detik`; enableCardClicks(); }
