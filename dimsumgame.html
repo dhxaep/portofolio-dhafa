@@ -532,22 +532,39 @@
 }
         function enableCardClicks() { document.querySelectorAll('.card').forEach(c => c.onclick = () => handleCardClick(c)); }
         function handleCardClick(card) {
-            if (!isGameActive || card.classList.contains('correct') || card.classList.contains('wrong')) return;
-            if (currentMode === 'memorize') {
-                const clickedImage = card.dataset.image;
-                const expectedImage = sequence[playerSequence.length];
-                if (clickedImage === expectedImage) {
-                    card.classList.add('correct'); playCorrectSound(); playerSequence.push(clickedImage);
-                    if (playerSequence.length === sequence.length) customSetTimeout(() => endGame(true), 500);
-                } else { card.classList.add('wrong'); playWrongSound(); loseLife(); customSetTimeout(() => card.classList.remove('wrong'), 800); }
-            } else {
-                card.textContent = card.dataset.hiddenContent;
-                if (card.dataset.hasSpecial === "true") {
-                    card.classList.add('correct'); playCorrectSound(); playerSequence.push(card.dataset.index);
-                    if (playerSequence.length === redCards.length) customSetTimeout(() => endGame(true), 500);
-                } else { card.classList.add('wrong'); playWrongSound(); loseLife(); customSetTimeout(() => { card.classList.remove('wrong'); card.textContent = '🥢'; }, 800); }
+    if (!isGameActive || card.classList.contains('correct') || card.classList.contains('wrong')) return;
+    if (currentMode === 'memorize') {
+        const clickedImage = card.dataset.image;
+        const expectedImage = sequence[playerSequence.length];
+        if (clickedImage === expectedImage) {
+            card.classList.add('correct'); playCorrectSound(); playerSequence.push(clickedImage);
+            if (playerSequence.length === sequence.length) customSetTimeout(() => endGame(true), 500);
+        } else { card.classList.add('wrong'); playWrongSound(); loseLife(); customSetTimeout(() => card.classList.remove('wrong'), 800); }
+    } else {
+        // Cek apakah kartu sudah pernah diklik (sudah revealed)
+        if (card.textContent !== '🥢') return;
+        
+        card.textContent = card.dataset.hiddenContent;
+        if (card.dataset.hasSpecial === "true") {
+            card.classList.add('correct'); playCorrectSound(); 
+            playerSequence.push(card);
+            
+            // Hitung berapa kartu special yang sudah ditemukan
+            const totalSpecialCards = document.querySelectorAll('.card[data-has-special="true"]').length;
+            const foundSpecialCards = document.querySelectorAll('.card.correct[data-has-special="true"]').length;
+            
+            if (foundSpecialCards === totalSpecialCards) {
+                customSetTimeout(() => endGame(true), 500);
             }
+        } else { 
+            card.classList.add('wrong'); playWrongSound(); loseLife(); 
+            customSetTimeout(() => { 
+                card.classList.remove('wrong'); 
+                card.textContent = '🥢'; 
+            }, 800); 
         }
+    }
+}
         
         function endGame(success, reason = 'lives') {
             if(!isGameActive && success) return;
