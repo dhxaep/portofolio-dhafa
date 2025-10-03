@@ -209,11 +209,11 @@
     <script>
         AOS.init();
     
+        // --- MODAL & API SETUP ---
         let infoModal;
         document.addEventListener('DOMContentLoaded', () => { infoModal = new bootstrap.Modal(document.getElementById('infoModal')); });
         function showModal(title, message) { document.getElementById('infoModalLabel').textContent = title; document.getElementById('infoModalBody').innerHTML = message; infoModal.show(); }
         const API_BASE = '/.netlify/functions';
-        
         async function apiCall(endpoint, body) {
             const loader = document.getElementById('loader');
             const isSilent = endpoint === 'update-score';
@@ -231,6 +231,7 @@
             }
         }
 
+        // --- GLOBAL VARIABLES & CORE FUNCTIONS ---
         let currentUser = '', currentMode = '', currentLevel = 1, currentUserData = null;
         let sequence = [], playerSequence = [], redCards = [];
         let gameTimer = null, timeLeft = 0, isGameActive = false, lives = 3;
@@ -239,20 +240,18 @@
         let audioContext;
         const dimsumImages = ['🥟', '🥠', '🍤', '🍜', '🍲', '🥢', '🍱', '🍙', '🍘', '🍚', '🥮', '🧧', '🏮', '🎋', '🍵', '🫖', '🥡', '🍛', '🍝', '🍳', '🥗', '🍖', '🍗', '🥓', '🌶️', '🧄', '🧅', '🥕', '🌽', '🥒', '🍅', '🥬'];
         
+        // BUG FIX: Define core functions early to prevent ReferenceError
+        function clearGameTimer() { if (gameTimer) { clearInterval(gameTimer); gameTimer = null; } }
+
         let activeTimeouts = [];
         function customSetTimeout(callback, delay) {
-            const timeoutId = setTimeout(() => {
-                activeTimeouts = activeTimeouts.filter(id => id !== timeoutId);
-                callback();
-            }, delay);
+            const timeoutId = setTimeout(() => { activeTimeouts = activeTimeouts.filter(id => id !== timeoutId); callback(); }, delay);
             activeTimeouts.push(timeoutId);
             return timeoutId;
         }
-        function clearAllTimeouts() {
-            activeTimeouts.forEach(id => clearTimeout(id));
-            activeTimeouts = [];
-        }
+        function clearAllTimeouts() { activeTimeouts.forEach(id => clearTimeout(id)); activeTimeouts = []; }
 
+        // --- AUTH & NAVIGATION ---
         async function login() {
             const username = document.getElementById('username').value.trim(); const password = document.getElementById('password').value.trim();
             if (!username || !password) return showModal('Input Tidak Lengkap', 'Masukkan username dan password!');
@@ -318,6 +317,7 @@
             showScreen('levelScreen');
         }
 
+        // --- GAME LOGIC: DIMDAMDOE ---
         class DimDamDoe {
              constructor() {
                 this.winningConditions = [ [0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6] ];
@@ -371,6 +371,7 @@
             }
         }
 
+        // --- GAME LOGIC: MEMORIZE & PICKME ---
         function startLevel(level) {
             clearGameTimer(); currentLevel = level;
             document.getElementById('gameUser').textContent = `👤 ${currentUser}`; document.getElementById('gameTitle').textContent = `Level ${level}`;
