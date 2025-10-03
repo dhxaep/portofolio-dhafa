@@ -202,7 +202,7 @@
     </div>
 
     <div class="modal fade" id="infoModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content glass"><div class="modal-header"><h5 class="modal-title" id="infoModalLabel"></h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body" id="infoModalBody"></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button></div></div></div></div>
-    <div class="modal fade" id="forgotPasswordModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content glass"><div class="modal-header"><h5 class="modal-title">Lupa Password</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div id="reset-step-1"><p>Masukkan username dan nomor WhatsApp Anda.</p><input type="text" id="resetUsername" class="form-control mb-2" placeholder="Username"><input type="tel" id="resetWaNumber" class="form-control" placeholder="Nomor WhatsApp (cth: 628123)"><button class="btn mt-3 w-100" onclick="initiatePasswordReset()">Kirim Kode</button></div><div id="reset-step-2" style="display:none;"><p>Masukkan kode verifikasi dan password baru.</p><div class="alert alert-success" id="resetCodeDisplay"></div><input type="text" id="resetCode" class="form-control mb-2" placeholder="Kode Verifikasi"><input type="password" id="resetNewPassword" class="form-control" placeholder="Password Baru"><button class="btn mt-3 w-100" onclick="verifyPasswordReset()">Reset Password</button></div></div></div></div></div>
+    <div class="modal fade" id="forgotPasswordModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content glass"><div class="modal-header"><h5 class="modal-title">Lupa Password</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div id="reset-step-1"><p>Masukkan username dan nomor WhatsApp Anda.</p><input type="text" id="resetUsername" class="form-control mb-2" placeholder="Username"><input type="tel" id="resetWaNumber" class="form-control" placeholder="Nomor WhatsApp (cth: 628123)"><button class="btn mt-3 w-100" onclick="initiatePasswordReset()">Kirim Kode</button></div><div id="reset-step-2" style="display:none;"><p>Masukkan kode verifikasi dan password baru.</p><div class="alert alert-success" id="resetCodeDisplay"></div><input type="text" id="resetCode" class="form-control mb-2" placeholder="Kode Verifikasi"><input type="password" id="resetNewPassword" class="form-control" placeholder="Password Baru"><button class="btn mt-3 w-100" onclick="verifyPasswordReset()">Reset Password</button></div></div></div></div>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
@@ -468,55 +468,80 @@
         function hideSpecialCards() { document.querySelectorAll('.card').forEach(c => { c.classList.remove('red-marked'); c.textContent = '🥢'; }); }
         function loseLife() { if (lives > 0) { lives--; document.querySelectorAll('.heart')[lives].classList.add('lost'); if (lives <= 0) endGame(false, 'lives'); } }
         
+        // --- START: FUNGSI shuffleCards YANG DIPERBAIKI ---
         function shuffleCards(callback) {
             const container = document.getElementById('cardsContainer');
-            let cards = Array.from(container.children);
-            if (cards.length === 0) { if (callback) callback(); return; }
-
+            const cards = Array.from(container.children);
+            const positions = cards.map(card => {
+                const rect = card.getBoundingClientRect();
+                return { card, top: rect.top, left: rect.left };
+            });
             const containerRect = container.getBoundingClientRect();
-            container.style.height = `${containerRect.height}px`;
-
-            const positions = cards.map(card => ({
-                top: card.offsetTop, left: card.offsetLeft,
-                width: card.offsetWidth, height: card.offsetHeight
-            }));
 
             cards.forEach((card, i) => {
+                const pos = positions[i];
                 card.style.position = 'absolute';
-                card.style.top = `${positions[i].top}px`;
-                card.style.left = `${positions[i].left}px`;
-                card.style.width = `${positions[i].width}px`;
-                card.style.height = `${positions[i].height}px`;
+                card.style.top = (pos.top - containerRect.top) + 'px';
+                card.style.left = (pos.left - containerRect.left) + 'px';
+                card.style.width = card.offsetWidth + 'px';
+                card.style.height = card.offsetHeight + 'px';
                 card.style.margin = '0';
                 card.style.transition = 'top 0.5s ease, left 0.5s ease';
             });
 
+            const swapCount = 6;
             let swapIndex = 0;
-            const doSwap = () => {
-                if (swapIndex++ < 6) {
-                    let i = Math.floor(Math.random() * cards.length);
-                    let j = Math.floor(Math.random() * cards.length);
-                    while (i === j) j = Math.floor(Math.random() * cards.length);
+            const delay = 600;
 
-                    const cardA = cards[i];
-                    const cardB = cards[j];
+            function doSwap() {
+                if (swapIndex >= swapCount) {
+                    cards.forEach(card => {
+                        card.style.position = '';
+                        card.style.top = '';
+                        card.style.left = '';
+                        card.style.width = '';
+                        card.style.height = '';
+                        card.style.margin = '';
+                        card.style.transition = '';
+                    });
 
-                    [cardA.style.top, cardB.style.top] = [cardB.style.top, cardA.style.top];
-                    [cardA.style.left, cardB.style.left] = [cardB.style.left, cardA.style.left];
-                    [cards[i], cards[j]] = [cards[j], cards[i]];
-
-                    customSetTimeout(doSwap, 600);
-                } else {
-                    cards.forEach(card => card.style = '');
-                    container.style.height = '';
+                    // Re-append kartu sesuai urutan acak yang baru. Ini adalah kunci perbaikannya.
                     cards.forEach(card => container.appendChild(card));
                     if (callback) callback();
+                    return;
                 }
-            };
-            doSwap();
+
+                let i = Math.floor(Math.random() * cards.length);
+                let j = Math.floor(Math.random() * cards.length);
+                while (i === j) j = Math.floor(Math.random() * cards.length);
+
+                const cardA = cards[i];
+                const cardB = cards[j];
+
+                const topA = cardA.style.top;
+                const leftA = cardA.style.left;
+                const topB = cardB.style.top;
+                const leftB = cardB.style.left;
+
+                cardA.style.top = topB;
+                cardA.style.left = leftB;
+
+                cardB.style.top = topA;
+                cardB.style.left = leftA;
+
+                // Tukar elemen di dalam array JS agar sesuai dengan visualnya
+                [cards[i], cards[j]] = [cards[j], cards[i]];
+
+                swapIndex++;
+                customSetTimeout(doSwap, 600);
+            }
+
+            customSetTimeout(doSwap, delay);
         }
+        // --- END: FUNGSI shuffleCards YANG DIPERBAIKI ---
 
         function enableCardClicks() { document.querySelectorAll('.card').forEach(c => c.onclick = () => handleCardClick(c)); }
+        
         function handleCardClick(card) {
             if (!isGameActive || card.classList.contains('correct') || card.classList.contains('wrong')) return;
             if (currentMode === 'memorize') {
@@ -527,11 +552,26 @@
                     if (playerSequence.length === sequence.length) customSetTimeout(() => endGame(true), 500);
                 } else { card.classList.add('wrong'); playWrongSound(); loseLife(); customSetTimeout(() => card.classList.remove('wrong'), 800); }
             } else {
+                if (card.textContent !== '🥢') return;
+                
                 card.textContent = card.dataset.hiddenContent;
                 if (card.dataset.hasSpecial === "true") {
-                    card.classList.add('correct'); playCorrectSound(); playerSequence.push(card.dataset.index);
-                    if (playerSequence.length === redCards.length) customSetTimeout(() => endGame(true), 500);
-                } else { card.classList.add('wrong'); playWrongSound(); loseLife(); customSetTimeout(() => { card.classList.remove('wrong'); card.textContent = '🥢'; }, 800); }
+                    card.classList.add('correct'); playCorrectSound(); 
+                    playerSequence.push(card);
+                    
+                    const totalSpecialCards = document.querySelectorAll('.card[data-has-special="true"]').length;
+                    const foundSpecialCards = document.querySelectorAll('.card.correct[data-has-special="true"]').length;
+                    
+                    if (foundSpecialCards === totalSpecialCards) {
+                        customSetTimeout(() => endGame(true), 500);
+                    }
+                } else { 
+                    card.classList.add('wrong'); playWrongSound(); loseLife(); 
+                    customSetTimeout(() => { 
+                        card.classList.remove('wrong'); 
+                        card.textContent = '🥢'; 
+                    }, 800); 
+                }
             }
         }
         
@@ -586,4 +626,3 @@
     </script>
 </body>
 </html>
-
