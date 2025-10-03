@@ -33,7 +33,16 @@
         .level-btn.completed { background: linear-gradient(135deg, #3e5526, #ab2902); color: #fadc9a; }
         .stars { position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%); font-size: 12px; }
         .game-area { margin: 30px 0; }
-        .cards-container { display: flex; justify-content: center; align-items: center; gap: 15px; flex-wrap: wrap; max-width: 500px; margin: 20px auto; position: relative; min-height: 220px; }
+        .cards-container {
+            display: grid; 
+            justify-content: center;
+            align-content: center;
+            gap: 15px;
+            max-width: 500px;
+            margin: 20px auto;
+            position: relative;
+            min-height: 220px; 
+        }
         .card { width: 100px; height: 100px; font-size: 48px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #fadc9a, #f2d375); color: #3e5526; font-weight: bold; border-radius: 12px; transition: transform 0.4s ease, box-shadow 0.4s ease; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); cursor: pointer; position: relative; }
         .card:hover { transform: scale(1.03); box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25); }
         .card.red-marked { background: linear-gradient(135deg, #ab2902, #c08429); color: #fadc9a; box-shadow: 0 0 20px rgba(171, 41, 2, 0.5); }
@@ -78,7 +87,29 @@
         @keyframes countdownPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
         @keyframes pulseTimer { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
         @keyframes winningGlow { from { opacity: 0.6; } to { opacity: 1; } }
-        @media (max-width: 768px) { .container { padding: 10px; } h1 { font-size: 2rem; } .level-grid { grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); } .lives-display { font-size: 16px; } .heart { font-size: 20px; } .tictactoe-board { max-width: 250px; gap: 10px; } .tictactoe-cell { font-size: 2.5rem; } .screen { padding: 20px; } }
+        
+        /* --- PERBAIKAN RESPONSIVE: Penyesuaian untuk mobile --- */
+        @media (max-width: 768px) {
+            .container { padding: 10px; }
+            .screen { padding: 20px; }
+            h1 { font-size: 2rem; }
+            h2 { font-size: 1.5rem; }
+            .btn { padding: 12px 20px; font-size: 14px; }
+            .mode-card { padding: 20px; }
+            .mode-icon { font-size: 3rem; }
+            .level-grid { grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); }
+            .lives-display { font-size: 16px; }
+            .heart { font-size: 20px; }
+            .cards-container { gap: 10px; }
+            .card {
+                width: 60px;
+                height: 60px;
+                font-size: 32px;
+                border-radius: 8px;
+            }
+            .tictactoe-board { max-width: 250px; gap: 10px; }
+            .tictactoe-cell { font-size: 2.5rem; }
+        }
         .form-container { width: 100%; max-width: 400px; margin: 0 auto; }
         .form-title { color: #f2d375; margin-bottom: 20px; font-size: 1.5rem; }
         .modal-content { background: rgba(62, 85, 38, 0.6); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(250, 220, 154, 0.2); color: #fadc9a; }
@@ -120,11 +151,10 @@
         document.addEventListener('DOMContentLoaded', () => { infoModal = new bootstrap.Modal(document.getElementById('infoModal')); });
         function showModal(title, message) { document.getElementById('infoModalLabel').textContent = title; document.getElementById('infoModalBody').innerHTML = message; infoModal.show(); }
         const API_BASE = '/.netlify/functions';
-
-        // --- PERBAIKAN: Fungsi apiCall dengan loading animation ---
+        
         async function apiCall(endpoint, body) {
             const loader = document.getElementById('loader');
-            loader.style.display = 'flex'; // Tampilkan loading
+            loader.style.display = 'flex'; 
             try {
                 const response = await fetch(`${API_BASE}/${endpoint}`, {
                     method: 'POST',
@@ -142,7 +172,7 @@
                 console.error(error);
                 throw error;
             } finally {
-                loader.style.display = 'none'; // Sembunyikan loading
+                loader.style.display = 'none'; 
             }
         }
 
@@ -157,11 +187,9 @@
         let audioContext;
         const dimsumImages = ['🥟', '🥠', '🍤', '🍜', '🍲', '🥢', '🍱', '🍙', '🍘', '🍚', '🥮', '🧧', '🏮', '🎋', '🍵', '🫖', '🥡', '🍛', '🍝', '🍳', '🥗', '🍖', '🍗', '🥓', '🌶️', '🧄', '🧅', '🥕', '🌽', '🥒', '🍅', '🥬'];
         
-        // PERBAIKAN FREEZE: Sistem baru untuk mengelola dan membersihkan semua setTimeout
         let activeTimeouts = [];
         function customSetTimeout(callback, delay) {
             const timeoutId = setTimeout(() => {
-                // Hapus timeout dari daftar setelah selesai dieksekusi
                 activeTimeouts = activeTimeouts.filter(id => id !== timeoutId);
                 callback();
             }, delay);
@@ -172,7 +200,6 @@
             activeTimeouts.forEach(id => clearTimeout(id));
             activeTimeouts = [];
         }
-        // ---
 
         async function login() {
             const username = document.getElementById('username').value.trim(); const password = document.getElementById('password').value.trim();
@@ -200,8 +227,8 @@
         function isLoggedIn() { return currentUser !== '' && currentUserData !== null; }
         
         function stopAllGameLogic() {
-            clearGameTimer(); // Hentikan setInterval
-            clearAllTimeouts(); // Hentikan semua setTimeout yang tertunda
+            clearGameTimer(); 
+            clearAllTimeouts(); 
             isGameActive = false;
             sequence = []; playerSequence = []; redCards = [];
             if(dimDamDoeGame) { dimDamDoeGame.gameActive = false; }
@@ -241,19 +268,26 @@
             getHardMove() { for (let i = 0; i < 9; i++) { if (this.board[i] === '') { this.board[i] = 'ai'; if (this.checkWinner() === 'ai') { this.board[i] = ''; return i; } this.board[i] = ''; } } for (let i = 0; i < 9; i++) { if (this.board[i] === '') { this.board[i] = 'player'; if (this.checkWinner() === 'player') { this.board[i] = ''; return i; } this.board[i] = ''; } } if (this.board[4] === '') return 4; const c = [0, 2, 6, 8].filter(i => this.board[i] === ''); if (c.length > 0) return c[Math.floor(Math.random() * c.length)]; return this.getRandomMove(); }
             checkWinner() { for (let cond of this.winningConditions) { const [a, b, c] = cond; if (this.board[a] && this.board[a] === this.board[b] && this.board[a] === this.board[c]) { this.highlightWinningLine(cond); return this.board[a]; } } return null; }
             highlightWinningLine(cond) { cond.forEach(i => { const c = document.querySelector(`[data-index="${i}"]`); c.style.background = 'rgba(242, 211, 117, 0.6)'; c.style.animation = 'winningGlow 0.5s ease-in-out infinite alternate'; }); }
-            async endGame(winner) {
+            
+            // --- PERBAIKAN LOADING: Menghilangkan jeda loading saat skor muncul ---
+            endGame(winner) {
                 if (!this.gameActive) return; this.gameActive = false; 
                 const gameTime = (Date.now() - this.startTime) / 1000; let pointsEarned = 0; let message = '';
                 if (winner === 'player') { this.scores.player++; let basePoints = 0; switch (this.difficulty) { case 'easy': basePoints = 100; break; case 'medium': basePoints = 200; break; case 'hard': basePoints = 300; break; } const speedBonus = Math.max(0, Math.floor((20 - gameTime) * 5)); const moveBonus = Math.max(0, (9 - this.moveCount) * 10); pointsEarned = basePoints + speedBonus + moveBonus; this.scores.points += pointsEarned; message = `🎉 Anda menang!<br>Total: +${pointsEarned} poin!`; this.playSound('win');
                 } else if (winner === 'ai') { this.scores.ai++; switch (this.difficulty) { case 'easy': pointsEarned = -50; break; case 'medium': pointsEarned = -25; break; case 'hard': pointsEarned = 0; break; } if (this.scores.points + pointsEarned < 0) { pointsEarned = -this.scores.points; } this.scores.points += pointsEarned; message = `🦐 AI menang!<br>${pointsEarned === 0 ? 'Tidak ada pengurangan poin!' : pointsEarned + ' poin'}`; this.playSound('lose');
                 } else { this.scores.tie++; switch (this.difficulty) { case 'easy': pointsEarned = 25; break; case 'medium': pointsEarned = 50; break; case 'hard': pointsEarned = 100; break; } this.scores.points += pointsEarned; message = `🤝 Seri!<br>+${pointsEarned} poin!`; this.playSound('tie'); }
-                this.updateScores(); showModal('Permainan Selesai', message);
-                try {
-                    const scoreToSend = Number(this.scores.points) || 0;
-                    await apiCall('update-score', { username: currentUser, mode: 'dimdamdoe', score: scoreToSend, stars: (winner === 'player' ? 1 : 0) });
-                    if (!currentUserData.scores['dimdamdoe']) { currentUserData.scores['dimdamdoe'] = { high_score: 0, total_stars: 0 }; }
-                    currentUserData.scores['dimdamdoe'].high_score = Math.max(currentUserData.scores['dimdamdoe'].high_score, scoreToSend);
-                } catch (e) { console.error("Gagal update skor dimdamdoe", e); }
+                
+                this.updateScores();
+                showModal('Permainan Selesai', message); // Tampilkan modal SEGERA
+
+                // Kirim skor ke server di latar belakang (tanpa 'await')
+                const scoreToSend = Number(this.scores.points) || 0;
+                apiCall('update-score', { username: currentUser, mode: 'dimdamdoe', score: scoreToSend, stars: (winner === 'player' ? 1 : 0) })
+                    .then(data => {
+                        if (!currentUserData.scores['dimdamdoe']) { currentUserData.scores['dimdamdoe'] = { high_score: 0, total_stars: 0 }; }
+                        currentUserData.scores['dimdamdoe'].high_score = Math.max(currentUserData.scores['dimdamdoe'].high_score, scoreToSend);
+                    })
+                    .catch(e => console.error("Gagal update skor dimdamdoe", e));
             }
             updateStatus() { const s = document.getElementById('dimdamdoeStatus'); s.textContent = this.currentPlayer === 'player' ? 'Giliran Anda! 🥟' : 'AI sedang berpikir... 🤔'; }
             updateScores() { document.getElementById('dimdamdoeTotalPoints').textContent = this.scores.points; document.getElementById('dimdamdoePlayerScore').textContent = this.scores.player; document.getElementById('dimdamdoeAiScore').textContent = this.scores.ai; document.getElementById('dimdamdoeTieScore').textContent = this.scores.tie; }
@@ -269,29 +303,43 @@
         function clearGameTimer() { if (gameTimer) { clearInterval(gameTimer); gameTimer = null; } }
         
         function startLevel(level) { clearGameTimer(); shuffleSpeedMultiplier = 1 + Math.floor((level - 1) / 5) * 0.8; currentLevel = level; document.getElementById('gameUser').textContent = `👤 ${currentUser}`; document.getElementById('gameTitle').textContent = `Level ${level}`; document.getElementById('currentLevel').textContent = level; document.getElementById('currentScore').textContent = '0'; sequence = []; playerSequence = []; redCards = []; flippedCards = []; lives = 3; isGameActive = false; document.querySelectorAll('.heart').forEach(h => h.classList.remove('lost')); setupGame(); showScreen('gameScreen'); startCountdown(); }
+        
         function startCountdown() {
-            clearGameTimer(); let count = 3; const container = document.getElementById('cardsContainer');
+            clearGameTimer();
+            let count = 3;
+            const container = document.getElementById('cardsContainer');
+            
+            container.style.display = 'flex';
+            container.style.justifyContent = 'center';
+            container.style.alignItems = 'center';
+            container.style.gridTemplateColumns = ''; 
+        
             function showCount() {
                 container.innerHTML = `<div class="countdown">${count > 0 ? count : 'GO!'}</div>`;
-                if (count > 0) { count--; customSetTimeout(showCount, 1000); } 
-                else { customSetTimeout(() => startGame(), 500); }
+                if (count > 0) {
+                    count--;
+                    customSetTimeout(showCount, 1000);
+                } else {
+                    customSetTimeout(() => startGame(), 500);
+                }
             }
             showCount();
         }
+
         function setupGame() { const cardsCount = Math.min(3 + Math.floor((currentLevel - 1) / 2), 25); const timeLimit = Math.max(20 - Math.floor(currentLevel / 3), 8); document.getElementById('timer').textContent = timeLimit; timeLeft = timeLimit; if (currentMode === 'memorize') { document.getElementById('gameInstructions').textContent = `Ingat urutan dimsum ini!`; } else { const redCount = Math.min(1 + Math.floor((currentLevel - 1) / 3), 10); document.getElementById('gameInstructions').textContent = `Ingat posisi ${redCount} dimsum spesial, lalu temukan setelah diacak!`; } document.getElementById('nextBtn').style.display = 'none'; }
+        
         function startGame() { isGameActive = false; playerSequence = []; flippedCards = []; gameStartTime = Date.now(); if (currentMode === 'memorize') { const cardsCount = Math.min(3 + Math.floor((currentLevel - 1) / 2), 25); const memoryTime = Math.max(8 - Math.floor(currentLevel / 5), 3); document.getElementById('gameInstructions').textContent = `Ingat urutan dimsum ini! Waktu: ${memoryTime} detik`; setupMemorizeSequence(cardsCount); startMemoryTimer(memoryTime); customSetTimeout(() => { switchToInputMode(); isGameActive = true; startGameTimer(20); }, memoryTime * 1000 + 300); } else { const cardsCount = Math.min(3 + Math.floor((currentLevel - 1) / 2), 25); const redCount = Math.min(1 + Math.floor((currentLevel - 1) / 3), 10); const memoryTime = Math.min(3 + Math.floor(currentLevel / 3), 8); document.getElementById('gameInstructions').textContent = `Ingat posisi dimsum spesial! Waktu: ${memoryTime} detik`; setupPickMeCards(cardsCount, redCount); startMemoryTimer(memoryTime); showSpecialCards(); customSetTimeout(() => { hideSpecialCards(); document.getElementById('gameInstructions').textContent = `Kartu sedang diacak...`; shuffleCards(() => { isGameActive = true; startGameTimer(15); enableCardClicks(); document.getElementById('gameInstructions').textContent = `Temukan semua dimsum spesial!`; }); }, memoryTime * 1000); } }
+        
         function setupMemorizeSequence(cardsCount) {
             const container = document.getElementById('cardsContainer');
             container.innerHTML = '';
-            // --- PERBAIKAN GRID ---
             container.style.display = 'grid';
             container.style.gridTemplateColumns = `repeat(${Math.min(cardsCount, 5)}, 1fr)`;
             container.style.maxWidth = '800px';
             container.style.margin = '0 auto';
             sequence = [];
-            const selectedImages = dimsumImages.slice(0, cardsCount);
-            const shuffledImages = selectedImages.sort(() => Math.random() - 0.5);
-            shuffledImages.forEach((image, index) => {
+            const selectedImages = [...dimsumImages].sort(() => 0.5 - Math.random()).slice(0, cardsCount);
+            selectedImages.forEach((image, index) => {
                 sequence.push(image);
                 const card = document.createElement('div');
                 card.className = 'card sequence-card';
@@ -302,11 +350,11 @@
             });
             playerSequence = [];
         }
+
         function setupPickMeCards(cardsCount, redCount) {
             const container = document.getElementById('cardsContainer');
             container.innerHTML = '';
             const cols = Math.ceil(Math.sqrt(cardsCount));
-            // --- PERBAIKAN GRID ---
             container.style.display = 'grid';
             container.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
             sequence = [];
@@ -329,18 +377,164 @@
             }
             playerSequence = [];
         }
+
         function startMemoryTimer(memoryTime) { clearGameTimer(); const endTime = Date.now() + memoryTime * 1000; function update() { const remaining = Math.max(0, Math.ceil((endTime - Date.now()) / 1000)); document.getElementById('timer').textContent = remaining; if (remaining <= 0) clearGameTimer(); } update(); gameTimer = setInterval(update, 100); }
         function startGameTimer(gameTime) { clearGameTimer(); const endTime = Date.now() + gameTime * 1000; function update() { const remaining = Math.max(0, Math.ceil((endTime - Date.now()) / 1000)); document.getElementById('timer').textContent = remaining; timeLeft = remaining; if (remaining <= 0) { clearGameTimer(); timeLeft = 0; if (isGameActive) { if (currentMode === 'pickme') { endGame(false); } else { loseLife(); } } } } update(); gameTimer = setInterval(update, 100); }
-        function switchToInputMode() { const container = document.getElementById('cardsContainer'); container.innerHTML = ''; container.style.gridTemplateColumns = 'repeat(5, 1fr)'; container.style.maxWidth = '500px'; const allImages = [...dimsumImages]; const shuffledImages = allImages.sort(() => Math.random() - 0.5).slice(0, 25); sequence.forEach((seqImage, index) => { if (!shuffledImages.includes(seqImage)) { shuffledImages[index] = seqImage; } }); shuffledImages.sort(() => Math.random() - 0.5); shuffledImages.forEach((image, index) => { const card = document.createElement('div'); card.className = 'card input-card'; card.textContent = image; card.dataset.image = image; card.dataset.index = index; card.dataset.clicked = 'false'; container.appendChild(card); }); document.getElementById('gameInstructions').textContent = `Klik dimsum sesuai urutan yang tadi ditampilkan! Waktu: 20 detik`; enableCardClicks(); }
+        
+        function switchToInputMode() {
+            const container = document.getElementById('cardsContainer');
+            container.innerHTML = '';
+            container.style.display = 'grid';
+            container.style.gridTemplateColumns = 'repeat(5, 1fr)';
+            container.style.maxWidth = '500px';
+
+            const otherImages = dimsumImages.filter(img => !sequence.includes(img));
+            otherImages.sort(() => 0.5 - Math.random()); 
+
+            let finalOptions = [...sequence];
+            const needed = 25 - finalOptions.length;
+            if (needed > 0) {
+                finalOptions.push(...otherImages.slice(0, needed));
+            }
+            finalOptions = finalOptions.slice(0, 25);
+
+            finalOptions.sort(() => 0.5 - Math.random());
+
+            finalOptions.forEach((image, index) => {
+                const card = document.createElement('div');
+                card.className = 'card input-card';
+                card.textContent = image;
+                card.dataset.image = image;
+                card.dataset.index = index;
+                card.dataset.clicked = 'false';
+                container.appendChild(card);
+            });
+            
+            document.getElementById('gameInstructions').textContent = `Klik dimsum sesuai urutan yang tadi ditampilkan! Waktu: 20 detik`;
+            enableCardClicks();
+        }
+
         function showSpecialCards() { document.querySelectorAll('.card').forEach(c => { if (c.dataset.hasSpecial === 'true') { c.classList.add('red-marked'); c.textContent = c.dataset.hiddenContent; } }); }
         function hideSpecialCards() { document.querySelectorAll('.card').forEach(c => { c.classList.remove('red-marked'); c.textContent = '🥢'; }); }
         function loseLife() { if (lives <= 0) return; lives--; const hearts = document.querySelectorAll('.heart'); if (hearts[lives]) hearts[lives].classList.add('lost'); if (lives <= 0) { endGame(false); } else { isGameActive = false; clearGameTimer(); showModal('Waktu Habis!', `Nyawa tersisa: ${lives}<br>Coba lagi!`); if (currentMode === 'memorize') { playerSequence = []; document.querySelectorAll('.card').forEach(c => { c.classList.remove('selected', 'correct', 'wrong'); c.dataset.clicked = 'false'; c.style.opacity = ''; c.style.border = ''; c.onclick = null; }); } else { playerSequence = []; document.querySelectorAll('.card').forEach(c => { c.classList.remove('selected', 'correct', 'wrong'); c.textContent = '🥢'; c.onclick = null; }); } const timeLimit = Math.max(20 - Math.floor(currentLevel / 3), 8); timeLeft = timeLimit; document.getElementById('timer').textContent = timeLimit; customSetTimeout(() => startCountdown(), 1000); } }
-        function shuffleCards(callback) { const container = document.getElementById('cardsContainer'); const cards = Array.from(container.children); const positions = cards.map(card => { const rect = card.getBoundingClientRect(); return { card, top: rect.top, left: rect.left }; }); const containerRect = container.getBoundingClientRect(); cards.forEach((card, i) => { const pos = positions[i]; card.style.position = 'absolute'; card.style.top = (pos.top - containerRect.top) + 'px'; card.style.left = (pos.left - containerRect.left) + 'px'; card.style.width = '100px'; card.style.height = '100px'; card.style.margin = '0'; card.style.transition = 'top 0.5s ease, left 0.5s ease'; }); const swapCount = 6; let swapIndex = 0; const delay = 600 / shuffleSpeedMultiplier; function doSwap() { if (swapIndex >= swapCount) { cards.forEach(card => { card.style.position = ''; card.style.top = ''; card.style.left = ''; card.style.margin = ''; card.style.transition = ''; }); cards.forEach(card => container.appendChild(card)); if (callback) callback(); return; } let i = Math.floor(Math.random() * cards.length); let j = Math.floor(Math.random() * cards.length); while (i === j) j = Math.floor(Math.random() * cards.length); const cardA = cards[i]; const cardB = cards[j]; const topA = parseFloat(cardA.style.top); const leftA = parseFloat(cardA.style.left); const topB = parseFloat(cardB.style.top); const leftB = parseFloat(cardB.style.left); cardA.style.top = `${topB}px`; cardA.style.left = `${leftB}px`; cardB.style.top = `${topA}px`; cardB.style.left = `${leftA}px`; [cards[i], cards[j]] = [cards[j], cards[i]]; swapIndex++; customSetTimeout(doSwap, 600); } customSetTimeout(doSwap, delay); }
+        
+        // --- PERBAIKAN RESPONSIVE: Mengambil ukuran kartu dinamis untuk animasi ---
+        function shuffleCards(callback) {
+            const container = document.getElementById('cardsContainer');
+            const cards = Array.from(container.children);
+            if (cards.length === 0) { if (callback) callback(); return; }
+
+            const cardSize = cards[0].getBoundingClientRect();
+            const cardWidth = cardSize.width;
+            const cardHeight = cardSize.height;
+
+            const positions = cards.map(card => { const rect = card.getBoundingClientRect(); return { card, top: rect.top, left: rect.left }; });
+            const containerRect = container.getBoundingClientRect();
+            cards.forEach((card, i) => {
+                const pos = positions[i];
+                card.style.position = 'absolute';
+                card.style.top = (pos.top - containerRect.top) + 'px';
+                card.style.left = (pos.left - containerRect.left) + 'px';
+                card.style.width = `${cardWidth}px`;
+                card.style.height = `${cardHeight}px`;
+                card.style.margin = '0';
+                card.style.transition = 'top 0.5s ease, left 0.5s ease';
+            });
+            const swapCount = 6; let swapIndex = 0; const delay = 600 / shuffleSpeedMultiplier;
+            function doSwap() {
+                if (swapIndex >= swapCount) {
+                    cards.forEach(card => {
+                        card.style.position = ''; card.style.top = ''; card.style.left = '';
+                        card.style.width = ''; card.style.height = '';
+                        card.style.margin = ''; card.style.transition = '';
+                    });
+                    cards.forEach(card => container.appendChild(card));
+                    if (callback) callback();
+                    return;
+                }
+                let i = Math.floor(Math.random() * cards.length);
+                let j = Math.floor(Math.random() * cards.length);
+                while (i === j) j = Math.floor(Math.random() * cards.length);
+                const cardA = cards[i]; const cardB = cards[j];
+                const topA = cardA.style.top; const leftA = cardA.style.left;
+                const topB = cardB.style.top; const leftB = cardB.style.left;
+                cardA.style.top = topB; cardA.style.left = leftB;
+                cardB.style.top = topA; cardB.style.left = leftA;
+                [cards[i], cards[j]] = [cards[j], cards[i]];
+                swapIndex++;
+                customSetTimeout(doSwap, 600);
+            }
+            customSetTimeout(doSwap, delay);
+        }
+
         function enableCardClicks() { document.querySelectorAll('.card').forEach(c => c.onclick = () => handleCardClick(c)); }
         function handleCardClick(card) { if (!isGameActive || timeLeft <= 0) return; if (currentMode === 'memorize') { if (card.dataset.clicked === 'true') return; const clickedImage = card.dataset.image; const expectedImage = sequence[playerSequence.length]; card.classList.add('selected'); card.dataset.clicked = 'true'; if (clickedImage === expectedImage) { playCorrectSound(); card.classList.add('correct'); playerSequence.push(clickedImage); card.onclick = null; card.style.opacity = '0.8'; if (playerSequence.length === sequence.length) customSetTimeout(() => endGame(true), 500); } else { playWrongSound(); card.classList.add('wrong'); customSetTimeout(() => { card.classList.remove('selected', 'wrong'); card.dataset.clicked = 'false'; lives--; const hearts = document.querySelectorAll('.heart'); if (hearts[lives]) hearts[lives].classList.add('lost'); if (lives <= 0) endGame(false); }, 800); } } else { const index = parseInt(card.dataset.index); card.classList.add('selected'); card.textContent = card.dataset.hiddenContent; if (card.dataset.hasSpecial === 'true') { playCorrectSound(); card.classList.add('correct'); card.classList.add('red-marked'); playerSequence.push(index); card.onclick = null; if (playerSequence.length === redCards.length) customSetTimeout(() => endGame(true), 500); } else { playWrongSound(); card.classList.add('wrong'); customSetTimeout(() => { lives--; const hearts = document.querySelectorAll('.heart'); if (hearts[lives]) hearts[lives].classList.add('lost'); if (lives <= 0) endGame(false); }, 800); } } }
-        async function endGame(success) { if(!isGameActive && success) return; isGameActive = false; clearGameTimer(); document.querySelectorAll('.card').forEach(c => c.onclick = null); if (success) { playWinSound(); const totalGameTime = Math.max(1, Math.floor((Date.now() - gameStartTime) / 1000)); const baseScore = currentLevel * 100; const timeBonus = Math.max(0, timeLeft * 10); const livesBonus = lives * 50; const speedBonus = Math.max(0, Math.floor((60 - totalGameTime) * 5)); const totalScore = baseScore + timeBonus + livesBonus + speedBonus; document.getElementById('currentScore').textContent = totalScore; let stars = 1; if (lives >= 2) stars = 2; if (lives === 3) stars = 3; try { await apiCall('update-score', { username: currentUser, mode: currentMode, score: totalScore, stars: stars }); if (!currentUserData.scores[currentMode]) { currentUserData.scores[currentMode] = { high_score: 0, total_stars: 0 }; } currentUserData.scores[currentMode].high_score = Math.max(currentUserData.scores[currentMode].high_score, totalScore); currentUserData.scores[currentMode].total_stars += stars; } catch (e) { console.error("Gagal update skor ke server", e) } showModal(`Level Selesai!`, `🎉 Level ${currentLevel} Selesai!<br>Skor: ${totalScore}<br>Bintang: ${'⭐'.repeat(stars)}<br>Nyawa tersisa: ${lives}`); if (currentLevel < 30) document.getElementById('nextBtn').style.display = 'block'; } else { playLoseSound(); showModal('Game Over!', '💔 Semua nyawa habis!'); customSetTimeout(() => showLevelScreen(), 2000); } }
+        
+        // --- PERBAIKAN LOADING: Menghilangkan jeda loading saat skor muncul ---
+        function endGame(success) {
+            if(!isGameActive && success) return;
+            isGameActive = false;
+            clearGameTimer();
+            document.querySelectorAll('.card').forEach(c => c.onclick = null);
+            if (success) {
+                playWinSound();
+                const totalGameTime = Math.max(1, Math.floor((Date.now() - gameStartTime) / 1000));
+                const baseScore = currentLevel * 100;
+                const timeBonus = Math.max(0, timeLeft * 10);
+                const livesBonus = lives * 50;
+                const speedBonus = Math.max(0, Math.floor((60 - totalGameTime) * 5));
+                const totalScore = baseScore + timeBonus + livesBonus + speedBonus;
+                document.getElementById('currentScore').textContent = totalScore;
+                let stars = 1;
+                if (lives >= 2) stars = 2;
+                if (lives === 3) stars = 3;
+                
+                showModal(`Level Selesai!`, `🎉 Level ${currentLevel} Selesai!<br>Skor: ${totalScore}<br>Bintang: ${'⭐'.repeat(stars)}<br>Nyawa tersisa: ${lives}`);
+                if (currentLevel < 30) document.getElementById('nextBtn').style.display = 'block';
+
+                // Kirim skor ke server di latar belakang
+                apiCall('update-score', { username: currentUser, mode: currentMode, score: totalScore, stars: stars })
+                    .then(() => {
+                        if (!currentUserData.scores[currentMode]) { currentUserData.scores[currentMode] = { high_score: 0, total_stars: 0 }; }
+                        currentUserData.scores[currentMode].high_score = Math.max(currentUserData.scores[currentMode].high_score, totalScore);
+                        currentUserData.scores[currentMode].total_stars += stars;
+                    })
+                    .catch(e => console.error("Gagal update skor ke server", e));
+
+            } else {
+                playLoseSound();
+                showModal('Game Over!', '💔 Semua nyawa habis!');
+                customSetTimeout(() => showLevelScreen(), 2000);
+            }
+        }
+
         function nextLevel() { if (currentLevel < 30) startLevel(currentLevel + 1); }
-        async function fetchAndShowLeaderboard(mode = 'memorize') { try { const response = await fetch(`${API_BASE}/leaderboard?mode=${mode}`); if (!response.ok) throw new Error('Gagal memuat data.'); const data = await response.json(); const list = document.getElementById('leaderboardList'); list.innerHTML = ''; if (data.leaderboard.length === 0) { list.innerHTML = '<p style="color: #fadc9a; text-align: center;">Belum ada data</p>'; } else { data.leaderboard.forEach((entry, index) => { const item = document.createElement('div'); item.className = 'leaderboard-item'; item.innerHTML = `<span>${index + 1}. ${entry.username}</span> <span>${entry.high_score}</span>`; list.appendChild(item); }); } } catch (error) { showModal('Error', error.message); } showScreen('leaderboardScreen'); }
+        async function fetchAndShowLeaderboard(mode = 'memorize') {
+            const loader = document.getElementById('loader');
+            loader.style.display = 'flex';
+            try {
+                const response = await fetch(`${API_BASE}/leaderboard?mode=${mode}`);
+                if (!response.ok) throw new Error('Gagal memuat data.');
+                const data = await response.json();
+                const list = document.getElementById('leaderboardList');
+                list.innerHTML = '';
+                if (data.leaderboard.length === 0) {
+                    list.innerHTML = '<p style="color: #fadc9a; text-align: center;">Belum ada data</p>';
+                } else {
+                    data.leaderboard.forEach((entry, index) => {
+                        const item = document.createElement('div');
+                        item.className = 'leaderboard-item';
+                        item.innerHTML = `<span>${index + 1}. ${entry.username}</span> <span>${entry.high_score}</span>`;
+                        list.appendChild(item);
+                    });
+                }
+            } catch (error) {
+                showModal('Error', error.message);
+            } finally {
+                loader.style.display = 'none';
+            }
+            showScreen('leaderboardScreen');
+        }
         function playSound(frequency, duration, type = 'sine') { if (!audioContext) return; try { const o = audioContext.createOscillator(); const g = audioContext.createGain(); o.connect(g); g.connect(audioContext.destination); o.frequency.value = frequency; o.type = type; g.gain.setValueAtTime(0.2, audioContext.currentTime); g.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration); o.start(audioContext.currentTime); o.stop(audioContext.currentTime + duration); } catch (e) { console.log('Sound error:', e); } }
         function playCorrectSound() { playSound(523.25, 0.2); }
         function playWrongSound() { playSound(220, 0.3, 'sawtooth'); }
